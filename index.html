@@ -53,25 +53,26 @@
 
 <header>
   <img src="https://hlooleqrr.com/logo.png" alt="سرعة تملك العقار" style="max-height: 80px;">
-  <h1>شركة سرعة تملك العقار</h1>
+  <h1>سرعة تملك العقار</h1>
 </header>
 
 <div class="container" id="form-container">
   <div id="question"></div>
   <button onclick="nextQuestion()">التالي</button>
-</div><script>
+</div>
+<script>
 const questions = [
   { q: "اختر نوع التمويل:", id: "financeType", type: "select", options: ["تمويل عقاري", "تمويل شخصي"] },
   { q: "هل التمويل مدعوم؟", id: "supported", type: "select", options: ["نعم", "لا"] },
   { q: "هل ترغب بالباقة المقدمة؟", id: "packageOffer", type: "select", options: ["نعم", "لا"] },
-  { q: "ادخل راتبك الشهري:", id: "salary", type: "number" },
+  { q: "ادخل راتبك رسالة إيداع الراتب الشهري:", id: "salary", type: "number" },
   { q: "حدد عدد سنوات التمويل:", id: "years", type: "range", min: 1, max: 30, value: 20 },
   { q: "هل لديك التزامات؟", id: "hasCommitments", type: "select", options: ["نعم", "لا"] },
   { q: "نوع الالتزام:", id: "commitmentType", type: "select", options: ["قرض شخصي", "قرض سيارة", "قرض استهلاكي"] },
   { q: "قيمة القسط الشهري للالتزام:", id: "commitmentPayment", type: "number" },
   { q: "عدد الأشهر المتبقية:", id: "commitmentMonths", type: "number" },
   { q: "هل لديك بطاقة فيزا؟", id: "hasVisa", type: "select", options: ["نعم", "لا"] },
-  { q: "اسم العميل الكامل:", id: "clientName", type: "text" },
+  { q: "اسم العميل :", id: "clientName", type: "text" },
   { q: "البنك الذي ينزل عليه الراتب:", id: "bankName", type: "text" },
   { q: "هل لديك التزامات خارج البنك؟", id: "externalDebts", type: "select", options: ["نعم", "لا"] },
   { q: "هل يوجد تفاوت بالراتب خلال آخر 3 أشهر؟", id: "salaryVariance", type: "select", options: ["نعم", "لا"] },
@@ -82,7 +83,8 @@ const questions = [
 ];
 
 let answers = {};
-let current = 0;function nextQuestion() {
+let current = 0;
+function nextQuestion() {
   const container = document.getElementById("question");
   const btn = document.querySelector("button");
 
@@ -119,45 +121,50 @@ let current = 0;function nextQuestion() {
 
   container.innerHTML = html;
   current++;
-}function nextQuestion() {
-  const container = document.getElementById("question");
-  const btn = document.querySelector("button");
+}
+function calculateResult() {
+  const salary = parseFloat(answers.salary) || 0;
+  const years = parseFloat(answers.years) || 0;
+  const financeType = answers.financeType;
+  const supported = answers.supported;
+  const packageOffer = answers.packageOffer;
+  let profitRate = 5; // نسبة ربح تقريبية
 
-  if (current > 0) {
-    const input = document.getElementById(questions[current-1].id);
-    if (input.type === "select-one" || input.type === "range") {
-      answers[questions[current-1].id] = input.value;
+  let maxDeductionRate = 0.55; // النسبة الأساسية
+
+  // تحديد نسبة الاستقطاع
+  if (salary >= 15000) {
+    maxDeductionRate = 0.65;
+  }
+
+  let extraSupport = 0; // دعم حكومي إضافي
+  if (financeType === "تمويل عقاري" && supported === "نعم" && packageOffer === "نعم") {
+    if (salary < 10000) {
+      extraSupport = 150000;
+      maxDeductionRate = 0.55;
     } else {
-      answers[questions[current-1].id] = input.value.trim();
+      extraSupport = 100000;
     }
   }
 
-  if (current >= questions.length) {
-    calculateResult();
-    btn.style.display = "none";
-    return;
-  }
+  const monthlyInstallment = salary * maxDeductionRate;
+  const totalPayment = monthlyInstallment * 12 * years;
+  const netFinance = (totalPayment / (1 + profitRate / 100)) + extraSupport;
+  const totalProfit = (totalPayment - netFinance + extraSupport);
 
-  const q = questions[current];
-  let html = `<label>${q.q}</label><br>`;
-
-  if (q.type === "select") {
-    html += `<select id="${q.id}">`;
-    q.options.forEach(opt => {
-      html += `<option value="${opt}">${opt}</option>`;
-    });
-    html += `</select>`;
-  } else if (q.type === "range") {
-    html += `<input type="range" id="${q.id}" min="${q.min}" max="${q.max}" value="${q.value}" oninput="document.getElementById('${q.id}Value').innerText = this.value">
-             <br><span id="${q.id}Value">${q.value}</span> سنة`;
-  } else {
-    html += `<input type="${q.type}" id="${q.id}" required>`;
-  }
-
-  container.innerHTML = html;
-  current++;
-}<footer>
-  <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
+  document.getElementById("question").innerHTML = `
+    <h2>نتيجة الحاسبة</h2>
+    <p>الراتب الشهري: ${salary.toLocaleString()} ريال</p>
+    <p>القسط الشهري المتوقع: ${monthlyInstallment.toFixed(0)} ريال</p>
+    <p>عدد السنوات: ${years} سنة</p>
+    <p>التمويل الصافي: ${netFinance.toFixed(0)} ريال</p>
+    <p>مجموع الأرباح التقديرية: ${totalProfit.toFixed(0)} ريال</p>
+    ${extraSupport > 0 ? `<p>دعم حكومي مضاف: ${extraSupport.toLocaleString()} ريال</p>` : ''}
+    <br><h3>للتواصل مع ممثلي شركة سرعة تملك العقار يرجى الاتصال على الرقم أو زيارة الموقع الرسمي.</h3>
+  `;
+}
+<footer>
+  <p>جميع الحقوق محفوظة  سرعة تملك العقار - <span id="datetime"></span></p>
 </footer>
 
 <script>
