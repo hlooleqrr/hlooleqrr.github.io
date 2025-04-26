@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> سرعة تملك العقار - حاسبة التمويل</title>
+  <title>سرعة تملك العقار - حاسبة التمويل</title>
 
-  <!-- ===== CSS (تصميم الصفحة) ===== -->
+  <!-- ===== CSS (تصميم عصري) ===== -->
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
-      background-color: #f7f7f7;
+      background-color: #f4f6f8;
       margin: 0;
       padding: 0;
       text-align: center;
     }
     header {
-      background-color: #004d40;
+      background-color: #005c48;
       color: white;
       padding: 20px;
     }
@@ -24,11 +24,11 @@
       margin: 20px auto;
       background: white;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
     input, select, button {
-      width: 100%;
+      width: 90%;
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
@@ -47,7 +47,7 @@
     footer {
       font-size: 12px;
       color: #666;
-      margin-top: 30px;
+      margin-top: 40px;
       padding: 10px;
     }
   </style>
@@ -58,104 +58,181 @@
 <!-- ===== رأس الصفحة ===== -->
 <header>
   <h1>سرعة تملك العقار</h1>
+  <p>نقدم أفضل حلول التمويل العقاري بكل سهولة وسرعة</p>
 </header>
 
-<!-- ===== نموذج الأسئلة ===== -->
 <div class="container" id="form-container">
   <div id="question"></div>
   <button onclick="nextQuestion()">التالي</button>
 </div>
 
-<!-- ===== JavaScript (عرض الأسئلة والتعامل معها) ===== -->
+
+<!-- ===== JavaScript (الأسئلة الذكية) ===== -->
 <script>
 const questions = [
-  {q: "ادخل اسمك الكامل:", id: "name", type: "text"},
-  {q: "ادخل اسم البنك الذي ينزل عليه راتبك:", id: "bank", type: "text"},
-  {q: "كم راتب رسالة الراتب الشهري؟", id: "salary", type: "number"},
-  {q: "نسبة الاستقطاع من الراتب (%)؟", id: "deduction", type: "number"},
-  {q: "عدد سنوات التمويل:", id: "years", type: "range", min: 1, max: 30, value: 20},
-  {q: "نسبة الأرباح (%)؟", id: "profitRate", type: "number"},
-  {q: "هل عليك التزامات؟", id: "hasCommitments", type: "select", options: ["لا", "نعم"]},
-  {q: "نوع الالتزام:", id: "commitmentType", type: "select", options: ["قرض شخصي", "قرض سيارة", "قرض استهلاكي"]},
-  {q: "ما هو قسط الالتزام الشهري؟", id: "commitmentPayment", type: "number"},
-  {q: "عدد الأشهر المتبقية للقرض:", id: "commitmentMonths", type: "number"},
-  {q: "في حالة قرض سيارة، قيمة الدفعة الأخيرة (إن وجدت):", id: "lastPayment", type: "number"},
-  {q: "هل لديك بطاقة فيزا؟", id: "hasVisa", type: "select", options: ["لا", "نعم"]},
-  {q: "هل لديك التزامات خارج البنك؟", id: "hasExternalDebts", type: "select", options: ["لا", "نعم"]},
-  {q: "هل يوجد تفاوت بالراتب خلال آخر 3 أشهر؟", id: "salaryVariance", type: "select", options: ["لا", "نعم"]},
-  {q: "هل سبق وتم إيقاف خدماتك؟", id: "serviceStopped", type: "select", options: ["لا", "نعم"]},
-  {q: "نوع العقار المطلوب:", id: "propertyType", type: "select", options: ["أرض", "وحدة جاهزة من السوق", "رهن", "أرض وقرض"]},
-  {q: "هل أنت مدعوم من اعتزاز؟", id: "isSupportedEtizaz", type: "select", options: ["لا", "نعم"]},
-  {q: "ما هو تصنيفك الوظيفي؟", id: "jobType", type: "select", options: ["عسكري", "مدني", "قطاع خاص"]}
+  { label: 'اختر نوع التمويل:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] },
+  { label: 'إذا كان عقاري، هل التمويل مدعوم؟', id: 'supported', type: 'select', options: ['مدعوم', 'غير مدعوم'], showIf: (a) => a.financeType === 'تمويل عقاري' },
+  { label: 'هل ترغب في الحصول على الباقة المقدمة؟', id: 'bundle', type: 'select', options: ['نعم', 'لا'], showIf: (a) => a.supported === 'مدعوم' },
+  { label: 'كم الراتب الشهري؟', id: 'salary', type: 'number' },
+  { label: 'حدد عدد سنوات التمويل:', id: 'years', type: 'range', min: 1, max: 30, value: 20 },
+  { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMargin', type: 'number' }
 ];
 
 let answers = {};
 let current = 0;
 
-function nextQuestion() {
-  const container = document.getElementById("question");
-  const btn = document.querySelector("button");
+function showQuestion(index) {
+  const container = document.getElementById('question');
+  container.innerHTML = '';
 
-  if (current > 0) {
-    const input = document.getElementById(questions[current-1].id);
-    if (input.type === "select-one" || input.type === "range") {
-      answers[questions[current-1].id] = input.value;
-    } else {
-      answers[questions[current-1].id] = input.value.trim();
-    }
-  }
-
-  if (current >= questions.length) {
-    calculateFinance();
-    btn.style.display = "none";
+  if (index >= questions.length) {
+    calculateResult();
+    document.querySelector('button').style.display = 'none';
     return;
   }
 
-  const q = questions[current];
-  let html = `<label>${q.q}</label><br>`;
+  const q = questions[index];
 
-  if (q.type === "select") {
-    html += `<select id="${q.id}">`;
-    q.options.forEach(opt => {
-      html += `<option value="${opt}">${opt}</option>`;
-    });
-    html += `</select>`;
-  } else if (q.type === "range") {
-    html += `<input type="range" id="${q.id}" min="${q.min}" max="${q.max}" value="${q.value}" oninput="document.getElementById('${q.id}Value').innerText = this.value">
-             <br><span id="${q.id}Value">${q.value}</span> سنة`;
-  } else {
-    html += `<input type="${q.type}" id="${q.id}" required>`;
+  if (q.showIf && !q.showIf(answers)) {
+    current++;
+    showQuestion(current);
+    return;
   }
 
-  container.innerHTML = html;
+  const div = document.createElement('div');
+  const label = document.createElement('label');
+  label.textContent = q.label;
+  div.appendChild(label);
+  div.appendChild(document.createElement('br'));
+
+  if (q.type === 'select') {
+    const select = document.createElement('select');
+    select.id = q.id;
+    q.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
+    });
+    div.appendChild(select);
+  } else if (q.type === 'range') {
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.id = q.id;
+    input.min = q.min;
+    input.max = q.max;
+    input.value = q.value;
+    input.oninput = () => document.getElementById(q.id + 'Value').innerText = input.value;
+    div.appendChild(input);
+    div.appendChild(document.createElement('br'));
+    const span = document.createElement('span');
+    span.id = q.id + 'Value';
+    span.textContent = q.value;
+    div.appendChild(span);
+    div.appendChild(document.createTextNode(' سنة'));
+  } else {
+    const input = document.createElement('input');
+    input.type = q.type;
+    input.id = q.id;
+    div.appendChild(input);
+  }
+
+  container.appendChild(div);
+}
+
+function nextQuestion() {
+  if (current > 0) {
+    const prevQ = questions[current-1];
+    const input = document.getElementById(prevQ.id);
+    answers[prevQ.id] = input.value;
+  }
+  showQuestion(current);
   current++;
 }
 </script>
 
-<!-- ===== JavaScript (الحسابات والنتائج) ===== -->
+
+<!-- ===== JavaScript (الحسابات الذكية والنتائج) ===== -->
 <script>
-function calculateFinance() {
+function calculateResult() {
+  const financeType = answers.financeType;
+  const supported = answers.supported;
+  const bundle = answers.bundle;
   const salary = parseFloat(answers.salary) || 0;
-  const deduction = parseFloat(answers.deduction) || 0;
   const years = parseFloat(answers.years) || 0;
-  const profitRate = parseFloat(answers.profitRate) || 0;
+  const profitMargin = parseFloat(answers.profitMargin) || 0;
 
-  const monthlyInstallment = (salary * deduction) / 100;
-  const totalPayment = monthlyInstallment * 12 * years;
-  const netFinance = totalPayment / (1 + (profitRate / 100));
-  const totalProfit = totalPayment - netFinance;
+  let deductionRate = 0.0;
+  let extraSupport = 0;
+  let addCommodityFee = false;
 
+  // تحديد نسبة الاستقطاع حسب نوع التمويل
+  if (financeType === "تمويل شخصي") {
+    deductionRate = 33.33;
+    addCommodityFee = true;
+  } else if (financeType === "تمويل عقاري") {
+    if (supported === "مدعوم") {
+      if (bundle === "نعم") {
+        if (salary < 10000) {
+          extraSupport = 150000;
+          deductionRate = 55;
+        } else {
+          extraSupport = 100000;
+          deductionRate = salary < 15000 ? 55 : 65;
+        }
+      } else {
+        deductionRate = salary < 15000 ? 55 : 65;
+      }
+    } else { // غير مدعوم
+      deductionRate = salary < 15000 ? 55 : 65;
+    }
+  }
+
+  // القسط الشهري
+  const monthlyInstallment = (salary * (deductionRate / 100));
+
+  // اجمالي التمويل مع الارباح
+  const totalWithProfit = monthlyInstallment * 12 * years;
+
+  // معامل الربح
+  const profitFactor = (years * profitMargin / 100) + 1;
+
+  // حساب الصافي
+  const netFinance = totalWithProfit / profitFactor;
+
+  // الرسوم الإدارية 1٪
+  const adminFee = netFinance * 0.01;
+  const vatOnAdmin = adminFee * 0.15;
+
+  // رسوم السلعة لو تمويل شخصي
+  const commodityFee = addCommodityFee ? netFinance * 0.01 : 0;
+
+  // التمويل الصافي بعد خصم الرسوم
+  const finalNetFinance = netFinance - (adminFee + vatOnAdmin + commodityFee);
+
+  // اجمالي التمويل النهائي (لو كان مدعوم مع باقة نضيف الدعم)
+  const totalFinalFinance = finalNetFinance + extraSupport;
+
+  // عرض النتيجة
   document.getElementById("question").innerHTML = `
-    <h3>نتيجة حساب التمويل:</h3>
-    <p>القسط الشهري التقريبي: ${monthlyInstallment.toFixed(2)} ريال</p>
-    <p>التمويل الصافي: ${netFinance.toFixed(2)} ريال</p>
-    <p>الأرباح التقريبية: ${totalProfit.toFixed(2)} ريال</p>
-    <p>شكراً لك، سيتم التواصل معك قريباً!</p>
+    <h2>نتيجة الحاسبة:</h2>
+    <p><strong>القسط الشهري المتوقع:</strong> ${monthlyInstallment.toFixed(0)} ريال</p>
+    <p><strong>اجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
+    <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
+    <p><strong>التمويل الصافي قبل الرسوم:</strong> ${netFinance.toFixed(0)} ريال</p>
+    <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
+    <p><strong>الضريبة على الرسوم:</strong> ${vatOnAdmin.toFixed(0)} ريال</p>
+    ${addCommodityFee ? `<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>` : ''}
+    <p><strong>التمويل الصافي النهائي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
+    ${extraSupport > 0 ? `<p><strong>دعم حكومي مضاف:</strong> ${extraSupport.toLocaleString()} ريال</p>` : ''}
+    <h3 style="margin-top:20px;">للتواصل مع  سرعة تملك العقار</h3>
+    <p>زورونا على: hlooleqrr.com</p>
   `;
 }
 </script>
 
-<!-- ===== الفوتر ===== -->
+
+<!-- ===== الفوتر (حقوق الشركة والتاريخ) ===== -->
 <footer>
   <p>جميع الحقوق محفوظة  سرعة تملك العقار - <span id="datetime"></span></p>
 </footer>
