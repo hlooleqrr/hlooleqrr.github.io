@@ -11,3 +11,62 @@
   <p>للتواصل: 0506214458</p>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حاسبة التمويل العقاري</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>شركة سرعة تملك العقار</h1>
+  <p>نقدم أفضل حلول التمويل العقاري بكل سهولة وسرعة.</p>
+
+  <h2>حاسبة التمويل العقاري</h2>
+  <label>قيمة العقار:</label><br>
+  <input type="number" id="propertyPrice" placeholder="أدخل قيمة العقار"><br>
+
+  <label>نسبة الدفعة الأولى (%):</label><br>
+  <input type="number" id="downPayment" placeholder="مثلاً: 10"><br>
+
+  <label>مدة التمويل (بالسنوات):</label><br>
+  <input type="number" id="years" placeholder="مثلاً: 20"><br>
+
+  <label>نسبة الفائدة السنوية (%):</label><br>
+  <input type="number" id="interest" placeholder="مثلاً: 4"><br>
+
+  <button onclick="calculate()">احسب القسط</button>
+
+  <h3 id="result"></h3>
+
+  <p>للتواصل: <a href="tel:0506214458">0506214458</a></p>
+
+  <script>
+    function calculate() {
+      const price = parseFloat(document.getElementById("propertyPrice").value);
+      const down = parseFloat(document.getElementById("downPayment").value);
+      const years = parseFloat(document.getElementById("years").value);
+      const interest = parseFloat(document.getElementById("interest").value);
+
+      const loanAmount = price - (price * down / 100);
+      const months = years * 12;
+      const monthlyInterest = (interest / 100) / 12;
+      const monthlyPayment = (loanAmount * monthlyInterest) / (1 - Math.pow(1 + monthlyInterest, -months));
+
+      document.getElementById("result").innerText =
+        "القسط الشهري التقريبي: " + monthlyPayment.toFixed(2) + " ريال";
+    }
+  </script>
+</body>
+</html>
