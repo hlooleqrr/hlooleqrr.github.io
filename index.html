@@ -53,10 +53,127 @@
 
 <header>
   <img src="https://hlooleqrr.com/logo.png" alt="سرعة تملك العقار" style="max-height: 80px;">
-  <h1>سرعة تملك العقار</h1>
+  <h1>شركة سرعة تملك العقار</h1>
 </header>
 
 <div class="container" id="form-container">
   <div id="question"></div>
   <button onclick="nextQuestion()">التالي</button>
-</div>
+</div><script>
+const questions = [
+  { q: "اختر نوع التمويل:", id: "financeType", type: "select", options: ["تمويل عقاري", "تمويل شخصي"] },
+  { q: "هل التمويل مدعوم؟", id: "supported", type: "select", options: ["نعم", "لا"] },
+  { q: "هل ترغب بالباقة المقدمة؟", id: "packageOffer", type: "select", options: ["نعم", "لا"] },
+  { q: "ادخل راتبك الشهري:", id: "salary", type: "number" },
+  { q: "حدد عدد سنوات التمويل:", id: "years", type: "range", min: 1, max: 30, value: 20 },
+  { q: "هل لديك التزامات؟", id: "hasCommitments", type: "select", options: ["نعم", "لا"] },
+  { q: "نوع الالتزام:", id: "commitmentType", type: "select", options: ["قرض شخصي", "قرض سيارة", "قرض استهلاكي"] },
+  { q: "قيمة القسط الشهري للالتزام:", id: "commitmentPayment", type: "number" },
+  { q: "عدد الأشهر المتبقية:", id: "commitmentMonths", type: "number" },
+  { q: "هل لديك بطاقة فيزا؟", id: "hasVisa", type: "select", options: ["نعم", "لا"] },
+  { q: "اسم العميل الكامل:", id: "clientName", type: "text" },
+  { q: "البنك الذي ينزل عليه الراتب:", id: "bankName", type: "text" },
+  { q: "هل لديك التزامات خارج البنك؟", id: "externalDebts", type: "select", options: ["نعم", "لا"] },
+  { q: "هل يوجد تفاوت بالراتب خلال آخر 3 أشهر؟", id: "salaryVariance", type: "select", options: ["نعم", "لا"] },
+  { q: "هل سبق وتم إيقاف خدماتك؟", id: "serviceStopped", type: "select", options: ["نعم", "لا"] },
+  { q: "نوع العقار المطلوب:", id: "propertyType", type: "select", options: ["أرض", "وحدة جاهزة من السوق", "رهن", "أرض وقرض"] },
+  { q: "هل أنت مدعوم من اعتزاز؟", id: "etizazSupport", type: "select", options: ["نعم", "لا"] },
+  { q: "تصنيف الوظيفة:", id: "jobType", type: "select", options: ["عسكري", "مدني", "قطاع خاص"] }
+];
+
+let answers = {};
+let current = 0;function nextQuestion() {
+  const container = document.getElementById("question");
+  const btn = document.querySelector("button");
+
+  if (current > 0) {
+    const input = document.getElementById(questions[current-1].id);
+    if (input.type === "select-one" || input.type === "range") {
+      answers[questions[current-1].id] = input.value;
+    } else {
+      answers[questions[current-1].id] = input.value.trim();
+    }
+  }
+
+  if (current >= questions.length) {
+    calculateResult();
+    btn.style.display = "none";
+    return;
+  }
+
+  const q = questions[current];
+  let html = `<label>${q.q}</label><br>`;
+
+  if (q.type === "select") {
+    html += `<select id="${q.id}">`;
+    q.options.forEach(opt => {
+      html += `<option value="${opt}">${opt}</option>`;
+    });
+    html += `</select>`;
+  } else if (q.type === "range") {
+    html += `<input type="range" id="${q.id}" min="${q.min}" max="${q.max}" value="${q.value}" oninput="document.getElementById('${q.id}Value').innerText = this.value">
+             <br><span id="${q.id}Value">${q.value}</span> سنة`;
+  } else {
+    html += `<input type="${q.type}" id="${q.id}" required>`;
+  }
+
+  container.innerHTML = html;
+  current++;
+}function nextQuestion() {
+  const container = document.getElementById("question");
+  const btn = document.querySelector("button");
+
+  if (current > 0) {
+    const input = document.getElementById(questions[current-1].id);
+    if (input.type === "select-one" || input.type === "range") {
+      answers[questions[current-1].id] = input.value;
+    } else {
+      answers[questions[current-1].id] = input.value.trim();
+    }
+  }
+
+  if (current >= questions.length) {
+    calculateResult();
+    btn.style.display = "none";
+    return;
+  }
+
+  const q = questions[current];
+  let html = `<label>${q.q}</label><br>`;
+
+  if (q.type === "select") {
+    html += `<select id="${q.id}">`;
+    q.options.forEach(opt => {
+      html += `<option value="${opt}">${opt}</option>`;
+    });
+    html += `</select>`;
+  } else if (q.type === "range") {
+    html += `<input type="range" id="${q.id}" min="${q.min}" max="${q.max}" value="${q.value}" oninput="document.getElementById('${q.id}Value').innerText = this.value">
+             <br><span id="${q.id}Value">${q.value}</span> سنة`;
+  } else {
+    html += `<input type="${q.type}" id="${q.id}" required>`;
+  }
+
+  container.innerHTML = html;
+  current++;
+}<footer>
+  <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
+</footer>
+
+<script>
+function updateDateTime() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('datetime').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
+
+</body>
+</html>
