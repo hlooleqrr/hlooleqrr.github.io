@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -27,11 +26,14 @@
   <label>الراتب الشهري:</label><br>
   <input type="number" id="salary"><br>
 
-  <label>نسبة الاستقطاع %:</label><br>
+  <label>نسبة الاستقطاع من الراتب (%):</label><br>
   <input type="number" id="percentage"><br>
 
   <label>عدد سنوات التمويل:</label><br>
   <input type="number" id="years"><br>
+
+  <label>نسبة الأرباح (%):</label><br>
+  <input type="number" id="profitRate"><br>
 
   <button onclick="calculate()">احسب التمويل</button>
 
@@ -44,8 +46,9 @@
       const salary = parseFloat(document.getElementById('salary').value);
       const percentage = parseFloat(document.getElementById('percentage').value);
       const years = parseFloat(document.getElementById('years').value);
+      const profitRate = parseFloat(document.getElementById('profitRate').value);
 
-      if (isNaN(salary) || isNaN(percentage) || isNaN(years)) {
+      if (isNaN(salary) || isNaN(percentage) || isNaN(years) || isNaN(profitRate)) {
         document.getElementById('result').innerHTML = "يرجى تعبئة جميع الحقول بشكل صحيح.";
         return;
       }
@@ -53,14 +56,13 @@
       const monthlyInstallment = salary * (percentage / 100);
       const months = years * 12;
       const totalPaid = monthlyInstallment * months;
-      const expectedProfitRate = 0.05; // تقدير بسيط
-      const estimatedProfit = totalPaid * expectedProfitRate;
+      const estimatedProfit = totalPaid * (profitRate / 100);
       const netFinance = totalPaid - estimatedProfit;
 
       document.getElementById('result').innerHTML = 
         "القسط الشهري: " + monthlyInstallment.toFixed(0) + " ريال<br>" +
         "التمويل الصافي: " + netFinance.toFixed(0) + " ريال<br>" +
-        "الأرباح التقريبية: " + estimatedProfit.toFixed(0) + " ريال";
+        "الأرباح: " + estimatedProfit.toFixed(0) + " ريال";
     }
   </script>
 
