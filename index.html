@@ -13,28 +13,27 @@
     }
     input, button {
       padding: 10px;
-      margin: 5px;
+      margin: 8px;
     }
   </style>
 </head>
 <body>
+
   <h1>شركة سرعة تملك العقار</h1>
   <p>نقدم أفضل حلول التمويل العقاري بكل سهولة وسرعة.</p>
 
   <h2>حاسبة التمويل العقاري</h2>
-  <label>قيمة العقار:</label><br>
-  <input type="number" id="propertyPrice" placeholder="أدخل قيمة العقار"><br>
 
-  <label>نسبة الدفعة الأولى (%):</label><br>
-  <input type="number" id="downPayment" placeholder="مثلاً: 10"><br>
+  <label>الراتب الشهري:</label><br>
+  <input type="number" id="salary"><br>
 
-  <label>مدة التمويل (بالسنوات):</label><br>
-  <input type="number" id="years" placeholder="مثلاً: 20"><br>
+  <label>نسبة الاستقطاع %:</label><br>
+  <input type="number" id="percentage"><br>
 
-  <label>نسبة الفائدة السنوية (%):</label><br>
-  <input type="number" id="interest" placeholder="مثلاً: 4"><br>
+  <label>عدد سنوات التمويل:</label><br>
+  <input type="number" id="years"><br>
 
-  <button onclick="calculate()">احسب القسط</button>
+  <button onclick="calculate()">احسب التمويل</button>
 
   <h3 id="result"></h3>
 
@@ -42,19 +41,28 @@
 
   <script>
     function calculate() {
-      const price = parseFloat(document.getElementById("propertyPrice").value);
-      const down = parseFloat(document.getElementById("downPayment").value);
-      const years = parseFloat(document.getElementById("years").value);
-      const interest = parseFloat(document.getElementById("interest").value);
+      const salary = parseFloat(document.getElementById('salary').value);
+      const percentage = parseFloat(document.getElementById('percentage').value);
+      const years = parseFloat(document.getElementById('years').value);
 
-      const loanAmount = price - (price * down / 100);
+      if (isNaN(salary) || isNaN(percentage) || isNaN(years)) {
+        document.getElementById('result').innerHTML = "يرجى تعبئة جميع الحقول بشكل صحيح.";
+        return;
+      }
+
+      const monthlyInstallment = salary * (percentage / 100);
       const months = years * 12;
-      const monthlyInterest = (interest / 100) / 12;
-      const monthlyPayment = (loanAmount * monthlyInterest) / (1 - Math.pow(1 + monthlyInterest, -months));
+      const totalPaid = monthlyInstallment * months;
+      const expectedProfitRate = 0.05; // تقدير بسيط
+      const estimatedProfit = totalPaid * expectedProfitRate;
+      const netFinance = totalPaid - estimatedProfit;
 
-      document.getElementById("result").innerText =
-        "القسط الشهري التقريبي: " + monthlyPayment.toFixed(2) + " ريال";
+      document.getElementById('result').innerHTML = 
+        "القسط الشهري: " + monthlyInstallment.toFixed(0) + " ريال<br>" +
+        "التمويل الصافي: " + netFinance.toFixed(0) + " ريال<br>" +
+        "الأرباح التقريبية: " + estimatedProfit.toFixed(0) + " ريال";
     }
   </script>
+
 </body>
 </html>
