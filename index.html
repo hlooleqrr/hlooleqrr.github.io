@@ -1,81 +1,17 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>  سرعة تملك العقار - حاسبة التمويل</title>
-
-  <!-- ===== CSS (تصميم عصري) ===== -->
-  <style>
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background-color: #005c48;
-      color: white;
-      padding: 20px;
-    }
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    input, select, button {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #00796b;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #004d40;
-    }
-    footer {
-      font-size: 12px;
-      color: #666;
-      margin-top: 40px;
-      padding: 10px;
-    }
-  </style>
-
-</head>
-<body>
-
-<!-- ===== رأس الصفحة ===== -->
-<header>
-  <h1>سرعة تملك العقار</h1>
-  <p>نقدم أفضل حلول التمويل العقاري بكل سهولة وسرعة</p>
-</header>
-
-<div class="container" id="form-container">
-  <div id="question"></div>
-  <button onclick="nextQuestion()">التالي</button>
-</div>
-
-
-<!-- ===== JavaScript (الأسئلة الذكية) ===== -->
+<!-- ===== JavaScript (الأسئلة الذكية المعدلة) ===== -->
 <script>
 const questions = [
   { label: 'اختر نوع التمويل:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] },
-  { label: 'إذا كان عقاري، هل التمويل مدعوم؟', id: 'supported', type: 'select', options: ['مدعوم', 'غير مدعوم'], showIf: (a) => a.financeType === 'تمويل عقاري' },
+  { label: 'هل التمويل مدعوم؟', id: 'supported', type: 'select', options: ['مدعوم', 'غير مدعوم'], showIf: (a) => a.financeType === 'تمويل عقاري' },
   { label: 'هل ترغب في الحصول على الباقة المقدمة؟', id: 'bundle', type: 'select', options: ['نعم', 'لا'], showIf: (a) => a.supported === 'مدعوم' },
   { label: 'كم الراتب الشهري؟', id: 'salary', type: 'number' },
   { label: 'حدد عدد سنوات التمويل:', id: 'years', type: 'range', min: 1, max: 30, value: 20 },
-  { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMargin', type: 'number' }
+  { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMargin', type: 'number' },
+  { label: 'هل لديك التزامات حالية؟', id: 'hasCommitments', type: 'select', options: ['نعم', 'لا'] },
+  { label: 'نوع الالتزام:', id: 'commitmentType', type: 'select', options: ['قرض شخصي', 'قرض سيارة', 'قرض استهلاكي'], showIf: (a) => a.hasCommitments === 'نعم' },
+  { label: 'كم قيمة القسط الشهري للالتزام؟', id: 'commitmentPayment', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' },
+  { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonths', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' },
+  { label: 'إذا كان قرض سيارة، كم الدفعة الأخيرة؟', id: 'lastPayment', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' && a.commitmentType === 'قرض سيارة' }
 ];
 
 let answers = {};
@@ -152,7 +88,7 @@ function nextQuestion() {
 </script>
 
 
-<!-- ===== JavaScript (الحسابات الذكية والنتائج) ===== -->
+<!-- ===== JavaScript (الحساب مع الالتزامات) ===== -->
 <script>
 function calculateResult() {
   const financeType = answers.financeType;
@@ -161,6 +97,8 @@ function calculateResult() {
   const salary = parseFloat(answers.salary) || 0;
   const years = parseFloat(answers.years) || 0;
   const profitMargin = parseFloat(answers.profitMargin) || 0;
+  const hasCommitments = answers.hasCommitments;
+  const commitmentPayment = parseFloat(answers.commitmentPayment) || 0;
 
   let deductionRate = 0.0;
   let extraSupport = 0;
@@ -188,35 +126,42 @@ function calculateResult() {
     }
   }
 
-  // القسط الشهري
-  const monthlyInstallment = (salary * (deductionRate / 100));
+  // حساب القسط المسموح به من الراتب
+  const allowedInstallment = (salary * (deductionRate / 100));
 
-  // اجمالي التمويل مع الارباح
-  const totalWithProfit = monthlyInstallment * 12 * years;
+  // خصم قسط الالتزام إن وجد
+  let availableInstallment = allowedInstallment;
+  if (hasCommitments === "نعم") {
+    availableInstallment -= commitmentPayment;
+  }
 
-  // معامل الربح
+  // لو الالتزامات أكبر من القسط المسموح به
+  if (availableInstallment <= 0) {
+    document.getElementById("question").innerHTML = `
+      <h2>عذرًا</h2>
+      <p>لا يمكنك الحصول على تمويل حالياً بسبب وجود التزامات مرتفعة.</p>
+      <h3>للتواصل مع شركة سرعة تملك العقار</h3>
+      <p>زورونا على: hlooleqrr.com</p>
+    `;
+    document.querySelector('button').style.display = 'none';
+    return;
+  }
+
+  // نكمل الحساب
+  const totalWithProfit = availableInstallment * 12 * years;
   const profitFactor = (years * profitMargin / 100) + 1;
-
-  // حساب الصافي
   const netFinance = totalWithProfit / profitFactor;
 
-  // الرسوم الإدارية 1٪
   const adminFee = netFinance * 0.01;
   const vatOnAdmin = adminFee * 0.15;
-
-  // رسوم السلعة لو تمويل شخصي
   const commodityFee = addCommodityFee ? netFinance * 0.01 : 0;
-
-  // التمويل الصافي بعد خصم الرسوم
   const finalNetFinance = netFinance - (adminFee + vatOnAdmin + commodityFee);
-
-  // اجمالي التمويل النهائي (لو كان مدعوم مع باقة نضيف الدعم)
   const totalFinalFinance = finalNetFinance + extraSupport;
 
   // عرض النتيجة
   document.getElementById("question").innerHTML = `
     <h2>نتيجة الحاسبة:</h2>
-    <p><strong>القسط الشهري المتوقع:</strong> ${monthlyInstallment.toFixed(0)} ريال</p>
+    <p><strong>القسط الشهري المتاح:</strong> ${availableInstallment.toFixed(0)} ريال</p>
     <p><strong>اجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
     <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
     <p><strong>التمويل الصافي قبل الرسوم:</strong> ${netFinance.toFixed(0)} ريال</p>
@@ -225,7 +170,7 @@ function calculateResult() {
     ${addCommodityFee ? `<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>` : ''}
     <p><strong>التمويل الصافي النهائي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
     ${extraSupport > 0 ? `<p><strong>دعم حكومي مضاف:</strong> ${extraSupport.toLocaleString()} ريال</p>` : ''}
-    <h3 style="margin-top:20px;">للتواصل مع  سرعة تملك العقار</h3>
+    <h3 style="margin-top:20px;">للتواصل مع شركة سرعة تملك العقار</h3>
     <p>زورونا على: hlooleqrr.com</p>
   `;
 }
@@ -234,7 +179,7 @@ function calculateResult() {
 
 <!-- ===== الفوتر (حقوق الشركة والتاريخ) ===== -->
 <footer>
-  <p>جميع الحقوق محفوظة  سرعة تملك العقار - <span id="datetime"></span></p>
+  <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
 </footer>
 
 <script>
@@ -254,3 +199,5 @@ updateDateTime();
 
 </body>
 </html>
+
+
