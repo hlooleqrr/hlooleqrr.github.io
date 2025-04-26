@@ -1,70 +1,17 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>حاسبة التمويل العقاري</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 8px;
-    }
-  </style>
-</head>
-<body>
+<h2>حاسبة التمويل </h2>
 
-  <h1>شركة سرعة تملك العقار</h1>
-  <p>نقدم أفضل حلول التمويل العقاري بكل سهولة وسرعة.</p>
+<label>الراتب الشهري:</label><br>
+<input type="number" id="salary"><br>
 
-  <h2>حاسبة التمويل العقاري</h2>
+<label>نسبة الاستقطاع من الراتب (%):</label><br>
+<input type="number" id="percentage"><br>
 
-  <label>الراتب الشهري:</label><br>
-  <input type="number" id="salary"><br>
+<label>عدد سنوات التمويل:</label><br>
+<input type="number" id="years"><br>
 
-  <label>نسبة الاستقطاع من الراتب (%):</label><br>
-  <input type="number" id="percentage"><br>
+<label>نسبة الأرباح (%):</label><br>
+<input type="number" id="profitRate"><br>
 
-  <label>عدد سنوات التمويل:</label><br>
-  <input type="number" id="years"><br>
+<button onclick="calculate()">احسب التمويل</button>
 
-  <label>نسبة الأرباح (%):</label><br>
-  <input type="number" id="profitRate"><br>
-
-  <button onclick="calculate()">احسب التمويل</button>
-
-  <h3 id="result"></h3>
-
-  <p>للتواصل: <a href="tel:0506214458">0506214458</a></p>
-
-  <script>
-    function calculate() {
-      const salary = parseFloat(document.getElementById('salary').value);
-      const percentage = parseFloat(document.getElementById('percentage').value);
-      const years = parseFloat(document.getElementById('years').value);
-      const profitRate = parseFloat(document.getElementById('profitRate').value);
-
-      if (isNaN(salary) || isNaN(percentage) || isNaN(years) || isNaN(profitRate)) {
-        document.getElementById('result').innerHTML = "يرجى تعبئة جميع الحقول بشكل صحيح.";
-        return;
-      }
-
-      const monthlyInstallment = salary * (percentage / 100);
-      const months = years * 12;
-      const totalPaid = monthlyInstallment * months;
-      const estimatedProfit = totalPaid * (profitRate / 100);
-      const netFinance = totalPaid - estimatedProfit;
-
-      document.getElementById('result').innerHTML = 
-        "القسط الشهري: " + monthlyInstallment.toFixed(0) + " ريال<br>" +
-        "التمويل الصافي: " + netFinance.toFixed(0) + " ريال<br>" +
-        "الأرباح: " + estimatedProfit.toFixed(0) + " ريال";
-    }
-  </script>
-
-</body>
-</html>
+<h3 id="result"></h3>
