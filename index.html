@@ -3,153 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>شركة سرعة تملك العقار - حاسبة التمويل</title>
+  <title>شركة سرعة تملك العقار - حاسبة التمويل العقاري</title>
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
-      background: #f7f7f7;
+      background-color: #f4f6f8;
       margin: 0;
       padding: 0;
       text-align: center;
     }
+    header {
+      background-color: #004d40;
+      color: white;
+      padding: 20px;
+    }
     .container {
       max-width: 600px;
-      margin: auto;
+      margin: 20px auto;
       background: white;
-      padding: 30px;
-      border-radius: 8px;
-      margin-top: 30px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
     input, select, button {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
-      font-size: 1em;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
-      background-color: #007b5f;
+      background-color: #00796b;
       color: white;
       border: none;
-      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #004d40;
     }
     footer {
+      font-size: 12px;
+      color: #666;
       margin-top: 30px;
-      font-size: 0.8em;
-      color: #555;
-      text-align: left;
-      padding: 10px;
     }
   </style>
 </head>
 <body>
 
+<header>
+  <img src="https://hlooleqrr.com/logo.png" alt="سرعة تملك العقار" style="max-height: 80px;">
   <h1>سرعة تملك العقار</h1>
+</header>
 
-  <div class="container" id="form-container">
-    <div id="question"></div>
-    <button onclick="nextQuestion()">التالي</button>
-  </div>
-
-  <footer>
-    <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
-  </footer>
-
-<script>
-const questions = [
-  {q: " الاسم الكريم:", id: "name", type: "text"},
-  {q: "ادخل اسم البنك الذي ينزل عليه راتبك:", id: "bank", type: "text"},
-  {q: "كم رسالة إيداع الراتب الشهري؟", id: "salary", type: "number"},
-  {q: "نسبة الاستقطاع من الراتب (%)؟", id: "deduction", type: "number"},
-  {q: "عدد سنوات التمويل:", id: "years", type: "number"},
-  {q: "نسبة الأرباح (%)؟", id: "profitRate", type: "number"},
-  {q: "هل عليك التزامات؟", id: "hasCommitments", type: "select", options: ["لا", "نعم"]},
-  {q: "نوع الالتزام:", id: "commitmentType", type: "select", options: ["قرض شخصي", "قرض سيارة", "قرض استهلاكي"]},
-  {q: "ما هو قسط الالتزام الشهري؟", id: "commitmentPayment", type: "number"},
-  {q: "عدد الأشهر المتبقية للقرض:", id: "commitmentMonths", type: "number"},
-  {q: "في حالة قرض سيارة، قيمة الدفعة الأخيرة (إن وجدت):", id: "lastPayment", type: "number"},
-  {q: "هل لديك بطاقة فيزا؟", id: "hasVisa", type: "select", options: ["لا", "نعم"]},
-  {q: "هل لديك التزامات خارج البنك؟", id: "hasExternalDebts", type: "select", options: ["لا", "نعم"]},
-  {q: "هل يوجد تفاوت بالراتب خلال آخر 3 أشهر؟", id: "salaryVariance", type: "select", options: ["لا", "نعم"]},
-  {q: "هل سبق وتم إيقاف خدماتك؟", id: "serviceStopped", type: "select", options: ["لا", "نعم"]},
-  {q: "نوع العقار المطلوب:", id: "propertyType", type: "select", options: ["أرض", "وحدة جاهزة من السوق", "رهن", "أرض وقرض"]},
-  {q: "هل أنت مدعوم سكني؟", id: "isSupported", type: "select", options: ["لا", "نعم"]},
-  {q: "هل أنت مدعوم من اعتزاز؟", id: "isSupportedEtizaz", type: "select", options: ["لا", "نعم"]},
-  {q: "ما هو تصنيفك الوظيفي؟", id: "jobType", type: "select", options: ["عسكري", "مدني", "قطاع خاص"]}
-];
-
-let answers = {};
-let current = 0;
-
-function nextQuestion() {
-  const container = document.getElementById("question");
-  const btn = document.querySelector("button");
-
-  if (current > 0) {
-    const input = document.getElementById(questions[current-1].id);
-    if (input.type === "select-one") {
-      answers[questions[current-1].id] = input.value;
-    } else {
-      answers[questions[current-1].id] = input.value.trim();
-    }
-  }
-
-  if (current >= questions.length) {
-    calculateFinance();
-    btn.style.display = "none";
-    return;
-  }
-
-  const q = questions[current];
-  let html = `<label>${q.q}</label><br>`;
-  if (q.type === "select") {
-    html += `<select id="${q.id}">`;
-    q.options.forEach(opt => {
-      html += `<option value="${opt}">${opt}</option>`;
-    });
-    html += `</select>`;
-  } else {
-    html += `<input type="${q.type}" id="${q.id}" required>`;
-  }
-  container.innerHTML = html;
-  current++;
-}
-
-function calculateFinance() {
-  const salary = parseFloat(answers.salary) || 0;
-  const deduction = parseFloat(answers.deduction) || 0;
-  const years = parseFloat(answers.years) || 0;
-  const profitRate = parseFloat(answers.profitRate) || 0;
-
-  const monthlyInstallment = (salary * deduction) / 100;
-  const totalPayment = monthlyInstallment * 12 * years;
-  const netFinance = totalPayment / (1 + (profitRate / 100));
-  const totalProfit = totalPayment - netFinance;
-
-  document.getElementById("question").innerHTML = `
-    <h3>نتيجة حساب التمويل:</h3>
-    <p>القسط الشهري التقريبي: ${monthlyInstallment.toFixed(2)} ريال</p>
-    <p>التمويل الصافي: ${netFinance.toFixed(2)} ريال</p>
-    <p>الأرباح التقريبية: ${totalProfit.toFixed(2)} ريال</p>
-    <p>شكراً لك، سيتم التواصل معك قريباً!</p>
-  `;
-}
-
-function updateDateTime() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('datetime').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-nextQuestion();
-</script>
-
-</body>
-</html>
+<div class="container" id="form-container">
+  <div id="question"></div>
+  <button onclick="nextQuestion()">التالي</button>
+</div>
