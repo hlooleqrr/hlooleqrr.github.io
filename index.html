@@ -1,164 +1,163 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة التمويل العقاري</title>
-    <style>
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: #f7f7f7;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            direction: rtl;
-        }
-        h1 {
-            color: #006400;
-            margin-top: 20px;
-        }
-        .container {
-            max-width: 500px;
-            margin: auto;
-            background: #ffffff;
-            padding: 20px;
-            border: 2px solid #006400;
-            border-radius: 8px;
-            margin-top: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        label {
-            font-weight: bold;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 1em;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #006400;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        footer {
-            margin-top: 30px;
-            font-size: 0.8em;
-            color: #555;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حاسبة التمويل العقاري والشخصي</title>
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 20px;
+      margin-top: 30px;
+      border: 2px solid #006400;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #006400;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>حاسبة التمويل العقاري</h1>
+<h1>حاسبة التمويل</h1>
 
-    <div class="container" id="form-container">
-        <div id="question"></div>
-        <button onclick="nextQuestion()">التالي</button>
-    </div>
+<div class="container" id="form-container">
+  <div id="questions"></div>
+  <button onclick="nextQuestion()">التالي</button>
+</div>
 
-    <footer>
-        <p>جميع الحقوق محفوظة &copy; 2025</p>
-    </footer>
+<script>
+const questions = [
+  {q: "ما هو الراتب الشهري؟", id: "salary", type: "number"},
+  {q: "نوع التمويل العقاري؟", id: "supportType", type: "select", options: ["مدعوم مع باقة مقدمة", "مدعوم دعم شهري فقط", "غير مدعوم"]},
+  {q: "هل لديك التزامات مالية؟", id: "hasCommitments", type: "select", options: ["لا", "نعم"]},
+  {q: "نوع الالتزام؟", id: "commitmentType", type: "select", options: ["قرض شخصي", "سيارة"], condition: (a) => a.hasCommitments === "نعم"},
+  {q: "كم قيمة القسط الشهري للالتزام؟", id: "commitmentValue", type: "number", condition: (a) => a.hasCommitments === "نعم"},
+  {q: "كم عدد الأشهر المتبقية للقسط؟", id: "commitmentMonths", type: "number", condition: (a) => a.hasCommitments === "نعم"},
+  {q: "هل لديك دفعة أخيرة للسيارة؟", id: "hasBalloon", type: "select", options: ["لا", "نعم"], condition: (a) => a.commitmentType === "سيارة"},
+  {q: "ما قيمة الدفعة الأخيرة؟", id: "balloonValue", type: "number", condition: (a) => a.hasBalloon === "نعم"},
+  {q: "كم عدد أشهر التمويل العقاري المطلوب؟", id: "financeMonths", type: "number"}
+];
 
-    <script>
-        const questions = [
-            {q: "ما نوع التمويل؟ (مدعوم أو غير مدعوم)", id: "finType", type: "select", options: ["مدعوم", "غير مدعوم"]},
-            {q: "ما هو الراتب الشهري (بالريال)؟", id: "salary", type: "number"},
-            {q: "هل لديك التزامات مالية شهرية؟", id: "hasCommitments", type: "select", options: ["لا", "نعم"]},
-            {q: "ما قيمة الالتزامات الشهرية (بالريال)؟", id: "commitmentValue", type: "number"}
-        ];
+let answers = {};
+let current = 0;
 
-        let answers = {};
-        let current = 0;
+function nextQuestion() {
+  const container = document.getElementById("questions");
+  const btn = document.querySelector("button");
 
-        function nextQuestion() {
-            const container = document.getElementById("question");
-            const btn = document.querySelector("button");
+  if (current > 0) {
+    const prev = questions[current-1];
+    const input = document.getElementById(prev.id);
+    if (input) {
+      answers[prev.id] = input.value;
+    }
+  }
 
-            // حفظ الإجابة السابقة
-            if (current > 0) {
-                const prev = questions[current-1];
-                const input = document.getElementById(prev.id);
-                if (prev.type === "select") {
-                    answers[prev.id] = input.value;
-                } else {
-                    answers[prev.id] = input.value.trim();
-                }
-            }
+  // تجاوز الأسئلة بناءً على الشرط
+  while (current < questions.length && questions[current].condition && !questions[current].condition(answers)) {
+    current++;
+  }
 
-            // تجاوز سؤال قيمة الالتزام إذا كانت الإجابة "لا"
-            if (current > 0) {
-                const prev = questions[current-1];
-                if (prev.id === "hasCommitments" && answers.hasCommitments === "لا") {
-                    current++; // تخطي السؤال التالي عن القيمة
-                }
-            }
+  if (current >= questions.length) {
+    calculate();
+    btn.style.display = "none";
+    return;
+  }
 
-            // إذا انتهت الأسئلة، احسب النتائج
-            if (current >= questions.length) {
-                calculateFinance();
-                btn.style.display = "none";
-                return;
-            }
+  const q = questions[current];
+  let html = `<label>${q.q}</label><br>`;
+  if (q.type === "select") {
+    html += `<select id="${q.id}">`;
+    q.options.forEach(opt => {
+      html += `<option value="${opt}">${opt}</option>`;
+    });
+    html += `</select>`;
+  } else {
+    html += `<input type="${q.type}" id="${q.id}" required>`;
+  }
+  container.innerHTML = html;
+  current++;
+}
 
-            // عرض السؤال الحالي
-            const q = questions[current];
-            let html = `<label>${q.q}</label><br>`;
-            if (q.type === "select") {
-                html += `<select id="${q.id}">`;
-                q.options.forEach(opt => {
-                    html += `<option value="${opt}">${opt}</option>`;
-                });
-                html += `</select>`;
-            } else {
-                html += `<input type="${q.type}" id="${q.id}" required>`;
-            }
-            container.innerHTML = html;
-            current++;
-        }
+function calculate() {
+  const salary = parseFloat(answers.salary) || 0;
+  const supportType = answers.supportType;
+  const hasCommitments = answers.hasCommitments === "نعم";
+  const commitmentType = answers.commitmentType;
+  const commitmentValue = parseFloat(answers.commitmentValue) || 0;
+  const commitmentMonths = parseInt(answers.commitmentMonths) || 0;
+  const hasBalloon = answers.hasBalloon === "نعم";
+  const balloonValue = parseFloat(answers.balloonValue) || 0;
+  const financeMonths = parseInt(answers.financeMonths) || 0;
 
-        function calculateFinance() {
-            const salary = parseFloat(answers.salary) || 0;
-            const commitmentValue = (answers.hasCommitments === "نعم") ? parseFloat(answers.commitmentValue) || 0 : 0;
-            const isSupported = answers.finType === "مدعوم";
+  // تحديد نسبة الاستقطاع الأساسية
+  let maxDeductionRate = 0;
+  if (supportType === "مدعوم مع باقة مقدمة") {
+    maxDeductionRate = 55;
+  } else if (supportType === "مدعوم دعم شهري فقط") {
+    maxDeductionRate = 65;
+  } else {
+    maxDeductionRate = (salary < 15000) ? 55 : 65;
+  }
 
-            // تحديد نسبة الاستقطاع حسب الراتب ونوع التمويل
-            let deductionRate = 0;
-            if (salary < 15000) {
-                deductionRate = isSupported ? 45 : 35;
-            } else {
-                deductionRate = isSupported ? 50 : 40;
-            }
+  // الالتزام الشهري النهائي
+  let finalCommitment = 0;
+  if (hasCommitments) {
+    if (commitmentType === "قرض شخصي") {
+      finalCommitment = commitmentValue;
+    } else if (commitmentType === "سيارة") {
+      let balloonMonthly = hasBalloon ? (balloonValue / 24) : 0;
+      finalCommitment = commitmentValue + balloonMonthly;
+    }
+  }
 
-            // حساب القسط الشهري بعد الالتزامات
-            let monthlyInstallment = (salary * deductionRate / 100) - commitmentValue;
-            if (monthlyInstallment < 0) monthlyInstallment = 0;
+  // الراتب × نسبة الاستقطاع ÷ 100 = الحد الأعلى للقسط العقاري مع الالتزامات
+  const maxAllowedWithCommitments = (salary * maxDeductionRate / 100) - finalCommitment;
+  const maxAllowedWithoutCommitments = (salary * maxDeductionRate / 100);
 
-            // حساب إجمالي التمويل (مثلاً على 25 سنة = 300 شهر)
-            const totalFinancing = monthlyInstallment * 12 * 25;
+  const monthlyInstallmentFirstPhase = (maxAllowedWithCommitments > 0) ? maxAllowedWithCommitments : 0;
+  const monthlyInstallmentSecondPhase = maxAllowedWithoutCommitments;
 
-            // حساب الرسوم الإدارية والضريبة
-            const adminFee = totalFinancing * 0.01;
-            const vat = adminFee * 0.15; // ضريبة 15% على الرسم الإداري [oai_citation:3‡wts.com](https://wts.com/global/publishing-article/19062020-vat-nl-saudi-arabia~publishing-article#:~:text=The%20Kingdom%20of%20Saudi%20Arabia,to%2015)
-            const netFinancing = totalFinancing - adminFee - vat;
+  const totalFinanceFirstPhase = monthlyInstallmentFirstPhase * financeMonths;
+  const totalFinanceSecondPhase = monthlyInstallmentSecondPhase * financeMonths;
 
-            // عرض النتائج
-            document.getElementById("question").innerHTML = `
-                <h3>نتيجة حساب التمويل:</h3>
-                <p>نسبة الاستقطاع المطبقة: <strong>${deductionRate}%</strong></p>
-                <p>القسط الشهري بعد الالتزامات: <strong>${monthlyInstallment.toFixed(2)} ريال</strong></p>
-                <p>إجمالي التمويل (تقريبي): <strong>${totalFinancing.toFixed(2)} ريال</strong></p>
-                <p>التمويل الصافي بعد خصم الرسوم: <strong>${netFinancing.toFixed(2)} ريال</strong></p>
-            `;
-        }
+  document.getElementById("questions").innerHTML = `
+    <h3>نتائج الحساب:</h3>
+    <p>الراتب: <strong>${salary.toFixed(2)} ريال</strong></p>
+    <p>نوع التمويل: <strong>${supportType}</strong></p>
+    <p>الالتزامات الشهرية: <strong>${finalCommitment.toFixed(2)} ريال</strong></p>
+    <p>الاستقطاع الأقصى المسموح به: <strong>${maxDeductionRate}%</strong></p>
+    <hr>
+    <p>القسط الشهري العقاري (خلال فترة الالتزام): <strong>${monthlyInstallmentFirstPhase.toFixed(2)} ريال</strong></p>
+    <p>القسط الشهري العقاري (بعد انتهاء الالتزامات): <strong>${monthlyInstallmentSecondPhase.toFixed(2)} ريال</strong></p>
+  `;
+}
 
-        // بدء عرض الأسئلة
-        nextQuestion();
-    </script>
+// بدء عرض الأسئلة
+nextQuestion();
+</script>
 
 </body>
 </html>
