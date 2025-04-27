@@ -78,8 +78,7 @@ const realEstateQuestions = [
   { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMargin', type: 'number' },
   { label: 'هل لديك التزامات حالية؟', id: 'hasCommitments', type: 'select', options: ['لا', 'نعم'] },
   { label: 'نوع الالتزام:', id: 'commitmentType', type: 'select', options: ['قرض سيارة', 'قرض استهلاكي'], showIf: (a) => a.hasCommitments === 'نعم' },
-  { label: 'كم القسط الشهري للالتزام؟', id: 'commitmentPayment', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' },
-  { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonths', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' }
+  { label: 'كم القسط الشهري للالتزام؟', id: 'commitmentPayment', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' }
 ];
 
 const personalQuestions = [
@@ -87,8 +86,7 @@ const personalQuestions = [
   { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMarginPersonal', type: 'number' },
   { label: 'حدد مدة التمويل الشخصي (عدد الأشهر حتى 60):', id: 'monthsPersonal', type: 'range', min: 1, max: 60, value: 60 },
   { label: 'هل لديك التزامات حالية (سيارة أو استهلاكي)؟', id: 'hasCommitmentsPersonal', type: 'select', options: ['لا', 'نعم'] },
-  { label: 'كم قيمة القسط الشهري للالتزام؟', id: 'commitmentPaymentPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' },
-  { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonthsPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' }
+  { label: 'كم قيمة القسط الشهري للالتزام؟', id: 'commitmentPaymentPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' }
 ];
 
 function showQuestion(index) {
