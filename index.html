@@ -140,7 +140,7 @@ function calculateResult() {
     document.getElementById("question").innerHTML = `
       <h2>عذرًا</h2>
       <p>لا يمكنك الحصول على تمويل حالياً بسبب وجود التزامات مرتفعة.</p>
-      <h3>للتواصل مع سرعة تملك العقار</h3>
+      <h3>للتواصل مع شركة سرعة تملك العقار</h3>
       <p>زورونا على: hlooleqrr.com</p>
     `;
     document.querySelector('button').style.display = 'none';
@@ -170,7 +170,7 @@ function calculateResult() {
     ${addCommodityFee ? `<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>` : ''}
     <p><strong>التمويل الصافي النهائي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
     ${extraSupport > 0 ? `<p><strong>دعم حكومي مضاف:</strong> ${extraSupport.toLocaleString()} ريال</p>` : ''}
-    <h3 style="margin-top:20px;">للتواصل مع  سرعة تملك العقار</h3>
+    <h3 style="margin-top:20px;">للتواصل مع شركة سرعة تملك العقار</h3>
     <p>زورونا على: hlooleqrr.com</p>
   `;
 }
@@ -179,7 +179,7 @@ function calculateResult() {
 
 <!-- ===== الفوتر (حقوق الشركة والتاريخ) ===== -->
 <footer>
-  <p>جميع الحقوق محفوظة  سرعة تملك العقار - <span id="datetime"></span></p>
+  <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
 </footer>
 
 <script>
@@ -199,3 +199,4 @@ updateDateTime();
 
 </body>
 </html>
+
