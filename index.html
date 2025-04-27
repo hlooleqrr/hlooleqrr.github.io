@@ -96,7 +96,7 @@ const realEstateQuestions = [
 const personalQuestions = [
   { label: 'كم الراتب الشهري؟', id: 'salaryPersonal', type: 'number' },
   { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMarginPersonal', type: 'number' },
-  { label: 'حدد عدد سنوات التمويل الشخصي (حتى 5 سنوات):', id: 'yearsPersonal', type: 'range', min: 1, max: 5, value: 5 },
+  { label: 'حدد مدة التمويل الشخصي (عدد الأشهر حتى 60):', id: 'monthsPersonal', type: 'range', min: 1, max: 60, value: 60 },
   { label: 'هل لديك التزامات حالية (سيارة أو استهلاكي)؟', id: 'hasCommitmentsPersonal', type: 'select', options: ['لا', 'نعم'] },
   { label: 'كم قيمة القسط الشهري للالتزام؟', id: 'commitmentPaymentPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' },
   { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonthsPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' }
@@ -107,13 +107,8 @@ function showQuestion(index) {
   container.innerHTML = '';
 
   if (index >= questions.length) {
-    if (answers.financeType === 'تمويل عقاري') {
-      questions = realEstateQuestions;
-    } else if (answers.financeType === 'تمويل شخصي') {
-      questions = personalQuestions;
-    }
-    current = 0;
-    showQuestion(current);
+    calculateResult();
+    document.querySelector('button').style.display = 'none';
     return;
   }
 
@@ -155,7 +150,7 @@ function showQuestion(index) {
     span.id = q.id + 'Value';
     span.textContent = q.value;
     div.appendChild(span);
-    div.appendChild(document.createTextNode(' سنة'));
+    div.appendChild(document.createTextNode(' شهر'));
   } else {
     const input = document.createElement('input');
     input.type = q.type;
@@ -173,6 +168,13 @@ function nextQuestion() {
     const input = document.getElementById(prevQ.id);
     answers[prevQ.id] = input.value;
   }
+  if (answers.financeType === "تمويل عقاري" && current === 1) {
+    questions = realEstateQuestions;
+    current = 0;
+  } else if (answers.financeType === "تمويل شخصي" && current === 1) {
+    questions = personalQuestions;
+    current = 0;
+  }
   showQuestion(current);
   current++;
 }
@@ -181,90 +183,36 @@ function calculateResult() {
   const financeType = answers.financeType;
 
   if (financeType === "تمويل عقاري") {
-    const supported = answers.supported;
-    const bundle = answers.bundle;
     const salary = parseFloat(answers.salary) || 0;
     const years = parseFloat(answers.years) || 0;
     const profitMargin = parseFloat(answers.profitMargin) || 0;
-    const hasCommitments = answers.hasCommitments;
-    const commitmentPayment = parseFloat(answers.commitmentPayment) || 0;
 
-    let deductionRate = 0;
-    let extraSupport = 0;
-
-    if (supported === "مدعوم") {
-      if (bundle === "نعم") {
-        if (salary < 10000) {
-          extraSupport = 150000;
-          deductionRate = 55;
-        } else {
-          extraSupport = 100000;
-          deductionRate = salary < 15000 ? 55 : 65;
-        }
-      } else {
-        deductionRate = salary < 15000 ? 55 : 65;
-      }
-    } else {
-      deductionRate = salary < 15000 ? 55 : 65;
-    }
-
-    const allowedInstallment = salary * (deductionRate / 100);
-    let availableInstallment = allowedInstallment;
-
-    if (hasCommitments === "نعم") {
-      availableInstallment -= commitmentPayment;
-    }
-
-    const totalWithProfit = availableInstallment * 12 * years;
+    const allowedInstallment = salary * (salary < 15000 ? 0.55 : 0.65);
+    const totalWithProfit = allowedInstallment * 12 * years;
     const profitFactor = (years * profitMargin / 100) + 1;
     const netFinance = totalWithProfit / profitFactor;
 
-    const adminFee = netFinance * 0.01;
-    const vatOnAdmin = adminFee * 0.15;
-    const finalNetFinance = netFinance - (adminFee + vatOnAdmin);
-
     document.getElementById("question").innerHTML = `
       <h2>نتيجة التمويل العقاري:</h2>
-      <p><strong>القسط الشهري:</strong> ${availableInstallment.toFixed(0)} ريال</p>
-      <p><strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
-      <p><strong>التمويل الصافي:</strong> ${netFinance.toFixed(0)} ريال</p>
+      <p>القسط الشهري: ${allowedInstallment.toFixed(0)} ريال</p>
+      <p>التمويل الصافي: ${netFinance.toFixed(0)} ريال</p>
     `;
   } else if (financeType === "تمويل شخصي") {
-    const salaryPersonal = parseFloat(answers.salaryPersonal) || 0;
-    const profitMarginPersonal = parseFloat(answers.profitMarginPersonal) || 0;
-    const yearsPersonal = parseFloat(answers.yearsPersonal) || 0;
-    const hasCommitmentsPersonal = answers.hasCommitmentsPersonal;
-    const commitmentPaymentPersonal = parseFloat(answers.commitmentPaymentPersonal) || 0;
-    const commitmentMonthsPersonal = parseFloat(answers.commitmentMonthsPersonal) || 0;
+    const salary = parseFloat(answers.salaryPersonal) || 0;
+    const profitMargin = parseFloat(answers.profitMarginPersonal) || 0;
+    const months = parseFloat(answers.monthsPersonal) || 0;
 
-    const totalAllowed = salaryPersonal * 0.45;
-    const personalLoanMax = salaryPersonal * 0.3333;
-
-    let availableForLoan = personalLoanMax;
-
-    if (hasCommitmentsPersonal === "نعم") {
-      if ((commitmentPaymentPersonal + personalLoanMax) > totalAllowed) {
-        availableForLoan = totalAllowed - commitmentPaymentPersonal;
-      }
-    }
-
-    const totalWithProfit = availableForLoan * 12 * yearsPersonal;
-    const profitFactor = (yearsPersonal * profitMarginPersonal / 100) + 1;
+    const allowedInstallment = salary * 0.3333;
+    const totalWithProfit = allowedInstallment * months;
+    const profitFactor = (months / 12 * profitMargin / 100) + 1;
     const netFinance = totalWithProfit / profitFactor;
-
-    const adminFee = netFinance * 0.01;
-    const vatOnAdmin = adminFee * 0.15;
-    const commodityFee = netFinance * 0.01;
-    const finalNetFinance = netFinance - (adminFee + vatOnAdmin + commodityFee);
 
     document.getElementById("question").innerHTML = `
       <h2>نتيجة التمويل الشخصي:</h2>
-      <p><strong>القسط الشهري للتمويل الشخصي:</strong> ${availableForLoan.toFixed(0)} ريال</p>
-      <p><strong>التمويل الصافي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
+      <p>القسط الشهري: ${allowedInstallment.toFixed(0)} ريال</p>
+      <p>التمويل الصافي: ${netFinance.toFixed(0)} ريال</p>
     `;
   }
-
-  document.querySelector('button').style.display = 'none';
 }
 </script>
 
