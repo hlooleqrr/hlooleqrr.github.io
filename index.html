@@ -1,4 +1,84 @@
-<!-- ===== JavaScript (الأسئلة الذكية المعدلة) ===== -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> سرعة تملك العقار - حاسبة التمويل</title>
+
+  <!-- ===== CSS (تصميم + حركة Smooth) ===== -->
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #005c48;
+      color: white;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #00796b;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+    footer {
+      font-size: 12px;
+      color: #666;
+      margin-top: 40px;
+      padding: 10px;
+    }
+    /* ===== حركة Smooth ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInMove 0.6s forwards;
+    }
+    @keyframes fadeInMove {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== رأس الصفحة ===== -->
+<header>
+  <h1>شركة سرعة تملك العقار</h1>
+  <p>نقدم أفضل حلول التمويل العقاري بكل سهولة وسرعة</p>
+</header>
+
+<div class="container" id="form-container">
+  <div id="question"></div>
+  <button onclick="nextQuestion()">التالي</button>
+</div>
+
+<!-- ===== JavaScript (الأسئلة الذكية) ===== -->
 <script>
 const questions = [
   { label: 'اختر نوع التمويل:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] },
@@ -73,6 +153,7 @@ function showQuestion(index) {
     div.appendChild(input);
   }
 
+  div.classList.add('fade-in');
   container.appendChild(div);
 }
 
@@ -86,7 +167,6 @@ function nextQuestion() {
   current++;
 }
 </script>
-
 
 <!-- ===== JavaScript (الحساب مع الالتزامات) ===== -->
 <script>
@@ -104,7 +184,6 @@ function calculateResult() {
   let extraSupport = 0;
   let addCommodityFee = false;
 
-  // تحديد نسبة الاستقطاع حسب نوع التمويل
   if (financeType === "تمويل شخصي") {
     deductionRate = 33.33;
     addCommodityFee = true;
@@ -121,33 +200,31 @@ function calculateResult() {
       } else {
         deductionRate = salary < 15000 ? 55 : 65;
       }
-    } else { // غير مدعوم
+    } else {
       deductionRate = salary < 15000 ? 55 : 65;
     }
   }
 
-  // حساب القسط المسموح به من الراتب
   const allowedInstallment = (salary * (deductionRate / 100));
-
-  // خصم قسط الالتزام إن وجد
   let availableInstallment = allowedInstallment;
+
   if (hasCommitments === "نعم") {
     availableInstallment -= commitmentPayment;
   }
 
-  // لو الالتزامات أكبر من القسط المسموح به
   if (availableInstallment <= 0) {
-    document.getElementById("question").innerHTML = `
+    const result = document.getElementById("question");
+    result.innerHTML = `
       <h2>عذرًا</h2>
-      <p>لا يمكنك الحصول على تمويل حالياً بسبب وجود التزامات مرتفعة.</p>
+      <p>لا يمكنك الحصول على تمويل حاليًا بسبب الالتزامات القائمة.</p>
       <h3>للتواصل مع شركة سرعة تملك العقار</h3>
       <p>زورونا على: hlooleqrr.com</p>
     `;
+    result.classList.add('fade-in');
     document.querySelector('button').style.display = 'none';
     return;
   }
 
-  // نكمل الحساب
   const totalWithProfit = availableInstallment * 12 * years;
   const profitFactor = (years * profitMargin / 100) + 1;
   const netFinance = totalWithProfit / profitFactor;
@@ -158,8 +235,8 @@ function calculateResult() {
   const finalNetFinance = netFinance - (adminFee + vatOnAdmin + commodityFee);
   const totalFinalFinance = finalNetFinance + extraSupport;
 
-  // عرض النتيجة
-  document.getElementById("question").innerHTML = `
+  const result = document.getElementById("question");
+  result.innerHTML = `
     <h2>نتيجة الحاسبة:</h2>
     <p><strong>القسط الشهري المتاح:</strong> ${availableInstallment.toFixed(0)} ريال</p>
     <p><strong>اجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
@@ -170,16 +247,16 @@ function calculateResult() {
     ${addCommodityFee ? `<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>` : ''}
     <p><strong>التمويل الصافي النهائي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
     ${extraSupport > 0 ? `<p><strong>دعم حكومي مضاف:</strong> ${extraSupport.toLocaleString()} ريال</p>` : ''}
-    <h3 style="margin-top:20px;">للتواصل مع شركة سرعة تملك العقار</h3>
+    <h3 style="margin-top:20px;">للتواصل مع  سرعة تملك العقار</h3>
     <p>زورونا على: hlooleqrr.com</p>
   `;
+  result.classList.add('fade-in');
 }
 </script>
 
-
-<!-- ===== الفوتر (حقوق الشركة والتاريخ) ===== -->
+<!-- ===== الفوتر مع التاريخ ===== -->
 <footer>
-  <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
+  <p>جميع الحقوق محفوظة  سرعة تملك العقار - <span id="datetime"></span></p>
 </footer>
 
 <script>
@@ -199,4 +276,3 @@ updateDateTime();
 
 </body>
 </html>
-
