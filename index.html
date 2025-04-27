@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سرعة تملك العقار - حاسبة التمويل الشخصي</title>
-
+  <title>شركة سرعة تملك العقار - الحاسبة الذكية</title>
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
@@ -19,7 +18,7 @@
       padding: 20px;
     }
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
       background: white;
       padding: 20px;
@@ -62,7 +61,6 @@
     }
   </style>
 </head>
-
 <body>
 
 <header>
@@ -75,24 +73,50 @@
   <button onclick="nextQuestion()">التالي</button>
 </div>
 
-<script>
-const questions = [
-  { label: 'كم الراتب الشهري؟', id: 'salary', type: 'number' },
-  { label: 'هل لديك التزامات حالية (سيارة أو استهلاكي)؟', id: 'hasCommitments', type: 'select', options: ['لا', 'نعم'] },
-  { label: 'كم قيمة القسط الشهري للالتزام؟', id: 'commitmentPayment', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' },
-  { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonths', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' },
-];
 
+<script>
 let answers = {};
 let current = 0;
+let questions = [
+  { label: 'اختر نوع التمويل:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] }
+];
 
+// الأسئلة الخاصة بالتمويل العقاري
+const realEstateQuestions = [
+  { label: 'هل التمويل مدعوم؟', id: 'supported', type: 'select', options: ['مدعوم', 'غير مدعوم'] },
+  { label: 'هل ترغب في الحصول على الباقة المقدمة؟', id: 'bundle', type: 'select', options: ['نعم', 'لا'], showIf: (a) => a.supported === 'مدعوم' },
+  { label: 'كم الراتب الشهري؟', id: 'salary', type: 'number' },
+  { label: 'حدد عدد سنوات التمويل:', id: 'years', type: 'range', min: 1, max: 30, value: 20 },
+  { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMargin', type: 'number' },
+  { label: 'هل لديك التزامات حالية؟', id: 'hasCommitments', type: 'select', options: ['لا', 'نعم'] },
+  { label: 'نوع الالتزام:', id: 'commitmentType', type: 'select', options: ['قرض سيارة', 'قرض استهلاكي'], showIf: (a) => a.hasCommitments === 'نعم' },
+  { label: 'كم القسط الشهري للالتزام؟', id: 'commitmentPayment', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' },
+  { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonths', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' }
+];
+
+// الأسئلة الخاصة بالتمويل الشخصي
+const personalQuestions = [
+  { label: 'كم الراتب الشهري؟', id: 'salaryPersonal', type: 'number' },
+  { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMarginPersonal', type: 'number' },
+  { label: 'حدد عدد سنوات التمويل الشخصي (حتى 5 سنوات):', id: 'yearsPersonal', type: 'range', min: 1, max: 5, value: 5 },
+  { label: 'هل لديك التزامات حالية (سيارة أو استهلاكي)؟', id: 'hasCommitmentsPersonal', type: 'select', options: ['لا', 'نعم'] },
+  { label: 'كم قيمة القسط الشهري للالتزام؟', id: 'commitmentPaymentPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' },
+  { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonthsPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' }
+];
+
+// عرض السؤال الحالي
 function showQuestion(index) {
   const container = document.getElementById('question');
   container.innerHTML = '';
 
   if (index >= questions.length) {
-    calculateResult();
-    document.querySelector('button').style.display = 'none';
+    if (answers.financeType === 'تمويل عقاري') {
+      questions = realEstateQuestions;
+    } else if (answers.financeType === 'تمويل شخصي') {
+      questions = personalQuestions;
+    }
+    current = 0;
+    showQuestion(current);
     return;
   }
 
@@ -120,6 +144,21 @@ function showQuestion(index) {
       select.appendChild(option);
     });
     div.appendChild(select);
+  } else if (q.type === 'range') {
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.id = q.id;
+    input.min = q.min;
+    input.max = q.max;
+    input.value = q.value;
+    input.oninput = () => document.getElementById(q.id + 'Value').innerText = input.value;
+    div.appendChild(input);
+    div.appendChild(document.createElement('br'));
+    const span = document.createElement('span');
+    span.id = q.id + 'Value';
+    span.textContent = q.value;
+    div.appendChild(span);
+    div.appendChild(document.createTextNode(' سنة'));
   } else {
     const input = document.createElement('input');
     input.type = q.type;
@@ -131,6 +170,7 @@ function showQuestion(index) {
   container.appendChild(div);
 }
 
+// عند الضغط على التالي
 function nextQuestion() {
   if (current > 0) {
     const prevQ = questions[current-1];
@@ -140,70 +180,136 @@ function nextQuestion() {
   showQuestion(current);
   current++;
 }
-
-function calculateResult() {
-  const salary = parseFloat(answers.salary) || 0;
-  const hasCommitments = answers.hasCommitments;
-  const commitmentPayment = parseFloat(answers.commitmentPayment) || 0;
-  const commitmentMonths = parseFloat(answers.commitmentMonths) || 0;
-
-  const personalLoanMax = salary * 0.3333;
-  const totalObligationMax = salary * 0.45;
-
-  let availableForPersonalLoan = personalLoanMax;
-  let summary = "";
-
-  if (hasCommitments === 'نعم') {
-    if ((commitmentPayment + personalLoanMax) > totalObligationMax) {
-      // اذا تعدينا ٤٥٪، نخفض القرض الشخصي
-      availableForPersonalLoan = totalObligationMax - commitmentPayment;
-      if (availableForPersonalLoan < 0) availableForPersonalLoan = 0;
-    }
-
-    summary = `
-      <p><strong>خلال أول ${commitmentMonths} شهر:</strong></p>
-      <p>قسط السيارة أو الاستهلاكي: ${commitmentPayment.toFixed(0)} ريال</p>
-      <p>قسط التمويل الشخصي: ${availableForPersonalLoan.toFixed(0)} ريال</p>
-      <p><strong>إجمالي الأقساط خلال أول ${commitmentMonths} شهر:</strong> ${(commitmentPayment + availableForPersonalLoan).toFixed(0)} ريال</p>
-      <hr>
-      <p><strong>بعد انتهاء ${commitmentMonths} شهر:</strong></p>
-      <p>قسط التمويل الشخصي فقط: ${personalLoanMax.toFixed(0)} ريال</p>
-    `;
-  } else {
-    summary = `
-      <p><strong>القسط الشهري للتمويل الشخصي:</strong> ${personalLoanMax.toFixed(0)} ريال لمدة 60 شهر</p>
-    `;
-  }
-
-  const result = document.getElementById("question");
-  result.innerHTML = `
-    <h2>نتيجة الحاسبة:</h2>
-    ${summary}
-    <h3>للتواصل مع  سرعة تملك العقار</h3>
-    <p>زورونا على: hlooleqrr.com</p>
-  `;
-  result.classList.add('fade-in');
-}
 </script>
 
-<footer>
-  <p>جميع الحقوق محفوظة  سرعة تملك العقار - <span id="datetime"></span></p>
-</footer>
 
 <script>
-function updateDateTime() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('datetime').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-setInterval(updateDateTime, 1000);
-updateDateTime();
-</script>
+function calculateResult() {
+  // نحفظ نوع التمويل
+  const financeType = answers.financeType;
 
-</body>
-</html>
+  if (financeType === "تمويل عقاري") {
+    // ========= حسبة التمويل العقاري =========
+    const supported = answers.supported;
+    const bundle = answers.bundle;
+    const salary = parseFloat(answers.salary) || 0;
+    const years = parseFloat(answers.years) || 0;
+    const profitMargin = parseFloat(answers.profitMargin) || 0;
+    const hasCommitments = answers.hasCommitments;
+    const commitmentPayment = parseFloat(answers.commitmentPayment) || 0;
+
+    let deductionRate = 0;
+    let extraSupport = 0;
+
+    if (supported === "مدعوم") {
+      if (bundle === "نعم") {
+        if (salary < 10000) {
+          extraSupport = 150000;
+          deductionRate = 55;
+        } else {
+          extraSupport = 100000;
+          deductionRate = salary < 15000 ? 55 : 65;
+        }
+      } else {
+        deductionRate = salary < 15000 ? 55 : 65;
+      }
+    } else {
+      deductionRate = salary < 15000 ? 55 : 65;
+    }
+
+    const allowedInstallment = salary * (deductionRate / 100);
+    let availableInstallment = allowedInstallment;
+
+    if (hasCommitments === "نعم") {
+      availableInstallment -= commitmentPayment;
+    }
+
+    if (availableInstallment <= 0) {
+      document.getElementById("question").innerHTML = `
+        <h2>عذرًا</h2>
+        <p>لا يمكنك الحصول على تمويل بسبب الالتزامات المرتفعة.</p>
+      `;
+      document.querySelector('button').style.display = 'none';
+      return;
+    }
+
+    const totalWithProfit = availableInstallment * 12 * years;
+    const profitFactor = (years * profitMargin / 100) + 1;
+    const netFinance = totalWithProfit / profitFactor;
+
+    const adminFee = netFinance * 0.01;
+    const vatOnAdmin = adminFee * 0.15;
+    const finalNetFinance = netFinance - (adminFee + vatOnAdmin);
+
+    document.getElementById("question").innerHTML = `
+      <h2>نتيجة التمويل العقاري:</h2>
+      <p><strong>القسط الشهري:</strong> ${availableInstallment.toFixed(0)} ريال</p>
+      <p><strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
+      <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
+      <p><strong>التمويل الصافي:</strong> ${netFinance.toFixed(0)} ريال</p>
+      <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
+      <p><strong>الضريبة على الرسوم:</strong> ${vatOnAdmin.toFixed(0)} ريال</p>
+      ${extraSupport > 0 ? `<p><strong>دعم حكومي إضافي:</strong> ${extraSupport.toFixed(0)} ريال</p>` : ''}
+    `;
+  } 
+  else if (financeType === "تمويل شخصي") {
+    // ========= حسبة التمويل الشخصي =========
+    const salaryPersonal = parseFloat(answers.salaryPersonal) || 0;
+    const profitMarginPersonal = parseFloat(answers.profitMarginPersonal) || 0;
+    const yearsPersonal = parseFloat(answers.yearsPersonal) || 0;
+    const hasCommitmentsPersonal = answers.hasCommitmentsPersonal;
+    const commitmentPaymentPersonal = parseFloat(answers.commitmentPaymentPersonal) || 0;
+    const commitmentMonthsPersonal = parseFloat(answers.commitmentMonthsPersonal) || 0;
+
+    const totalAllowed = salaryPersonal * 0.45; // 45%
+    const personalLoanMax = salaryPersonal * 0.3333; // 33.33%
+    
+    let availableForLoan = personalLoanMax;
+
+    if (hasCommitmentsPersonal === "نعم") {
+      if ((commitmentPaymentPersonal + personalLoanMax) > totalAllowed) {
+        availableForLoan = totalAllowed - commitmentPaymentPersonal;
+      }
+      if (availableForLoan < 0) availableForLoan = 0;
+    }
+
+    const totalWithProfit = availableForLoan * 12 * yearsPersonal;
+    const profitFactor = (yearsPersonal * profitMarginPersonal / 100) + 1;
+    const netFinance = totalWithProfit / profitFactor;
+
+    const adminFee = netFinance * 0.01;
+    const vatOnAdmin = adminFee * 0.15;
+    const commodityFee = netFinance * 0.01;
+
+    const finalNetFinance = netFinance - (adminFee + vatOnAdmin + commodityFee);
+
+    let resultText = `
+      <h2>نتيجة التمويل الشخصي:</h2>
+      <p><strong>القسط الشهري للتمويل الشخصي:</strong> ${availableForLoan.toFixed(0)} ريال</p>
+      <p><strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
+      <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
+      <p><strong>التمويل الصافي قبل الرسوم:</strong> ${netFinance.toFixed(0)} ريال</p>
+      <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
+      <p><strong>الضريبة على الرسوم:</strong> ${vatOnAdmin.toFixed(0)} ريال</p>
+      <p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>
+      <p><strong>التمويل الصافي النهائي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
+    `;
+
+    if (hasCommitmentsPersonal === "نعم") {
+      resultText += `
+        <hr>
+        <p><strong>التفاصيل الإضافية:</strong></p>
+        <p>خلال أول ${commitmentMonthsPersonal} شهر:</p>
+        <p>قسط السيارة أو القرض الاستهلاكي: ${commitmentPaymentPersonal.toFixed(0)} ريال</p>
+        <p>قسط التمويل الشخصي: ${availableForLoan.toFixed(0)} ريال</p>
+        <p>إجمالي القسط الشهري خلال أول ${commitmentMonthsPersonal} شهر: ${(commitmentPaymentPersonal + availableForLoan).toFixed(0)} ريال</p>
+        <p>بعد انتهاء الالتزام، يستمر قسط التمويل الشخصي فقط: ${personalLoanMax.toFixed(0)} ريال</p>
+      `;
+    }
+
+    document.getElementById("question").innerHTML = resultText;
+  }
+
+  document.querySelector('button').style.display = 'none';
+}
+</script>
