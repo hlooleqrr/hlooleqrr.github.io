@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title  سرعة تملك العقار - الحاسبة الذكية</title>
+  <title>شركة سرعة تملك العقار - الحاسبة الذكية</title>
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
@@ -61,10 +61,11 @@
     }
   </style>
 </head>
+
 <body>
 
 <header>
-  <h1> سرعة تملك العقار</h1>
+  <h1>شركة سرعة تملك العقار</h1>
   <p>نقدم أفضل حلول التمويل بكل سهولة وسرعة</p>
 </header>
 
@@ -73,7 +74,6 @@
   <button onclick="nextQuestion()">التالي</button>
 </div>
 
-
 <script>
 let answers = {};
 let current = 0;
@@ -81,7 +81,6 @@ let questions = [
   { label: 'اختر نوع التمويل:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] }
 ];
 
-// الأسئلة الخاصة بالتمويل العقاري
 const realEstateQuestions = [
   { label: 'هل التمويل مدعوم؟', id: 'supported', type: 'select', options: ['مدعوم', 'غير مدعوم'] },
   { label: 'هل ترغب في الحصول على الباقة المقدمة؟', id: 'bundle', type: 'select', options: ['نعم', 'لا'], showIf: (a) => a.supported === 'مدعوم' },
@@ -94,7 +93,6 @@ const realEstateQuestions = [
   { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonths', type: 'number', showIf: (a) => a.hasCommitments === 'نعم' }
 ];
 
-// الأسئلة الخاصة بالتمويل الشخصي
 const personalQuestions = [
   { label: 'كم الراتب الشهري؟', id: 'salaryPersonal', type: 'number' },
   { label: 'كم نسبة هامش الربح السنوي (%)؟', id: 'profitMarginPersonal', type: 'number' },
@@ -104,7 +102,6 @@ const personalQuestions = [
   { label: 'كم عدد الأشهر المتبقية للالتزام؟', id: 'commitmentMonthsPersonal', type: 'number', showIf: (a) => a.hasCommitmentsPersonal === 'نعم' }
 ];
 
-// عرض السؤال الحالي
 function showQuestion(index) {
   const container = document.getElementById('question');
   container.innerHTML = '';
@@ -170,7 +167,6 @@ function showQuestion(index) {
   container.appendChild(div);
 }
 
-// عند الضغط على التالي
 function nextQuestion() {
   if (current > 0) {
     const prevQ = questions[current-1];
@@ -180,16 +176,11 @@ function nextQuestion() {
   showQuestion(current);
   current++;
 }
-</script>
 
-
-<script>
 function calculateResult() {
-  // نحفظ نوع التمويل
   const financeType = answers.financeType;
 
   if (financeType === "تمويل عقاري") {
-    // ========= حسبة التمويل العقاري =========
     const supported = answers.supported;
     const bundle = answers.bundle;
     const salary = parseFloat(answers.salary) || 0;
@@ -224,15 +215,6 @@ function calculateResult() {
       availableInstallment -= commitmentPayment;
     }
 
-    if (availableInstallment <= 0) {
-      document.getElementById("question").innerHTML = `
-        <h2>عذرًا</h2>
-        <p>لا يمكنك الحصول على تمويل بسبب الالتزامات المرتفعة.</p>
-      `;
-      document.querySelector('button').style.display = 'none';
-      return;
-    }
-
     const totalWithProfit = availableInstallment * 12 * years;
     const profitFactor = (years * profitMargin / 100) + 1;
     const netFinance = totalWithProfit / profitFactor;
@@ -245,15 +227,9 @@ function calculateResult() {
       <h2>نتيجة التمويل العقاري:</h2>
       <p><strong>القسط الشهري:</strong> ${availableInstallment.toFixed(0)} ريال</p>
       <p><strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
-      <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
       <p><strong>التمويل الصافي:</strong> ${netFinance.toFixed(0)} ريال</p>
-      <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
-      <p><strong>الضريبة على الرسوم:</strong> ${vatOnAdmin.toFixed(0)} ريال</p>
-      ${extraSupport > 0 ? `<p><strong>دعم حكومي إضافي:</strong> ${extraSupport.toFixed(0)} ريال</p>` : ''}
     `;
-  } 
-  else if (financeType === "تمويل شخصي") {
-    // ========= حسبة التمويل الشخصي =========
+  } else if (financeType === "تمويل شخصي") {
     const salaryPersonal = parseFloat(answers.salaryPersonal) || 0;
     const profitMarginPersonal = parseFloat(answers.profitMarginPersonal) || 0;
     const yearsPersonal = parseFloat(answers.yearsPersonal) || 0;
@@ -261,16 +237,15 @@ function calculateResult() {
     const commitmentPaymentPersonal = parseFloat(answers.commitmentPaymentPersonal) || 0;
     const commitmentMonthsPersonal = parseFloat(answers.commitmentMonthsPersonal) || 0;
 
-    const totalAllowed = salaryPersonal * 0.45; // 45%
-    const personalLoanMax = salaryPersonal * 0.3333; // 33.33%
-    
+    const totalAllowed = salaryPersonal * 0.45;
+    const personalLoanMax = salaryPersonal * 0.3333;
+
     let availableForLoan = personalLoanMax;
 
     if (hasCommitmentsPersonal === "نعم") {
       if ((commitmentPaymentPersonal + personalLoanMax) > totalAllowed) {
         availableForLoan = totalAllowed - commitmentPaymentPersonal;
       }
-      if (availableForLoan < 0) availableForLoan = 0;
     }
 
     const totalWithProfit = availableForLoan * 12 * yearsPersonal;
@@ -280,36 +255,36 @@ function calculateResult() {
     const adminFee = netFinance * 0.01;
     const vatOnAdmin = adminFee * 0.15;
     const commodityFee = netFinance * 0.01;
-
     const finalNetFinance = netFinance - (adminFee + vatOnAdmin + commodityFee);
 
-    let resultText = `
+    document.getElementById("question").innerHTML = `
       <h2>نتيجة التمويل الشخصي:</h2>
       <p><strong>القسط الشهري للتمويل الشخصي:</strong> ${availableForLoan.toFixed(0)} ريال</p>
-      <p><strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(0)} ريال</p>
-      <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
-      <p><strong>التمويل الصافي قبل الرسوم:</strong> ${netFinance.toFixed(0)} ريال</p>
-      <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
-      <p><strong>الضريبة على الرسوم:</strong> ${vatOnAdmin.toFixed(0)} ريال</p>
-      <p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>
-      <p><strong>التمويل الصافي النهائي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
+      <p><strong>التمويل الصافي:</strong> ${finalNetFinance.toFixed(0)} ريال</p>
     `;
-
-    if (hasCommitmentsPersonal === "نعم") {
-      resultText += `
-        <hr>
-        <p><strong>التفاصيل الإضافية:</strong></p>
-        <p>خلال أول ${commitmentMonthsPersonal} شهر:</p>
-        <p>قسط السيارة أو القرض الاستهلاكي: ${commitmentPaymentPersonal.toFixed(0)} ريال</p>
-        <p>قسط التمويل الشخصي: ${availableForLoan.toFixed(0)} ريال</p>
-        <p>إجمالي القسط الشهري خلال أول ${commitmentMonthsPersonal} شهر: ${(commitmentPaymentPersonal + availableForLoan).toFixed(0)} ريال</p>
-        <p>بعد انتهاء الالتزام، يستمر قسط التمويل الشخصي فقط: ${personalLoanMax.toFixed(0)} ريال</p>
-      `;
-    }
-
-    document.getElementById("question").innerHTML = resultText;
   }
 
   document.querySelector('button').style.display = 'none';
 }
 </script>
+
+<footer>
+  <p>جميع الحقوق محفوظة لشركة سرعة تملك العقار - <span id="datetime"></span></p>
+</footer>
+
+<script>
+function updateDateTime() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('datetime').innerText = `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
+
+</body>
+</html>
