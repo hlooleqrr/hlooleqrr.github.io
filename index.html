@@ -148,22 +148,22 @@ function calculateResult(){
   const box=document.getElementById('question');
   box.innerHTML=`
     <h2>نتيجة الحاسبة</h2>
-    <p><strong>قسطك خلال أول ${comMonths} شهر (مع الالتزام):</strong> ${avail.toFixed(0)} ر.</p>
+    <p><strong>قسطك خلال أول ${comMonths} شهر (مع الالتزام):</strong> ${avail.toFixed(0)} </p>
     ${balloonMonths?`<p><strong>قسطك خلال ${balloonMonths} شهر بعد توزيع دفعة السيارة:</strong> ${(allowed-extraMonthly).toFixed(0)} ر.</p>`:''}
-    <p><strong>قسطك بعد انتهاء الالتزامات:</strong> ${allowed.toFixed(0)} .</p>
+    <p><strong>قسطك بعد انتهاء الالتزامات:</strong> ${allowed.toFixed(0)} </p>
     <hr>
-    <p><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0)} .</p>
-    <p><strong>التمويل الصافي النهائي بعد خصم الرسوم:</strong> ${finalNet.toFixed(0)} .</p>
-    ${extraSupport?`<p><strong>دعم حكومي مضاف:</strong> ${extraSupport.toLocaleString()} .</p>`:''}
+    <p><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0)} </p>
+    <p><strong>التمويل الصافي النهائي بعد خصم الرسوم:</strong> ${finalNet.toFixed(0)} </p>
+    ${extraSupport?`<p><strong>دعم حكومي مضاف:</strong> ${extraSupport.toLocaleString()} </p>`:''}
     <hr>
-    <p><strong>الأرباح الإجمالية:</strong> ${totalProfit.toFixed(0)} .</p>
+    <p><strong>الأرباح الإجمالية:</strong> ${totalProfit.toFixed(0)} </p>
     <p>معامل الربح: ${profitFactor.toFixed(3)}</p>
     <p>الرسوم الإدارية: ${adminFee.toFixed(0)} .</p>
     <p>ضريبة الرسوم: ${vat.toFixed(0)} .</p>
-    ${addCommodityFee?`<p>رسوم السلع: ${commodityFee.toFixed(0)} .</p>`:''}
-    <p><strong>إجمالي الأقساط مع الأرباح:</strong> ${totalInstallments.toFixed(0)} .</p>
+    ${addCommodityFee?`<p>رسوم السلع: ${commodityFee.toFixed(0)} </p>`:''}
+    <p><strong>إجمالي الأقساط مع الأرباح:</strong> ${totalInstallments.toFixed(0)} </p>
     <hr>
-    <p>للتواصل مع سرعة تملك العقار والحلول التمويلية اتصل: 0506214458 | او زورونا hlooleqrr.com</p>
+    <p>للتواصل مع سرعة تملك العقار والحلول التمويلية اتصل: 0506214458 | او زورونا خذ لقطة للحاسبة وتواصل معناhlooleqrr.com</p>
   `;box.classList.add('fade-in');
 }
 
