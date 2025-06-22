@@ -77,7 +77,7 @@
 
 <script>
 const questions = [
-  { label: 'نوع التمويل الذي تريد حسبته:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] },
+  { label: 'نوع التمويل الذي تريد حسبته ؟:', id: 'financeType', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي'] },
   { label: 'هل التمويل مدعوم؟', id: 'supported', type: 'select', options: ['مدعوم', 'غير مدعوم'], showIf: (a) => a.financeType === 'تمويل عقاري' },
   { label: 'هل ترغب في الحصول على الباقة المقدمة من سكني بشكل دفعة أولى اذا تم الاختيار [لا]فيتم نزول الدعم بشكل شهري ؟', id: 'bundle', type: 'select', options: ['نعم', 'لا'], showIf: (a) => a.supported === 'مدعوم' },
   { label: 'كم الراتب الشهري؟', id: 'salary', type: 'number' },
