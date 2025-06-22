@@ -149,7 +149,7 @@ function calculateResult(){
   box.innerHTML=`
     <h2>نتيجة الحاسبة</h2>
     <p><strong>قسطك خلال أول ${comMonths} شهر (مع الالتزام):</strong> ${avail.toFixed(0)} </p>
-    ${balloonMonths?`<p><strong>قسطك خلال ${balloonMonths} شهر بعد توزيع دفعة السيارة:</strong> ${(allowed-extraMonthly).toFixed(0)} ر.</p>`:''}
+    ${balloonMonths?`<p><strong>قسطك خلال ${balloonMonths} شهر بعد توزيع دفعة السيارة:</strong> ${(allowed-extraMonthly).toFixed(0)} </p>`:''}
     <p><strong>قسطك بعد انتهاء الالتزامات:</strong> ${allowed.toFixed(0)} </p>
     <hr>
     <p><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0)} </p>
