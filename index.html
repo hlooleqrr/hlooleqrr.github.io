@@ -1,40 +1,123 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>سرعة تملك العقار – حاسبة التمويل</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body{font-family:'Tajawal',sans-serif;background:#f4f6f8;margin:0;text-align:center}
-    header{background:#005c48;color:#fff;padding:20px}
-    .container{max-width:650px;margin:20px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.1)}
-    input,select,button{width:90%;padding:10px;margin:10px 0;font-size:16px;border-radius:5px;border:1px solid #ccc}
-    button{background:#00796b;color:#fff;border:0;cursor:pointer}button:hover{background:#004d40}
-    footer{font-size:12px;color:#666;margin-top:40px;padding:10px}
-    .fade-in{opacity:0;transform:translateY(20px);animation:fade .6s forwards}
-    @keyframes fade{to{opacity:1;transform:none}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>سرعة تملك العقار – حاسبة التمويل</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<style>
+ body{font-family:'Tajawal',sans-serif;background:#f4f6f8;margin:0;text-align:center}
+ header{background:#005c48;color:#fff;padding:20px}
+ .container{max-width:700px;margin:20px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.1)}
+ input,select,button{width:90%;padding:10px;margin:10px 0;font-size:16px;border-radius:5px;border:1px solid #ccc}
+ button{background:#00796b;color:#fff;border:0;cursor:pointer}button:hover{background:#004d40}
+ footer{font-size:12px;color:#666;margin-top:40px;padding:10px}
+ .fade{animation:fade .5s forwards}@keyframes fade{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+</style>
 </head>
 <body>
+
 <header>
-  <h1>سرعة تملك العقار - الحاسبة التمويلية</h1>
-  <p>حاسبة تقريبية مبنية على بياناتك</p>
+  <h1>سرعة تملك العقار والحلول التمويلية – الحاسبة التقريبية</h1>
+  <p>نقدّم أفضل الحلول التمويلية المتكاملة</p>
 </header>
-<div class="container" id="form-container">
-  <div id="question"></div>
-  <button onclick="nextQuestion()">ابدأ الآن</button>
+
+<div class="container" id="app">
+  <div id="screen"></div>
+  <button id="nextBtn" onclick="next()">التالي</button>
 </div>
-<footer>
-  <p>© سرعة تملك العقار والحلول التمويلية - <span id="datetime"></span></p>
-</footer>
+
+<footer>© سرعة تملك العقار – <span id="dt"></span></footer>
+
 <script>
-function updateTime() {
-  const now = new Date();
-  document.getElementById('datetime').textContent = now.toLocaleString('ar-EG');
+/* ============== أدوات مساعدة ============== */
+function $(id){return document.getElementById(id)}
+function now(){ $('dt').textContent=new Date().toLocaleString('ar-EG')}
+setInterval(now,1000); now();
+
+/* ============== متغيرات عامة ============== */
+let step=0,answers={},commitments=[];
+
+/* ============== الأسئلة الأساسية ============== */
+const steps=[
+  {id:'financeType',lbl:'نوع التمويل؟',type:'select',opts:['تمويل عقاري','تمويل شخصي']},
+  {id:'supported',lbl:'هل التمويل مدعوم؟',type:'select',opts:['مدعوم','غير مدعوم'],
+    show:()=>answers.financeType==='تمويل عقاري'},
+  {id:'bundle',lbl:'هل ترغب في الحصول على الباقة المقدّمة من سكني؟',type:'select',opts:['نعم','لا'],
+    show:()=>answers.supported==='مدعوم'},
+  {id:'salary',lbl:'الراتب الشهري (ريال):',type:'number'},
+  {id:'duration',lbl:'حدد المدة:',type:'range',
+    show:()=>true,
+    min:()=>1,max:()=>answers.financeType==='تمويل شخصي'?60:30,val:()=>answers.financeType==='تمويل شخصي'?12:20,
+    unit:()=>answers.financeType==='تمويل شخصي'?'شهر':'سنة'},
+  {id:'profit',lbl:'نسبة هامش الربح السنوي (%)؟',type:'number'},
+  {id:'hasCom',lbl:'هل لديك التزامات؟',type:'select',opts:['نعم','لا']}
+];
+
+/* ============== إنشاء عنصر سؤال ============== */
+function renderStep(s){
+  const d=document.createElement('div');d.className='fade';
+  const l=document.createElement('label');l.textContent=s.lbl;d.appendChild(l);d.appendChild(document.createElement('br'));
+  if(s.type==='select'){
+    const sel=document.createElement('select');sel.id=s.id;
+    s.opts.forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o;sel.appendChild(op);});
+    d.appendChild(sel);
+  }else if(s.type==='number'){
+    const inp=document.createElement('input');inp.type='number';inp.id=s.id;d.appendChild(inp);
+  }else if(s.type==='range'){
+    const inp=document.createElement('input');inp.type='range';inp.id=s.id;
+    inp.min=s.min();inp.max=s.max();inp.value=s.val();
+    inp.oninput=()=>$('val').textContent=inp.value;
+    d.appendChild(inp);d.appendChild(document.createElement('br'));
+    d.appendChild(Object.assign(document.createElement('span'),{id:'val',textContent:inp.value}));
+    d.appendChild(document.createTextNode(' '+s.unit()));
+  }
+  $('screen').innerHTML='';$('screen').appendChild(d);
 }
-setInterval(updateTime, 1000);
-updateTime();
-</script>
-</body>
-</html>
+
+/* ============== التزامات ديناميكية ============== */
+function askCommitment(){
+  $('screen').innerHTML='';
+  const frag=document.createDocumentFragment();
+
+  // نوع الالتزام
+  const lbl1=document.createElement('label');lbl1.textContent='نوع الالتزام:';frag.appendChild(lbl1);frag.appendChild(document.createElement('br'));
+  const sel=document.createElement('select');sel.id='cType';
+  ['قرض شخصي','قرض سيارة','قرض استهلاكي'].forEach(t=>{const o=document.createElement('option');o.value=o.textContent=t;sel.appendChild(o);});
+  frag.appendChild(sel);frag.appendChild(document.createElement('br'));
+
+  // القسط
+  const lbl2=document.createElement('label');lbl2.textContent='قيمة القسط الشهري:';frag.appendChild(lbl2);frag.appendChild(document.createElement('br'));
+  const pay=document.createElement('input');pay.type='number';pay.id='cPay';frag.appendChild(pay);frag.appendChild(document.createElement('br'));
+
+  // الأشهر المتبقية
+  const lbl3=document.createElement('label');lbl3.textContent='عدد الأشهر المتبقية:';frag.appendChild(lbl3);frag.appendChild(document.createElement('br'));
+  const mon=document.createElement('input');mon.type='number';mon.id='cMon';frag.appendChild(mon);frag.appendChild(document.createElement('br'));
+
+  // الدفعة الأخيرة للسيارة
+  const lbl4=document.createElement('label');lbl4.textContent='الدفعة الأخيرة (إذا قرض سيارة):';frag.appendChild(lbl4);frag.appendChild(document.createElement('br'));
+  const bal=document.createElement('input');bal.type='number';bal.id='cBal';bal.value=0;frag.appendChild(bal);frag.appendChild(document.createElement('br'));
+
+  $('screen').appendChild(frag);
+
+  // زر متابعة
+  $('nextBtn').onclick=()=>{
+    commitments.push({type:sel.value,pay:+pay.value,mon:+mon.value,bal:+bal.value});
+    askAnother();
+  };
+}
+
+/* هل يوجد التزام آخر؟ */
+function askAnother(){
+  $('screen').innerHTML='<p>هل لديك التزام آخر؟</p>';
+  const sel=document.createElement('select');sel.id='more';
+  ['نعم','لا'].forEach(t=>{const o=document.createElement('option');o.value=o.textContent=t;sel.appendChild(o);});
+  $('screen').appendChild(sel);
+  $('nextBtn').onclick=()=>{
+    if(sel.value==='نعم'){askCommitment();}
+    else{calculate();}
+  };
+}
+
+/* ============== التنقل في الأسئلة ============== */
+function next(){
