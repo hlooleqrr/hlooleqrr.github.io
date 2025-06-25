@@ -262,9 +262,9 @@ function calculate(){
     html += `<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0)} ريال</p>`;
   });
   html += `
-  <p style="color:green; font-size:38px; font-weight:bold;">✅ التمويل الصافي بعد خصم الرسوم: ${finalNet.toFixed(0)} ريال</p>
+  <p style="color:green; font-size:38px; font-weight:bold;">🖱️ التمويل الصافي بعد خصم الرسوم: ${finalNet.toFixed(0)} ريال</p>
   ${supportText}
-  <p style="color:green; font-size:36px; font-weight:bold;">✅ التمويل الصافي قبل خصم الرسوم: ${netFinance.toFixed(0)} ريال</p>
+  <p style="color:green; font-size:36px; font-weight:bold;">🖱️ التمويل الصافي قبل خصم الرسوم: ${netFinance.toFixed(0)} ريال</p>
   <p style="color:darkred; font-size:34px; font-weight:bold;">🔻 الربح دون الرسوم: ${(totalInst - netFinance).toFixed(0)} ريال</p>
   <p style="color:darkred; font-size:34px; font-weight:bold;">🔻 الربح مع الرسوم: ${totalProfitWithFees.toFixed(0)} ريال</p>
   <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
