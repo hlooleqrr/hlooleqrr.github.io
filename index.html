@@ -110,7 +110,7 @@
 let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
 let hasStarted = false;
 const generalQuestions = [
-  { id:'financeType',label:'نوع التمويل',type:'select',options:[' تمويل عقاري','تمويل شخصي او استهلاكي'] },
+  { id:'financeType',label:'نوع التمويل المراد حسبته',type:'select',options:['تمويل عقاري','تمويل شخصي او تمويل أستهلاكي'] },
   { id:'supported',label:'هل التمويل مدعوم؟',type:'select',options:['مدعوم','غير مدعوم'],show:a=>a.financeType==='تمويل عقاري' },
   { id:'bundle',label:'هل ترغب في دفعة مقدمة من سكني؟',type:'select',options:['نعم','لا'],show:a=>a.supported==='مدعوم' },
   { id:'salary',label:'كم الراتب الشهري الصافي؟',type:'number' },
@@ -120,10 +120,10 @@ const generalQuestions = [
   { id:'hasCommitments',label:'هل لديك التزامات؟',type:'select',options:['نعم','لا'] }
 ];
 const commitmentQuestions = [
-  { id:'type',label:'نوع الالتزام',type:'select',options:['تمويل شخصي','تمويل سيارة','تمويل استهلاكي','تمويل عقاري'] },
+  { id:'type',label:'نوع الالتزام',type:'select',options:['قرض شخصي','قرض سيارة','قرض استهلاكي','قرض عقاري'] },
   { id:'amount',label:'كم القسط الشهري؟',type:'number' },
   { id:'months',label:'كم عدد الأشهر المتبقية؟',type:'select',options:[] },
-  { id:'balloon',label:'هل يوجد دفعةأخيرة(لسيارة)؟',type:'select',options:['نعم','لا'],show:c=>c.type==='قرض سيارة' },
+  { id:'balloon',label:'هل يوجد دفعةأخيرة (لسيارة)؟',type:'select',options:['نعم','لا'],show:c=>c.type==='قرض سيارة' },
   { id:'balloonAmount',label:'كم مبلغ الدفعة الأخيرة؟',type:'number',show:c=>c.balloon==='نعم' },
   { id:'more',label:'هل لديك التزامات أخرى؟',type:'select',options:['نعم','لا'] }
 ];
@@ -254,10 +254,10 @@ function calculate(){
     }else{
       const dist = Math.min(months, 240),
             monthly = Math.round(sup / dist);
-      supportText = `<p class="highlight">تم توزيع دعم الدفعة (${sup.toLocaleString()} ريال) على ${dist} شهر يصبح الدعم الشهري ${monthly.toLocaleString()} ريال</p>`;
+      supportText = `<p class="highlight">تم توزيع دعم الدفعة (${sup.toLocaleString()} ريال) على ${dist} شهر = ${monthly.toLocaleString()} ريال</p>`;
     }
   }
-  let html = '<div class="result"><h2>نتيجة الحسبة:</h2>';
+  let html = '<div class="result"><h2>نتيجة الحسبة (التقريبية):</h2>';
   finalPhases.forEach(p=>{
     html += `<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0)} ريال</p>`;
   });
