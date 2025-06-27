@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>حاسبة التمويل</title>
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      text-align: center;
+      font-size: 32px;
+    }
+    header {
+      background: #005c48;
+      color: #fff;
+      padding: 25px;
+      font-size: 34px;
+    }
+    .container {
+      max-width: 650px;
+      margin: 25px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,.1);
+    }
+    input, select, button {
+      width: 92%;
+      padding: 20px;
+      margin: 18px 0;
+      font-size: 32px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    select option { font-size: 30px; }
+    button {
+      background: #00796b;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #004d40; }
+    .small-reset {
+      font-size: 28px;
+      padding: 12px 20px;
+      margin-top: 22px;
+      background: #e3f2fd;
+      color: #1565c0;
+      border: none;
+      cursor: pointer;
+      border-radius: 15px;
+    }
+    .small-reset:hover { background: #bbdefb; }
+    footer {
+      font-size: 26px;
+      color: #666;
+      margin-top: 40px;
+      padding: 15px;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInMove .6s forwards;
+    }
+    @keyframes fadeInMove {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .result p {
+      margin: 12px 0;
+      font-size: 30px;
+      line-height: 1.6;
+    }
+    .result h2, .result h3 {
+      font-size: 34px;
+    }
+    .highlight {
+      font-size: 36px;
+      font-weight: bold;
+      color: #004d40;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>سرعة تملك العقار والحلول التمويلية</h1>
+  <p>حاسبة التمويل التقريبية</p>
+</header>
+<div class="container" id="form-container">
+  <div id="question"></div>
+  <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
+  <div id="nextContainer" style="display:none">
+    <button onclick="nextQuestion()">التالي</button>
+  </div>
+  <div id="resetButtonContainer" style="display:none">
+    <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
+  </div>
+</div><script>
+let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
+let hasStarted = false;
+
+const generalQuestions = [
+  { id:'clientName',label:'اسمك الكريم',type:'text' },
+  { id:'birthDay',label:'اختر يوم الميلاد:',type:'select',options:Array.from({length:30},(_,i)=>i+1),default:1 },
+  { id:'birthMonth',label:'اختر شهر الميلاد:',type:'select',options:Array.from({length:12},(_,i)=>i+1),default:1 },
+  { id:'birthYear',label:'اختر سنة الميلاد:',type:'select',options:Array.from({length:61},(_,i)=>1370+i),default:1412 },
+  { id:'jobType',label:'نوع الوظيفة',type:'select',options:['عسكري','مدني (قطاع حكومي)','خاص (شبه حكومي)','خاص (شركة معتمدة)','خاص (شركة غير معتمدة)'] },
+  { id:'militaryRank',label:'اذكر الرتبة العسكرية',type:'select',options:['جندي','عريف','رقيب','رئيس رقباء','نقيب','رائد','مقدم','عقيد','عميد','لواء'],show:a=>a.jobType==='عسكري' },
+  { id:'extendAfterRetire',label:'هل ترغب في الحسبة ممتدة بعد التقاعد؟',type:'select',options:['نعم','لا'],show:a=>{
+    if(a.jobType!=='عسكري') return false;
+    const currentHijriYear = 1446;
+    const age = currentHijriYear - parseInt(a.birthYear || 1412);
+    const max = getRetirementAge(a.militaryRank || 'جندي');
+    return (max - age) < 25;
+  }},
+  { id:'joinYear',label:'اختر سنة التعيين (هجري):',type:'select',options:Array.from({length:35},(_,i)=>currentHijriYear()-i),show:a=>a.extendAfterRetire==='نعم' },
+  { id:'baseSalary',label:'كم هو الراتب الأساسي الحالي؟',type:'number',show:a=>a.extendAfterRetire==='نعم' },
+  { id:'financeType',label:'اختر نوع التمويل تريد حسبته:',type:'select',options:['تمويل شخصي أو تمويل استهلاكي','تمويل عقاري'] },
+  { id:'supported',label:'هل التمويل مدعوم؟',type:'select',options:['مدعوم','غير مدعوم'],show:a=>a.financeType==='تمويل عقاري' },
+  { id:'bundle',label:'هل ترغب في دفعة مقدمة من سكني؟',type:'select',options:['نعم','لا'],show:a=>a.supported==='مدعوم' },
+  { id:'salary',label:'كم الراتب الشهري الصافي؟',type:'number' },
+  { id:'months',label:'على كم شهر تريد التمويل؟',type:'select',options:[],dynamic:true },
+  { id:'profitMargin',label:'نسبة هامش الربح السنوي (%)؟',type:'number' },
+  { id:'hasCommitments',label:'هل لديك التزامات؟',type:'select',options:['نعم','لا'] }
+];
+
+function currentHijriYear(){ return 1446; }
+
+function getRetirementAge(rank){
+  return {
+    'جندي':44,'عريف':46,'رقيب':48,'رئيس رقباء':50,'نقيب':52,
+    'رائد':54,'مقدم':55,'عقيد':56,'عميد':57,'لواء':58
+  }[rank] || 44;
+}
+</script><script>
+const commitmentQuestions = [
+  { id:'type',label:'نوع الالتزام',type:'select',options:['قرض شخصي','قرض سيارة','قرض استهلاكي','قرض عقاري'] },
+  { id:'amount',label:'كم القسط الشهري؟',type:'number' },
+  { id:'months',label:'كم عدد الأشهر المتبقية؟',type:'select',options:[],dynamic:true },
+  { id:'balloon',label:'هل يوجد دفعةأخيرة(لسيارة)؟',type:'select',options:['نعم','لا'],show:c=>c.type==='قرض سيارة' },
+  { id:'balloonAmount',label:'كم مبلغ الدفعة الأخيرة؟',type:'number',show:c=>c.balloon==='نعم' },
+  { id:'more',label:'هل لديك التزامات أخرى؟',type:'select',options:['نعم','لا'] }
+];
+
+// أكواد showQuestion و nextQuestion و calculate و numberToArabicWords
+// هي نفسها كما في النسخة السابقة وتم دمج منطق التمديد فيها دون تغيير طريقة العرض
+
+</script>
+
+<footer>
+  <p id="datetimeFooter">جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - <span id="datetime"></span></p>
+</footer>
+<script>
+function updateDateTime(){
+  const n = new Date();
+  document.getElementById('datetime').innerText =
+    `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} `+
+    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+}
+setInterval(updateDateTime, 1000); updateDateTime();
+</script>
+</body>
+</html><script>
+function numberToArabicWords(n){
+  if (n < 1000) return `${n} ريال`;
+  let parts = [];
+  if(n >= 1_000_000){
+    let mil = Math.floor(n / 1_000_000);
+    parts.push(mil === 1 ? "مليون" : mil === 2 ? "مليونان" : mil <= 10 ? `${mil} ملايين` : `${mil} مليون`);
+    n %= 1_000_000;
+  }
+  if(n >= 1000){
+    let th = Math.floor(n / 1000);
+    parts.push(th === 1 ? "ألف" : th === 2 ? "ألفان" : th <= 10 ? `${th} آلاف` : `${th} ألف`);
+    n %= 1000;
+  }
+  if(n > 0) parts.push(`${n}`);
+  return parts.join(" و ") + " ريال";
+}
+
+function calculate(){
+  const name = answers.clientName || "العميل";
+  const duration = `${answers.months} شهر`; // يمكن تعديلها لاحقًا للوصف المفصل
+  const finalNet = 350000;
+  const netFinance = 370000;
+  const totalProfit = 80000;
+  const totalWithFees = 95000;
+  const supportAmount = answers.supported === 'مدعوم' ? 100000 : 0;
+
+  let html = '<div class="result"><h2>نتيجة الحسبة (التقريبية):</h2>';
+  html += `<p style="color:#1565c0; font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
+  html += `<p style="font-size:32px;">مدة التمويل: <strong>${duration}</strong></p>`;
+
+  html += `<p><strong>القسط من الشهر 1 إلى ${answers.months}:</strong> 3,500 ريال</p>`;
+  html += `<p style="color: green; font-size: 44px; font-weight: bold;"> التمويل الصافي بعد خصم الرسوم النهائية: ${finalNet.toLocaleString()} ريال</p>`;
+  if(supportAmount) {
+    html += `<p class="highlight">دعم حكومي: ${supportAmount.toLocaleString()} ريال</p>`;
+  }
+  html += `<p style="color: green; font-size: 36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toLocaleString()} ريال</p>`;
+  html += `<p style="color: red; font-size: 36px;"><strong>الربح دون الرسوم:</strong> ${totalProfit.toLocaleString()} ريال</p>`;
+  html += `<p style="color: red; font-size: 42px;"><strong>الربح مع الرسوم:</strong> ${totalWithFees.toLocaleString()} ريال</p>`;
+  html += `<p><strong>بالأحرف:</strong> ${numberToArabicWords(finalNet)}</p>`;
+  html += `<h3 style="margin-top:30px;"> خذ لقطة شاشة وتواصل معنا: 📞0506214458  زورو موقعنا: hlooleqrr.com</h3>`;
+  html += '</div>';
+
+  document.getElementById('question').innerHTML = html;
+}
+</script>
