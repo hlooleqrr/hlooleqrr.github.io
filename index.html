@@ -99,7 +99,24 @@
   <div id="resetButtonContainer" style="display:none">
     <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
   </div>
-</div><script>
+</div>
+
+<footer>
+  <p id="datetimeFooter">
+    جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - 
+    <span id="datetime"></span>
+  </p>
+</footer>
+<script>
+function updateDateTime(){
+  const n = new Date();
+  document.getElementById('datetime').innerText =
+    `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} `+
+    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+}
+setInterval(updateDateTime, 1000); updateDateTime();
+</script>
+</body></html><script>
 let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
 let hasStarted = false;
 
@@ -132,8 +149,6 @@ const generalQuestions = [
   { id:'profitMargin',label:'نسبة هامش الربح السنوي (%)؟',type:'number' },
   { id:'hasCommitments',label:'هل لديك التزامات؟',type:'select',options:['نعم','لا'] }
 ];
-
-function currentHijriYear(){ return 1446; }
 
 function getRetirementAge(rank){
   return {
@@ -177,14 +192,7 @@ function updateDateTime(){
     `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
 }
 setInterval(updateDateTime, 1000); updateDateTime();
-</script>
-
-<footer>
-  <p id="datetimeFooter">
-    جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - 
-    <span id="datetime"></span>
-  </p>
-</footer><script>
+</script><script>
 function calculate(){
   const name = answers.clientName || "العميل";
   const months = parseInt(answers.months || 0);
