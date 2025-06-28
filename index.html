@@ -243,5 +243,16 @@ function calculate(){
   document.getElementById('question').innerHTML = html;
 }
 </script>
+<script>
+function handleStartOrReset() {
+  if (!hasStarted) {
+    hasStarted = true;
+    document.getElementById('mainButton').style.display = 'none';
+    nextQuestion(); // يبدأ عرض أول سؤال
+  } else {
+    resetCalc(); // يعيد الحسبة إذا بدأت
+  }
+}
+</script>
 </body>
 </html>
