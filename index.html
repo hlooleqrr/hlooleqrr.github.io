@@ -100,7 +100,6 @@
     <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
   </div>
 </div>
-
 <footer>
   <p id="datetimeFooter">
     جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - 
@@ -119,6 +118,17 @@ setInterval(updateDateTime, 1000); updateDateTime();
 let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
 let hasStarted = false;
 
+function formatMonthsText(m) {
+  let y = Math.floor(m / 12), mo = m % 12, parts = [];
+  if (y > 0) parts.push(
+    y === 1 ? "سنة واحدة" : y === 2 ? "سنتان" : y <= 10 ? `${y} سنوات` : `${y} سنة`
+  );
+  if (mo > 0) parts.push(
+    mo === 1 ? "شهر واحد" : mo === 2 ? "شهران" : mo <= 10 ? `${mo} أشهر` : `${mo} شهر`
+  );
+  return `${m} شهر (${parts.join(' و ')})`;
+}
+
 const generalQuestions = [
   { id:'clientName',label:'اسمك الكريم',type:'text' },
   { id:'birthDay',label:'اختر يوم الميلاد:',type:'select',options:Array.from({length:30},(_,i)=>i+1),default:1 },
@@ -131,10 +141,8 @@ const generalQuestions = [
   ],show:a=>a.jobType==='عسكري' },
   { id:'extendAfterRetire',label:'هل ترغب في الحسبة ممتدة بعد التقاعد؟',type:'select',options:['نعم','لا'],show:a=>{
     if(a.jobType!=='عسكري') return false;
-    const currentHijriYear = 1446;
-    const age = currentHijriYear - parseInt(a.birthYear || 1412);
-    const max = getRetirementAge(a.militaryRank || 'جندي');
-    return (max - age) < 25;
+    const age = 1446 - parseInt(a.birthYear || 1412);
+    return (getRetirementAge(a.militaryRank || 'جندي') - age) < 25;
   }},
   { id:'joinDay',label:'اختر يوم التعيين:',type:'select',options:Array.from({length:30},(_,i)=>i+1),show:a=>a.extendAfterRetire==='نعم' },
   { id:'joinMonth',label:'اختر شهر التعيين:',type:'select',options:Array.from({length:12},(_,i)=>i+1),show:a=>a.extendAfterRetire==='نعم' },
@@ -185,14 +193,10 @@ function numberToArabicWords(n){
 }
 </script><script>
 function handleStartOrReset() {
-  if (!hasStarted) {
-    hasStarted = true;
-    document.getElementById('mainButton').style.display = 'none';
-    document.getElementById('nextContainer').style.display = 'block';
-    showQuestion();
-  } else {
-    resetCalc();
-  }
+  hasStarted = true;
+  document.getElementById('mainButton').style.display = 'none';
+  document.getElementById('nextContainer').style.display = 'block';
+  showQuestion();
 }
 
 function showQuestion() {
@@ -215,21 +219,18 @@ function showQuestion() {
     return;
   }
 
-  let html = '';
-  html += `<label>${current.label}</label><br/>`;
+  let html = `<label>${current.label}</label><br/>`;
   if (current.type === 'select') {
-    html += `<select onchange="answers['${current.id}']=this.value;" id="${current.id}">`;
+    html += `<select id="${current.id}" onchange="answers['${current.id}']=this.value">`;
     let opts = current.options;
     if (current.dynamic && current.id === 'months') {
-      const maxMonths = 360;
-      opts = Array.from({length: maxMonths}, (_, i) => i + 1).filter(m => m >= 12);
+      const max = answers.financeType?.includes('شخصي') ? 60 : 360;
+      opts = Array.from({length: max}, (_, i) => i + 1).filter(m => m >= 12);
     }
-    opts.forEach(o => {
-      html += `<option value="${o}" ${o === current.default ? 'selected' : ''}>${o}</option>`;
-    });
+    opts.forEach(o => html += `<option value="${o}">${o}</option>`);
     html += `</select>`;
-  } else if (current.type === 'number' || current.type === 'text') {
-    html += `<input type="${current.type}" id="${current.id}" oninput="answers['${current.id}']=this.value" value="${answers[current.id] || ''}" />`;
+  } else {
+    html += `<input type="${current.type}" id="${current.id}" oninput="answers['${current.id}']=this.value" />`;
   }
 
   document.getElementById('question').innerHTML = html;
@@ -237,9 +238,9 @@ function showQuestion() {
 
 function nextQuestion() {
   const current = generalQuestions[step];
-  const input = document.getElementById(current.id);
-  if (input && input.value === '') return alert('الرجاء تعبئة الحقل');
-  answers[current.id] = input?.value || '';
+  const val = document.getElementById(current.id)?.value;
+  if (val === '') return alert('الرجاء تعبئة الحقل');
+  answers[current.id] = val;
   step++;
   showQuestion();
 }
@@ -266,13 +267,11 @@ function showCommitmentQuestion() {
 
   let html = `<label>${current.label}</label><br/>`;
   if (current.type === 'select') {
-    html += `<select onchange="currentCommitment['${current.id}']=this.value;" id="${current.id}">`;
-    current.options.forEach(o => {
-      html += `<option value="${o}">${o}</option>`;
-    });
+    html += `<select id="${current.id}" onchange="currentCommitment['${current.id}']=this.value">`;
+    current.options.forEach(o => html += `<option value="${o}">${o}</option>`);
     html += `</select>`;
-  } else if (current.type === 'number') {
-    html += `<input type="number" id="${current.id}" oninput="currentCommitment['${current.id}']=this.value" />`;
+  } else {
+    html += `<input type="${current.type}" id="${current.id}" oninput="currentCommitment['${current.id}']=this.value" />`;
   }
 
   document.getElementById('question').innerHTML = html;
@@ -309,7 +308,7 @@ function calculate(){
 
   let html = '<div class="result"><h2>نتيجة الحسبة (التقريبية):</h2>';
   html += `<p style="color:#1565c0; font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
-  html += `<p style="font-size:32px;">مدة التمويل: <strong>${months} شهر (${Math.floor(months/12)} سنة و ${months%12} شهر)</strong></p>`;
+  html += `<p style="font-size:32px;">مدة التمويل: <strong>${formatMonthsText(months)}</strong></p>`;
 
   if (postRetireMonths > 0) {
     html += `<p><strong>من الشهر 1 إلى ${preRetireMonths}:</strong> ${preRetireInstallment.toLocaleString()} ريال</p>`;
