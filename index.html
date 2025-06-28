@@ -90,12 +90,19 @@
   <h1>سرعة تملك العقار والحلول التمويلية</h1>
   <p>حاسبة التمويل التقريبية</p>
 </header>
+
 <div class="container" id="form-container">
   <div id="question"></div>
+
+  <!-- زر ابدأ الحسبة -->
   <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
+
+  <!-- زر التالي -->
   <div id="nextContainer" style="display:none">
     <button onclick="nextQuestion()">التالي</button>
   </div>
+
+  <!-- زر إعادة الحسبة -->
   <div id="resetButtonContainer" style="display:none">
     <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
   </div>
@@ -286,7 +293,8 @@ function calculate(){
     let available = salaryUsed * deductionRate / 100 - activeCommits - balloonExtra;
     if(financeType.includes('شخصي') || financeType.includes('استهلاكي')) available = Math.min(available, salaryUsed * 0.3333);
     futurePhases.push({ month: m, inst: available });
-      let finalPhases = [];
+  }
+    let finalPhases = [];
   for (let i = 0; i < futurePhases.length; i++) {
     if (i === 0 || futurePhases[i].inst !== finalPhases[finalPhases.length - 1]?.inst) {
       finalPhases.push({ from: futurePhases[i].month, to: futurePhases[i].month, inst: futurePhases[i].inst });
