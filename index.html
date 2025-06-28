@@ -115,8 +115,7 @@ function updateDateTime(){
     `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
 }
 setInterval(updateDateTime, 1000); updateDateTime();
-</script>
-</body></html><script>
+</script><script>
 let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
 let hasStarted = false;
 
@@ -150,6 +149,15 @@ const generalQuestions = [
   { id:'hasCommitments',label:'هل لديك التزامات؟',type:'select',options:['نعم','لا'] }
 ];
 
+const commitmentQuestions = [
+  { id:'type',label:'نوع الالتزام',type:'select',options:['قرض شخصي','قرض سيارة','قرض استهلاكي','قرض عقاري'] },
+  { id:'amount',label:'كم القسط الشهري؟',type:'number' },
+  { id:'months',label:'كم عدد الأشهر المتبقية؟',type:'select',options:Array.from({length:60},(_,i)=>i+1) },
+  { id:'balloon',label:'هل يوجد دفعة أخيرة (لسيارة)؟',type:'select',options:['نعم','لا'],show:c=>c.type==='قرض سيارة' },
+  { id:'balloonAmount',label:'كم مبلغ الدفعة الأخيرة؟',type:'number',show:c=>c.balloon==='نعم' },
+  { id:'more',label:'هل لديك التزامات أخرى؟',type:'select',options:['نعم','لا'] }
+];
+
 function getRetirementAge(rank){
   return {
     "جندي": 44, "جندي أول": 44, "عريف": 46, "وكيل رقيب": 46,
@@ -158,15 +166,6 @@ function getRetirementAge(rank){
     "مقدم": 56, "عقيد": 58, "عميد": 60, "لواء": 60
   }[rank] || 44;
 }
-</script><script>
-const commitmentQuestions = [
-  { id:'type',label:'نوع الالتزام',type:'select',options:['قرض شخصي','قرض سيارة','قرض استهلاكي','قرض عقاري'] },
-  { id:'amount',label:'كم القسط الشهري؟',type:'number' },
-  { id:'months',label:'كم عدد الأشهر المتبقية؟',type:'select',options:[],dynamic:true },
-  { id:'balloon',label:'هل يوجد دفعة أخيرة (لسيارة)؟',type:'select',options:['نعم','لا'],show:c=>c.type==='قرض سيارة' },
-  { id:'balloonAmount',label:'كم مبلغ الدفعة الأخيرة؟',type:'number',show:c=>c.balloon==='نعم' },
-  { id:'more',label:'هل لديك التزامات أخرى؟',type:'select',options:['نعم','لا'] }
-];
 
 function numberToArabicWords(n){
   if (n < 1000) return `${n} ريال`;
@@ -184,15 +183,101 @@ function numberToArabicWords(n){
   if(n > 0) parts.push(`${n}`);
   return parts.join(" و ") + " ريال";
 }
-
-function updateDateTime(){
-  const n = new Date();
-  document.getElementById('datetime').innerText =
-    `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} `+
-    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
-}
-setInterval(updateDateTime, 1000); updateDateTime();
 </script><script>
+function handleStartOrReset() {
+  if (!hasStarted) {
+    hasStarted = true;
+    document.getElementById('mainButton').style.display = 'none';
+    document.getElementById('nextContainer').style.display = 'block';
+    showQuestion();
+  } else {
+    resetCalc();
+  }
+}
+
+function showQuestion() {
+  let current = generalQuestions[step];
+  while (current && current.show && !current.show(answers)) {
+    step++;
+    current = generalQuestions[step];
+  }
+  if (!current) {
+    document.getElementById('question').innerHTML = '';
+    if (answers.hasCommitments === 'نعم') {
+      commitmentStep = 0;
+      currentCommitment = {};
+      showCommitmentQuestion();
+    } else {
+      document.getElementById('nextContainer').style.display = 'none';
+      document.getElementById('resetButtonContainer').style.display = 'block';
+      calculate();
+    }
+    return;
+  }
+
+  let html = '';
+  html += `<label>${current.label}</label><br/>`;
+  if (current.type === 'select') {
+    html += `<select onchange="answers['${current.id}']=this.value;" id="${current.id}">`;
+    let opts = current.options;
+    if (current.dynamic && current.id === 'months') {
+      const maxMonths = 360;
+      opts = Array.from({length: maxMonths}, (_, i) => i + 1).filter(m => m >= 12);
+    }
+    opts.forEach(o => {
+      html += `<option value="${o}" ${o === current.default ? 'selected' : ''}>${o}</option>`;
+    });
+    html += `</select>`;
+  } else if (current.type === 'number' || current.type === 'text') {
+    html += `<input type="${current.type}" id="${current.id}" oninput="answers['${current.id}']=this.value" value="${answers[current.id] || ''}" />`;
+  }
+
+  document.getElementById('question').innerHTML = html;
+}
+
+function nextQuestion() {
+  const current = generalQuestions[step];
+  const input = document.getElementById(current.id);
+  if (input && input.value === '') return alert('الرجاء تعبئة الحقل');
+  answers[current.id] = input?.value || '';
+  step++;
+  showQuestion();
+}
+
+function showCommitmentQuestion() {
+  let current = commitmentQuestions[commitmentStep];
+  while (current && current.show && !current.show(currentCommitment)) {
+    commitmentStep++;
+    current = commitmentQuestions[commitmentStep];
+  }
+  if (!current) {
+    answers.commitments.push(currentCommitment);
+    if (currentCommitment.more === 'نعم') {
+      commitmentStep = 0;
+      currentCommitment = {};
+      showCommitmentQuestion();
+    } else {
+      document.getElementById('nextContainer').style.display = 'none';
+      document.getElementById('resetButtonContainer').style.display = 'block';
+      calculate();
+    }
+    return;
+  }
+
+  let html = `<label>${current.label}</label><br/>`;
+  if (current.type === 'select') {
+    html += `<select onchange="currentCommitment['${current.id}']=this.value;" id="${current.id}">`;
+    current.options.forEach(o => {
+      html += `<option value="${o}">${o}</option>`;
+    });
+    html += `</select>`;
+  } else if (current.type === 'number') {
+    html += `<input type="number" id="${current.id}" oninput="currentCommitment['${current.id}']=this.value" />`;
+  }
+
+  document.getElementById('question').innerHTML = html;
+}
+
 function calculate(){
   const name = answers.clientName || "العميل";
   const months = parseInt(answers.months || 0);
@@ -244,4 +329,18 @@ function calculate(){
 
   document.getElementById('question').innerHTML = html;
 }
+
+function resetCalc() {
+  answers = { commitments: [] };
+  step = 0;
+  commitmentStep = 0;
+  currentCommitment = {};
+  hasStarted = false;
+  document.getElementById('mainButton').style.display = 'block';
+  document.getElementById('nextContainer').style.display = 'none';
+  document.getElementById('resetButtonContainer').style.display = 'none';
+  document.getElementById('question').innerHTML = '';
+}
 </script>
+</body>
+</html>
