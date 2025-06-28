@@ -38,71 +38,51 @@
       background-color: #00796b;
       color: white;
       border: none;
-      cursor: pointer;
-    }
-    .fade-in {
-      animation: fadeIn 0.6s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .highlight {
-      font-weight: bold;
-      color: green;
     }
     .result {
-      background: #f9f9f9;
+      background: #e8f5e9;
       padding: 20px;
       border-radius: 10px;
+      margin-top: 30px;
     }
-    .reset-btn {
-      font-size: 26px;
-      background-color: #e0f0ff;
-      color: #005caa;
-      border: none;
-      padding: 10px 25px;
-      border-radius: 8px;
-      cursor: pointer;
+    .highlight {
+      color: #1b5e20;
+      font-weight: bold;
+      font-size: 36px;
     }
   </style>
 </head>
 <body>
   <header>حاسبة التمويل العقاري والشخصي</header>
   <div class="container">
+    <button id="startButton" onclick="startCalculator()">ابدأ الحسبة</button>
     <div id="question"></div>
-    <div id="nextContainer" style="display:none;">
-      <button onclick="nextQuestion()">التالي</button>
-    </div>
-    <div id="resetButtonContainer" style="display:none; margin-top:20px;">
-      <button onclick="location.reload()" style="margin-top:30px; font-size:26px; color:#005caa; background:none; border:none; cursor:pointer;">
-  🔁 إعادة الحسبة
-</button>
-    </div>
-    <div id="mainButton">
-      <button onclick="handleStartOrReset()">ابدأ الحسبة</button>
-    </div>
   </div>
 
-  <footer>
-    <p id="datetimeFooter">جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية</p>
-  </footer>
   <script>
-    function updateDateTime() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mi = String(now.getMinutes()).padStart(2, '0');
-      const ss = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('datetimeFooter').innerText =
-        `جميع الحقوق محفوظة - سرعة تملك العقار - التاريخ: ${yyyy}/${mm}/${dd} - الوقت: ${hh}:${mi}:${ss}`;
+    let currentQuestion = 0;
+    let answers = { commitments: [] };
+
+    function startCalculator() {
+      currentQuestion = 0;
+      answers = { commitments: [] };
+      document.getElementById("startButton").style.display = "none";
+      showQuestion();
     }
-    setInterval(updateDateTime, 1000); updateDateTime();
-  </script>
-</body>
-</html><script>
+
+    function showRestartButton() {
+      const restart = document.createElement("button");
+      restart.textContent = "🔁 إعادة الحسبة";
+      restart.style.marginTop = "30px";
+      restart.style.fontSize = "26px";
+      restart.style.color = "#005caa";
+      restart.style.background = "none";
+      restart.style.border = "none";
+      restart.style.cursor = "pointer";
+      restart.onclick = () => location.reload();
+      document.getElementById("question").appendChild(restart);
+    }
+  </script><script>
 let step = 0;
 let commitmentStep = 0;
 let currentCommitment = {};
