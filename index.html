@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>سرعة تملك العقار</title>
+  <title>سرعة تملك العقار والحلول التمويلية</title>
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
@@ -17,9 +17,13 @@
       padding: 25px;
       font-size: 34px;
     }
+    h2 {
+      font-size: 32px;
+      margin: 10px 0 20px;
+    }
     .container {
       max-width: 650px;
-      margin: 25px auto;
+      margin: 0 auto 25px;
       background: #fff;
       padding: 25px;
       border-radius: 10px;
@@ -39,7 +43,8 @@
   </style>
 </head>
 <body>
-  <header>سرعة تملك العقار</header>
+  <header>سرعة تملك العقار والحلول التمويلية</header>
+  <h2>حاسبة التمويل التقريبية</h2>
   <div class="container" id="question">
     <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
     <div id="resetButtonContainer" style="display:none;">
@@ -159,6 +164,7 @@
     }
 
     const div = document.createElement('div');
+    div.classList.add('fade-in');
     div.innerHTML = `<label>${q.label}</label><br>`;
     if(q.type==='select'){
       const sel = document.createElement('select'); sel.id = q.id;
@@ -181,7 +187,7 @@
   function nextQuestion(){
     const q = step < generalQuestions.length ? generalQuestions[step] : commitmentQuestions[commitmentStep];
     const el = document.getElementById(q.id);
-    const val = el.value;
+    const val = el?.value;
     if(!val){ alert('يرجى تعبئة الحقل قبل المتابعة'); return; }
 
     if(step < generalQuestions.length){
@@ -198,7 +204,6 @@
       if(q.id==='months') currentCommitment[q.id]=parseInt(val);
       else if(q.id==='amount'||q.id==='balloonAmount') currentCommitment[q.id]=parseFloat(val);
       else currentCommitment[q.id]=val;
-
       if(q.id==='more'){
         answers.commitments.push(currentCommitment);
         currentCommitment={};
@@ -224,17 +229,16 @@
     } else {
       if(supported==='مدعوم'){
         deductionRate = bundle==='لا'?65:(salary<15000?55:65);
-      } else {
-        deductionRate = salary<15000?55:65;
-      }
+      } else deductionRate = salary<15000?55:65;
     }
 
     const allowedInst = salary*deductionRate/100;
     const commits = [...answers.commitments].sort((a,b)=>a.months-b.months);
-    const balloonPhases = commits.filter(c=>c.type==='قرض سيارة'&&c.balloon==='نعم'&&c.balloonAmount)
+    const balloonPhases = commits
+      .filter(c=>c.type==='قرض سيارة'&&c.balloon==='نعم'&&c.balloonAmount)
       .map(c=>({ start:c.months,end:c.months+24,value:c.balloonAmount/24 }));
 
-    const futurePhases=[];
+    let futurePhases=[];
     for(let m=1;m<=months;m++){
       const active=commits.filter(c=>m<=c.months).reduce((s,c)=>s+(c.amount||0),0);
       const extra=balloonPhases.reduce((s,b)=>(m>=b.start&&m<b.end)?s+b.value:s,0);
@@ -271,23 +275,23 @@
     const finalNetFixed=finalNet.toFixed(0);
 
     let html='<div class="result">';
-    html+=`<p style="color:#1565c0; font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
+    html+=`<p style="color:#1565c0;font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
     html+=`<p>مدة التمويل: <strong>${duration}</strong></p>`;
 
     if(finalPhases.some(p=>p.inst<=0)){
-      html+=`<p style="color:red; font-size:38px; font-weight:bold;">نعتذر منك لا يمكن تمويلك</p>`;
+      html+=`<p style="color:red;font-size:38px;font-weight:bold;">نعتذر منك لا يمكن تمويلك</p>`;
     }
 
     finalPhases.forEach(p=>{
-      html+=`<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>`;
+      html+=`<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>`;
     });
 
     html+=`
-      <p style="color: green; font-size: 44px; font-weight: bold;">التمويل الصافي بعد خصم الرسوم النهائية: ${finalNetFixed.replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
+      <p style="color:green;font-size:44px;font-weight:bold;">التمويل الصافي بعد خصم الرسوم النهائية: ${finalNetFixed.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
       ${supportText}
-      <p style="color: green; font-size: 36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
-      <p style="color: red; font-size: 36px;"><strong>الربح دون الرسوم:</strong> ${(totalInst-netFinance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
-      <p style="color: red; font-size: 42px;"><strong>الربح مع الرسوم:</strong> ${totalProfitWithFees.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
+      <p style="color:green;font-size:36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+      <p style="color:red;font-size:36px;"><strong>الربح دون الرسوم:</strong> ${(totalInst-netFinance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+      <p style="color:red;font-size:42px;"><strong>الربح مع الرسوم:</strong> ${totalProfitWithFees.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
       <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
       <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
       <p><strong>ضريبة الرسوم:</strong> ${vat.toFixed(0)} ريال</p>
@@ -306,7 +310,7 @@
 <script>
   function updateDateTime(){
     const n=new Date();
-    document.getElementById('datetime').innerText =
+    document.getElementById('datetime').innerText=
       `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} `+
       `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
   }
