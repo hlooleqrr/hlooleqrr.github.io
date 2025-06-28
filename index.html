@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <title>سرعة تملك العقار والحلول التمويلية</title>
   <style>
-    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; margin: 0; text-align: center; font-size: 32px; }
-    header { background: #005c48; color: #fff; padding: 25px; font-size: 40px; }
-    h2 { font-size: 32px; margin: 10px 0 20px; }
+    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; margin:0; text-align:center; font-size:32px; }
+    header { background:#005c48; color:#fff; padding:25px; font-size:40px; }
+    h2 { font-size:32px; margin:10px 0 20px; }
     .container { max-width:650px; margin:0 auto 25px; background:#fff; padding:25px; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,.1); }
     input, select, button { width:92%; padding:20px; margin:18px 0; font-size:32px; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
-    .result p { margin:12px 0; text-align: right; }
+    .result p { margin:12px 0; text-align:right; }
     .highlight { color:#2e7d32; font-size:36px; }
-    #resetButtonContainer { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 1000; }
-    #resetButtonContainer button { font-size: 16px; padding: 6px 12px; width: auto; }
+    #resetButtonContainer { position:fixed; bottom:15px; left:50%; transform:translateX(-50%); z-index:1000; }
+    #resetButtonContainer button { font-size:16px; padding:6px 12px; width:auto; }
   </style>
 </head>
 <body>
@@ -78,7 +78,6 @@ function getMaxAllowedMonths(){
   if(answers.extended==='نعم'){
     return Math.min(monthsUntil60, baseLimit);
   }
-  // قبل التقاعد
   return Math.min(getRetirementMonths(), baseLimit);
 }
 
@@ -86,11 +85,7 @@ function describeMonths(m){
   const y=Math.floor(m/12), mm=m%12;
   let t=`${m} شهر`;
   if(y||mm){
-    t+=' (';
-    if(y) t+=`${y} سنة${y>1?'ات':''}`;
-    if(y&&mm) t+=' و';
-    if(mm) t+=`${mm} شهر`;
-    t+=')';
+    t+=' ('; if(y) t+=`${y} سنة${y>1?'ات':''}`; if(y&&mm) t+=' و'; if(mm) t+=`${mm} شهر`; t+=')';
   }
   return t;
 }
@@ -105,9 +100,7 @@ function handleStartOrReset(){
 }
 
 function resetCalc(){
-  answers={commitments:[]};
-  step=commitmentStep=0;
-  currentCommitment={};
+  answers={commitments:[]}; step=commitmentStep=0; currentCommitment={};
   hasStarted=true;
   document.getElementById('mainButton').style.display='none';
   showQuestion();
@@ -115,8 +108,7 @@ function resetCalc(){
 
 function showQuestion(){
   const cont=document.getElementById('question');
-  cont.innerHTML='';
-  document.getElementById('nextContainer').style.display='block';
+  cont.innerHTML=''; document.getElementById('nextContainer').style.display='block';
   let q;
   if(step<generalQuestions.length){
     q=generalQuestions[step];
@@ -131,7 +123,8 @@ function showQuestion(){
 
   if(q.type==='dateHijri'){
     const div=document.createElement('div'); div.classList.add('fade-in');
-    div.innerHTML= `<label>${q.label}</label><br>
+    // Selected years from 1370 to 1447
+    div.innerHTML=`<label>${q.label}</label><br>
       <select id="${q.id}Day"><option value="">اليوم</option>${
         Array.from({length:30},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')
       }</select>
@@ -139,7 +132,7 @@ function showQuestion(){
         Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')
       }</select>
       <select id="${q.id}Year"><option value="">السنة</option>${
-        Array.from({length:61},(_,i)=>`<option value="${1370+i}">${1370+i}</option>`).join('')
+        Array.from({length:(1447-1370+1)},(_,i)=>`<option value="${1370+i}">${1370+i}</option>`).join('')
       }</select>`;
     cont.appendChild(div);
     return;
@@ -281,7 +274,7 @@ function calculate(){
     <p><strong>بالأحرف:</strong>${numberToArabicWords(parseInt(fixed))}</p>
     <h3 style="margin-top:30px;">خذ لقطة شاشة وتواصل معنا: 📞0506214458  زورو موقعنا: hlooleqrr.com</h3>
   `;
-  document.getElementById('question').innerHTML=html;
+  document.getElementById('question').innerHTML = html;
 }
 </script>
 
