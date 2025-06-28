@@ -15,7 +15,7 @@
       background: #005c48;
       color: #fff;
       padding: 25px;
-      font-size: 34px;
+      font-size: 40px;
     }
     h2 {
       font-size: 32px;
@@ -45,7 +45,8 @@
 <body>
   <header>سرعة تملك العقار والحلول التمويلية</header>
   <h2>حاسبة التمويل التقريبية</h2>
-  <div class="container" id="question">
+  <div class="container">
+    <div id="question"></div>
     <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
     <div id="resetButtonContainer" style="display:none;">
       <button onclick="handleStartOrReset()">إعادة الحسبة 🔁</button>
@@ -56,266 +57,239 @@
   </div>
 
 <script>
-  let hasStarted = false;
-  let step = 0;
-  let commitmentStep = 0;
-  let answers = { commitments: [] };
-  let currentCommitment = {};
+let hasStarted = false;
+let step = 0;
+let commitmentStep = 0;
+let answers = { commitments: [] };
+let currentCommitment = {};
 
-  const generalQuestions = [
-    { id: 'financeType', label: 'اختر نوع التمويل تريد حسبته:', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي أو استهلاكي'] },
-    { id: 'clientName', label: 'الاسم الكريم:', type: 'text' },
-    { show: a => a.financeType === 'تمويل عقاري', id: 'supported', label: 'هل التمويل مدعوم أم غير مدعوم؟', type: 'select', options: ['مدعوم', 'غير مدعوم'] },
-    { show: a => a.financeType === 'تمويل عقاري' && a.supported === 'مدعوم', id: 'bundle', label: 'هل ترغب في دفعة مقدمة من سكني؟', type: 'select', options: ['نعم', 'لا'] },
-    { id: 'salary', label: 'الراتب الشهري (ريال):', type: 'number' },
-    { id: 'profitMargin', label: 'هامش الربح (%):', type: 'number', default: '4.5' },
-    { id: 'months', label: 'عدد أشهر التمويل:', type: 'select', dynamic: true },
-    { id: 'jobType', label: 'نوع الوظيفة:', type: 'select', options: ['عسكري','مدني','خاص شبه حكومي','خاص معتمد','خاص غير معتمد'] },
-    { id: 'birthHijriYear', label: 'اختر سنة الميلاد بالهجري:', type: 'select', options: Array.from({length:61}, (_,i) => (1370 + i).toString()) },
-    { show: a => a.jobType === 'عسكري', id: 'rank', label: 'حدد رتبتك العسكرية:', type: 'select', options: ['جندي','جندي أول','عريف','وكيل رقيب','رقيب','رقيب أول','رئيس رقباء','ملازم','ملازم أول','نقيب','رائد','مقدم','عقيد','عميد','لواء'] },
-    { id: 'hasCommitments', label: 'هل لديك التزامات مالية؟', type: 'select', options: ['نعم', 'لا'] },
-  ];
+const generalQuestions = [
+  { id: 'financeType', label: 'اختر نوع التمويل تريد حسبته:', type: 'select', options: ['تمويل عقاري', 'تمويل شخصي أو استهلاكي'] },
+  { id: 'clientName', label: 'الاسم الكريم:', type: 'text' },
+  { show: a => a.financeType === 'تمويل عقاري', id: 'supported', label: 'هل التمويل مدعوم أم غير مدعوم؟', type: 'select', options: ['مدعوم', 'غير مدعوم'] },
+  { show: a => a.financeType === 'تمويل عقاري' && a.supported === 'مدعوم', id: 'bundle', label: 'هل ترغب في دفعة مقدمة من سكني؟', type: 'select', options: ['نعم', 'لا'] },
+  { id: 'salary', label: 'الراتب الشهري (ريال):', type: 'number' },
+  { id: 'profitMargin', label: 'هامش الربح (%):', type: 'number', default: '4.5' },
+  { id: 'months', label: 'عدد أشهر التمويل:', type: 'select', dynamic: true },
+  { id: 'jobType', label: 'نوع الوظيفة:', type: 'select', options: ['عسكري','مدني','خاص شبه حكومي','خاص معتمد','خاص غير معتمد'] },
+  { id: 'birthHijriYear', label: 'اختر سنة الميلاد بالهجري:', type: 'select', options: Array.from({length:61},(_,i)=>(1370+i).toString()) },
+  { show: a => a.jobType === 'عسكري', id: 'rank', label: 'حدد رتبتك العسكرية:', type: 'select', options: ['جندي','جندي أول','عريف','وكيل رقيب','رقيب','رقيب أول','رئيس رقباء','ملازم','ملازم أول','نقيب','رائد','مقدم','عقيد','عميد','لواء'] },
+  { id: 'hasCommitments', label: 'هل لديك التزامات مالية؟', type: 'select', options: ['نعم','لا'] },
+];
 
-  const commitmentQuestions = [
-    { id: 'type', label: 'نوع الالتزام:', type: 'select', options: ['قرض سيارة','قرض شخصي','قرض استهلاكي'] },
-    { id: 'amount', label: 'القيمة الشهرية للقسط (ريال):', type: 'number' },
-    { id: 'months', label: 'عدد أشهر الالتزام المتبقية:', type: 'select', dynamic: true },
-    { id: 'balloon', label: 'هل لديك دفعة أخيرة؟', type: 'select', options: ['نعم','لا'] },
-    { show: c => c.balloon === 'نعم', id: 'balloonAmount', label: 'مبلغ الدفعة الأخيرة (ريال):', type: 'number' },
-    { id: 'more', label: 'هل لديك التزام آخر؟', type: 'select', options: ['نعم','لا'] },
-  ];
+const commitmentQuestions = [
+  { id: 'type', label: 'نوع الالتزام:', type: 'select', options: ['قرض سيارة','قرض شخصي','قرض استهلاكي'] },
+  { id: 'amount', label: 'القيمة الشهرية للقسط (ريال):', type: 'number' },
+  { id: 'months', label: 'عدد أشهر الالتزام المتبقية:', type: 'select', dynamic: true },
+  { id: 'balloon', label: 'هل لديك دفعة أخيرة؟', type: 'select', options: ['نعم','لا'] },
+  { show: c=>c.balloon==='نعم', id: 'balloonAmount', label: 'مبلغ الدفعة الأخيرة (ريال):', type: 'number' },
+  { id: 'more', label: 'هل لديك التزام آخر؟', type: 'select', options: ['نعم','لا'] },
+];
 
-  function getMaxAllowedMonths() {
-    const currentHijriYear = 1446;
-    const birthYear = parseInt(answers.birthHijriYear);
-    const ageNow = currentHijriYear - birthYear;
-    const ranksRetireAge = {
-      "جندي":44,"جندي أول":44,"عريف":46,"وكيل رقيب":46,
-      "رقيب":48,"رقيب أول":50,"رئيس رقباء":52,
-      "ملازم":48,"ملازم أول":50,"نقيب":52,"رائد":54,
-      "مقدم":56,"عقيد":58,"عميد":60,"لواء":60
-    };
-    const retireAge = answers.jobType === 'عسكري'
-      ? (ranksRetireAge[answers.rank] || 60)
-      : 60;
-    const remainingYears = retireAge - ageNow;
-    const maxMonths = remainingYears * 12;
-    return answers.financeType.includes('شخصي') || answers.financeType.includes('استهلاكي')
-      ? Math.min(maxMonths, 60)
-      : Math.min(maxMonths, 360);
+function getMaxAllowedMonths(){
+  const currentHijriYear = 1446;
+  const birthYear = parseInt(answers.birthHijriYear);
+  const ageNow = currentHijriYear - birthYear;
+  const ranks = {"جندي":44,"جندي أول":44,"عريف":46,"وكيل رقيب":46,"رقيب":48,"رقيب أول":50,"رئيس رقباء":52,"ملازم":48,"ملازم أول":50,"نقيب":52,"رائد":54,"مقدم":56,"عقيد":58,"عميد":60,"لواء":60};
+  const retireAge = answers.jobType==='عسكري'? (ranks[answers.rank]||60):60;
+  const remainYears = retireAge - ageNow;
+  const max = remainYears*12;
+  return answers.financeType.includes('شخصي')||answers.financeType.includes('استهلاكي')? Math.min(max,60): Math.min(max,360);
+}
+
+function describeMonths(m){
+  const y=Math.floor(m/12), mm=m%12;
+  let txt=`${m} شهر`;
+  if(y>0||mm>0){
+    txt+=' (';
+    if(y>0) txt+=`${y} سنة${y>1?'ات':''}`;
+    if(y>0&&mm>0) txt+=' و';
+    if(mm>0) txt+=`${mm} شهر`;
+    txt+=')';
   }
+  return txt;
+}
 
-  function describeMonths(m) {
-    const y = Math.floor(m / 12);
-    const mm = m % 12;
-    let txt = `${m} شهر`;
-    if (y > 0 || mm > 0) {
-      txt += ' (';
-      if (y > 0) txt += `${y} سنة${y > 1 ? 'ات' : ''}`;
-      if (y > 0 && mm > 0) txt += ' و';
-      if (mm > 0) txt += `${mm} شهر`;
-      txt += ')';
-    }
-    return txt;
-  }
+function numberToArabicWords(num){
+  const ones=['','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة'];
+  const teens=['عشرة','إحدى عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
+  const tens=['','','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
+  const hundreds=['','مائة','مائتان','ثلاثمائة','أربعمائة','خمسمائة','ستمائة','سبعمائة','ثمانمائة','تسعمائة'];
+  let parts=[];
+  if(num>=100){const h=Math.floor(num/100); parts.push(hundreds[h]); num%=100;}
+  if(num>=20){const t=Math.floor(num/10); parts.push(tens[t]); num%=10;}
+  else if(num>=10){parts.push(teens[num-10]); num=0;}
+  if(num>0) parts.push(ones[num]);
+  return parts.join(' و ');
+}
 
-  function numberToArabicWords(num) {
-    const ones = ['', 'واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة'];
-    const teens = ['عشرة','إحدى عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
-    const tens = ['', '', 'عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
-    const hundreds = ['', 'مائة','مائتان','ثلاثمائة','أربعمائة','خمسمائة','ستمائة','سبعمائة','ثمانمائة','تسعمائة'];
-    let parts = [];
-    if (num >= 100) { const h = Math.floor(num / 100); parts.push(hundreds[h]); num %= 100; }
-    if (num >= 20) { const t = Math.floor(num / 10); parts.push(tens[t]); num %= 10; }
-    else if (num >= 10) { parts.push(teens[num - 10]); num = 0; }
-    if (num > 0) parts.push(ones[num]);
-    return parts.join(' و ');
-  }
-
-  function handleStartOrReset(){
-    if(!hasStarted){
-      hasStarted = true;
-      document.getElementById('mainButton').style.display = 'none';
-      document.getElementById('resetButtonContainer').style.display = 'block';
-      showQuestion();
-    } else {
-      answers = { commitments: [] };
-      step = commitmentStep = 0;
-      currentCommitment = {};
-      showQuestion();
-    }
-  }
-
-  function showQuestion(){
-    const cont = document.getElementById('question');
-    cont.innerHTML = '';
-    document.getElementById('nextContainer').style.display = 'block';
-    let q;
-    if(step < generalQuestions.length){
-      q = generalQuestions[step];
-      if(q.show && !q.show(answers)){ step++; showQuestion(); return; }
-    } else if(answers.hasCommitments === 'نعم'){
-      q = commitmentQuestions[commitmentStep];
-      if(q.show && !q.show(currentCommitment)){ commitmentStep++; showQuestion(); return; }
-    } else {
-      document.getElementById('nextContainer').style.display = 'none';
-      calculate();
-      return;
-    }
-
-    const div = document.createElement('div');
-    div.classList.add('fade-in');
-    div.innerHTML = `<label>${q.label}</label><br>`;
-    if(q.type==='select'){
-      const sel = document.createElement('select'); sel.id = q.id;
-      sel.innerHTML = '<option value="">اختر...</option>';
-      if(q.dynamic){
-        const limit = getMaxAllowedMonths();
-        for(let i=1;i<=limit;i++){
-          sel.innerHTML += `<option value="${i}">${i} شهر</option>`;
-        }
-      } else {
-        q.options.forEach(opt=> sel.innerHTML += `<option value="${opt}">${opt}</option>`);
-      }
-      div.appendChild(sel);
-    } else {
-      div.innerHTML += `<input type="${q.type}" id="${q.id}" ${q.default?`value="${q.default}"`:''}>`;
-    }
-    cont.appendChild(div);
-  }
-
-  function nextQuestion(){
-    const q = step < generalQuestions.length ? generalQuestions[step] : commitmentQuestions[commitmentStep];
-    const el = document.getElementById(q.id);
-    const val = el?.value;
-    if(!val){ alert('يرجى تعبئة الحقل قبل المتابعة'); return; }
-
-    if(step < generalQuestions.length){
-      answers[q.id] = val;
-      if(q.id==='months'){
-        const max = getMaxAllowedMonths();
-        if(parseInt(val)>max){
-          alert(`أقصى مدة مسموحة حسب العمر والتقاعد: ${describeMonths(max)}.`);
-          answers[q.id]=max.toString();
-        }
-      }
-      step++;
-    } else {
-      if(q.id==='months') currentCommitment[q.id]=parseInt(val);
-      else if(q.id==='amount'||q.id==='balloonAmount') currentCommitment[q.id]=parseFloat(val);
-      else currentCommitment[q.id]=val;
-      if(q.id==='more'){
-        answers.commitments.push(currentCommitment);
-        currentCommitment={};
-        if(val==='نعم'){ commitmentStep=0; showQuestion(); return; }
-        else{ document.getElementById('nextContainer').style.display='none'; calculate(); return; }
-      }
-      commitmentStep++;
-    }
+function handleStartOrReset(){
+  if(!hasStarted){
+    hasStarted=true;
+    document.getElementById('mainButton').style.display='none';
+    document.getElementById('resetButtonContainer').style.display='block';
     showQuestion();
+  } else { resetCalc(); }
+}
+
+function resetCalc(){
+  answers={commitments:[]};
+  step=commitmentStep=0;
+  currentCommitment={};
+  hasStarted=true;
+  document.getElementById('mainButton').style.display='none';
+  document.getElementById('resetButtonContainer').style.display='block';
+  showQuestion();
+}
+
+function showQuestion(){
+  const cont=document.getElementById('question');
+  cont.innerHTML='';
+  document.getElementById('nextContainer').style.display='block';
+  let q;
+  if(step<generalQuestions.length){
+    q=generalQuestions[step];
+    if(q.show&&!q.show(answers)){ step++; showQuestion(); return; }
+  } else if(answers.hasCommitments==='نعم'){
+    q=commitmentQuestions[commitmentStep];
+    if(q.show&&!q.show(currentCommitment)){ commitmentStep++; showQuestion(); return; }
+  } else {
+    document.getElementById('nextContainer').style.display='none';
+    calculate(); return;
   }
-
-  function calculate(){
-    const salary = parseFloat(answers.salary),
-          months = parseInt(answers.months),
-          years  = months/12,
-          profitMargin = parseFloat(answers.profitMargin),
-          { financeType,supported,bundle } = answers;
-
-    let deductionRate=0, addCommodityFee=false;
-    if(financeType.includes('شخصي')||financeType.includes('استهلاكي')){
-      if(months>60){ alert('مدة التمويل الشخصي لا تتجاوز 60 شهر'); return; }
-      deductionRate=45; addCommodityFee=true;
+  const div=document.createElement('div');
+  div.innerHTML=`<label>${q.label}</label><br>`;
+  if(q.type==='select'){
+    const sel=document.createElement('select'); sel.id=q.id;
+    sel.innerHTML='<option value="">اختر...</option>';
+    if(q.dynamic){
+      const lim=getMaxAllowedMonths();
+      for(let i=1;i<=lim;i++) sel.innerHTML+=`<option value="${i}">${i} شهر</option>`;
     } else {
-      if(supported==='مدعوم'){
-        deductionRate = bundle==='لا'?65:(salary<15000?55:65);
-      } else deductionRate = salary<15000?55:65;
+      q.options.forEach(o=>sel.innerHTML+=`<option value="${o}">${o}</option>`);
     }
-
-    const allowedInst = salary*deductionRate/100;
-    const commits = [...answers.commitments].sort((a,b)=>a.months-b.months);
-    const balloonPhases = commits
-      .filter(c=>c.type==='قرض سيارة'&&c.balloon==='نعم'&&c.balloonAmount)
-      .map(c=>({ start:c.months,end:c.months+24,value:c.balloonAmount/24 }));
-
-    let futurePhases=[];
-    for(let m=1;m<=months;m++){
-      const active=commits.filter(c=>m<=c.months).reduce((s,c)=>s+(c.amount||0),0);
-      const extra=balloonPhases.reduce((s,b)=>(m>=b.start&&m<b.end)?s+b.value:s,0);
-      let avail=allowedInst-active-extra;
-      if(financeType.includes('شخصي')||financeType.includes('استهلاكي'))
-        avail=Math.min(avail,salary*0.3333);
-      futurePhases.push({ month:m,inst:avail });
-    }
-
-    const finalPhases=[];
-    futurePhases.forEach(fp=>{
-      const last=finalPhases[finalPhases.length-1];
-      if(!last||last.inst!==fp.inst) finalPhases.push({ from:fp.month,to:fp.month,inst:fp.inst });
-      else last.to=fp.month;
-    });
-
-    const totalInst=finalPhases.reduce((s,p)=>s+p.inst*(p.to-p.from+1),0);
-    const profitFactor=years*profitMargin/100+1;
-    const netFinance=totalInst/profitFactor;
-    let adminFee=netFinance*0.01, vat=adminFee*0.15;
-    if(adminFee+vat>5750){ adminFee=5000; vat=750; }
-    const commodityFee=addCommodityFee?netFinance*0.01:0;
-    const finalNet=netFinance-(adminFee+vat+commodityFee);
-    const totalProfitWithFees=totalInst-finalNet;
-
-    let supportText='';
-    if(financeType==='تمويل عقاري'&&supported==='مدعوم'&&bundle==='نعم'){
-      const sup=salary<10000?150000:100000;
-      supportText=`<p class="highlight">دعم حكومي مضاف: ${sup.toLocaleString()} ريال</p>`;
-    }
-
-    const name=answers.clientName||"العميل";
-    const duration=describeMonths(months);
-    const finalNetFixed=finalNet.toFixed(0);
-
-    let html='<div class="result">';
-    html+=`<p style="color:#1565c0;font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
-    html+=`<p>مدة التمويل: <strong>${duration}</strong></p>`;
-
-    if(finalPhases.some(p=>p.inst<=0)){
-      html+=`<p style="color:red;font-size:38px;font-weight:bold;">نعتذر منك لا يمكن تمويلك</p>`;
-    }
-
-    finalPhases.forEach(p=>{
-      html+=`<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>`;
-    });
-
-    html+=`
-      <p style="color:green;font-size:44px;font-weight:bold;">التمويل الصافي بعد خصم الرسوم النهائية: ${finalNetFixed.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
-      ${supportText}
-      <p style="color:green;font-size:36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
-      <p style="color:red;font-size:36px;"><strong>الربح دون الرسوم:</strong> ${(totalInst-netFinance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
-      <p style="color:red;font-size:42px;"><strong>الربح مع الرسوم:</strong> ${totalProfitWithFees.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
-      <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
-      <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
-      <p><strong>ضريبة الرسوم:</strong> ${vat.toFixed(0)} ريال</p>
-      ${commodityFee?`<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>`:''}
-      <p><strong>بالأحرف:</strong> ${numberToArabicWords(parseInt(finalNetFixed))}</p>
-      <h3 style="margin-top:30px;">خذ لقطة شاشة وتواصل معنا: 📞0506214458 زورو موقعنا: hlooleqrr.com</h3>
-    </div>`;
-
-    document.getElementById('question').innerHTML=html;
+    div.appendChild(sel);
+  } else {
+    div.innerHTML+=`<input type="${q.type}" id="${q.id}" ${q.default?`value="${q.default}"`:''}>`;
   }
+  cont.appendChild(div);
+}
+
+function nextQuestion(){
+  const q=step<generalQuestions.length? generalQuestions[step]: commitmentQuestions[commitmentStep];
+  const el=document.getElementById(q.id), val=el.value;
+  if(!val){alert('يرجى تعبئة الحقل قبل المتابعة'); return;}
+  if(step<generalQuestions.length){
+    answers[q.id]=val;
+    if(q.id==='months'){
+      const mx=getMaxAllowedMonths();
+      if(parseInt(val)>mx){
+        alert(`أقصى مدة مسموحة حسب العمر والتقاعد: ${describeMonths(mx)}.`);
+        answers[q.id]=mx.toString();
+      }
+    }
+    step++;
+  } else {
+    if(q.id==='months') currentCommitment[q.id]=parseInt(val);
+    else if(q.id==='amount'||q.id==='balloonAmount') currentCommitment[q.id]=parseFloat(val);
+    else currentCommitment[q.id]=val;
+    if(q.id==='more'){
+      answers.commitments.push(currentCommitment);
+      currentCommitment={};
+      if(val==='نعم'){ commitmentStep=0; showQuestion(); return; }
+      else { document.getElementById('nextContainer').style.display='none'; calculate(); return; }
+    }
+    commitmentStep++;
+  }
+  showQuestion();
+}
+
+function calculate(){
+  const salary=parseFloat(answers.salary),
+        months=parseInt(answers.months),
+        years=months/12,
+        profitMargin=parseFloat(answers.profitMargin),
+        {financeType,supported,bundle}=answers;
+  let deductionRate=0,addCommodityFee=false;
+  if(financeType.includes('شخصي')||financeType.includes('استهلاكي')){
+    if(months>60){alert('مدة التمويل الشخصي لا تتجاوز 60 شهر');return;}
+    deductionRate=45; addCommodityFee=true;
+  } else {
+    deductionRate=supported==='مدعوم'?(bundle==='لا'?65:(salary<15000?55:65)):(salary<15000?55:65);
+  }
+  const allowedInst=salary*deductionRate/100;
+  const commits=[...answers.commitments].sort((a,b)=>parseInt(a.months)-parseInt(b.months));
+  const balloonPhases=commits.filter(c=>c.type==='قرض سيارة'&&c.balloon==='نعم'&&c.balloonAmount)
+    .map(c=>({start:c.months,end:c.months+24,value:c.balloonAmount/24}));
+  const futurePhases=[];
+  for(let m=1;m<=months;m++){
+    const active=commits.filter(c=>m<=c.months).reduce((s,c)=>s+(c.amount||0),0);
+    const extra=balloonPhases.reduce((s,b)=>(m>=b.start&&m<b.end)?s+b.value:s,0);
+    let avail=allowedInst-active-extra;
+    if(financeType.includes('شخصي')||financeType.includes('استهلاكي'))
+      avail=Math.min(avail,salary*0.3333);
+    futurePhases.push({month:m,inst:avail});
+  }
+  const finalPhases=[];
+  futurePhases.forEach(fp=>{
+    const last=finalPhases[finalPhases.length-1];
+    if(!last||last.inst!==fp.inst) finalPhases.push({from:fp.month,to:fp.month,inst:fp.inst});
+    else last.to=fp.month;
+  });
+  const totalInst=finalPhases.reduce((s,p)=>s+p.inst*(p.to-p.from+1),0);
+  const profitFactor=years*profitMargin/100+1;
+  const netFinance=totalInst/profitFactor;
+  let adminFee=netFinance*0.01,vat=adminFee*0.15;
+  if(adminFee+vat>5750){adminFee=5000;vat=750;}
+  const commodityFee=addCommodityFee?netFinance*0.01:0;
+  const finalNet=netFinance-(adminFee+vat+commodityFee);
+  const totalProfitWithFees=totalInst-finalNet;
+  let supportText='';
+  if(financeType==='تمويل عقاري'&&supported==='مدعوم'&&bundle==='نعم'){
+    const sup=salary<10000?150000:100000;
+    supportText=`<p class="highlight">دعم حكومي مضاف: ${sup.toLocaleString()} ريال</p>`;
+  }
+  const name=answers.clientName||"العميل";
+  const duration=describeMonths(months);
+  const finalNetFixed=finalNet.toFixed(0);
+  let html='<div class="result">';
+  html+=`<p style="color:#1565c0;font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
+  html+=`<p>مدة التمويل: <strong>${duration}</strong></p>`;
+  if(finalPhases.some(p=>p.inst<=0)){
+    html+=`<p style="color:red;font-size:38px;font-weight:bold;">نعتذر منك لا يمكن تمويلك</p>`;
+  }
+  finalPhases.forEach(p=>{
+    html+=`<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>`;
+  });
+  html+=`
+    <p style="color:green;font-size:44px;font-weight:bold;">التمويل الصافي بعد خصم الرسوم النهائية: ${finalNetFixed.replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
+    ${supportText}
+    <p style="color:green;font-size:36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
+    <p style="color:red;font-size:36px;"><strong>الربح دون الرسوم:</strong> ${(totalInst-netFinance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
+    <p style="color:red;font-size:42px;"><strong>الربح مع الرسوم:</strong> ${totalProfitWithFees.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",")} ريال</p>
+    <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
+    <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
+    <p><strong>ضريبة الرسوم:</strong> ${vat.toFixed(0)} ريال</p>
+    ${commodityFee?`<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>`:''}
+    <p><strong>بالأحرف:</strong> ${numberToArabicWords(parseInt(finalNetFixed))}</p>
+    <h3 style="margin-top:30px;">خذ لقطة شاشة وتواصل معنا: 📞0506214458 زورو موقعنا: hlooleqrr.com</h3>
+  </div>`;
+  document.getElementById('question').innerHTML=html;
+}
 </script>
 
 <footer>
   <p>جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - <span id="datetime"></span></p>
 </footer>
 <script>
-  function updateDateTime(){
-    const n=new Date();
-    document.getElementById('datetime').innerText=
-      `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} `+
-      `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
-  }
-  setInterval(updateDateTime,1000);
-  updateDateTime();
+function updateDateTime(){
+  const n=new Date();
+  document.getElementById('datetime').innerText=
+    `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`+
+    ` ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+}
+setInterval(updateDateTime,1000);
+updateDateTime();
 </script>
 </body>
 </html>
