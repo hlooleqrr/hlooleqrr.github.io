@@ -34,348 +34,324 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
-    select option { font-size: 30px; }
     button {
-      background: #00796b;
-      color: #fff;
+      background-color: #00796b;
+      color: white;
       border: none;
       cursor: pointer;
-    }
-    button:hover { background: #004d40; }
-    .small-reset {
-      font-size: 28px;
-      padding: 12px 20px;
-      margin-top: 22px;
-      background: #e3f2fd;
-      color: #1565c0;
-      border: none;
-      cursor: pointer;
-      border-radius: 15px;
-    }
-    .small-reset:hover { background: #bbdefb; }
-    footer {
-      font-size: 26px;
-      color: #666;
-      margin-top: 40px;
-      padding: 15px;
     }
     .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInMove .6s forwards;
+      animation: fadeIn 0.6s;
     }
-    @keyframes fadeInMove {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .result p {
-      margin: 12px 0;
-      font-size: 30px;
-      line-height: 1.6;
-    }
-    .result h2, .result h3 {
-      font-size: 34px;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     .highlight {
-      font-size: 36px;
       font-weight: bold;
-      color: #004d40;
+      color: green;
+    }
+    .result {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .reset-btn {
+      font-size: 26px;
+      background-color: #e0f0ff;
+      color: #005caa;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>سرعة تملك العقار والحلول التمويلية</h1>
-  <p>حاسبة التمويل التقريبية</p>
-</header>
-<div class="container" id="form-container">
-  <div id="question"></div>
-  <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
-  <div id="nextContainer" style="display:none">
-    <button onclick="nextQuestion()">التالي</button>
+  <header>حاسبة التمويل العقاري والشخصي</header>
+  <div class="container">
+    <div id="question"></div>
+    <div id="nextContainer" style="display:none;">
+      <button onclick="nextQuestion()">التالي</button>
+    </div>
+    <div id="resetButtonContainer" style="display:none; margin-top:20px;">
+      <button onclick="handleStartOrReset()" class="reset-btn">🔁 إعادة الحسبة</button>
+    </div>
+    <div id="mainButton">
+      <button onclick="handleStartOrReset()">ابدأ الحسبة</button>
+    </div>
   </div>
-  <div id="resetButtonContainer" style="display:none">
-    <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
-  </div>
-</div>
 
-<footer>
-  <p id="datetimeFooter">
-    جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - 
-    <span id="datetime"></span>
-  </p>
-</footer>
-<script>
-function updateDateTime(){
-  const n = new Date();
-  document.getElementById('datetime').innerText =
-    `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} `+
-    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+  <footer>
+    <p id="datetimeFooter">جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية</p>
+  </footer>
+  <script>
+    function updateDateTime() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('datetimeFooter').innerText =
+        `جميع الحقوق محفوظة - سرعة تملك العقار - التاريخ: ${yyyy}/${mm}/${dd} - الوقت: ${hh}:${mi}:${ss}`;
+    }
+    setInterval(updateDateTime, 1000); updateDateTime();
+  </script>
+</body>
+</html><script>
+let step = 0;
+let commitmentStep = 0;
+let currentCommitment = {};
+let hasStarted = false;
+let answers = { commitments: [] };
+
+function handleStartOrReset(){
+  if(!hasStarted){
+    hasStarted = true;
+    document.getElementById('mainButton').style.display = 'none';
+    document.getElementById('resetButtonContainer').style.display = 'block';
+    showQuestion();
+  }else{
+    resetCalc();
+  }
 }
-setInterval(updateDateTime, 1000); updateDateTime();
-</script><script>
-let currentQuestion = 0;
-let answers = {
-  commitments: []
-};
 
-function handleStartOrReset() {
-  document.getElementById("mainButton").style.display = "none";
+function resetCalc(){
+  answers = { commitments: [] };
+  step = 0;
+  commitmentStep = 0;
+  currentCommitment = {};
+  hasStarted = true;
+  document.getElementById('mainButton').style.display = 'none';
+  document.getElementById('resetButtonContainer').style.display = 'block';
+  document.getElementById('question').innerHTML = '';
   showQuestion();
-  document.getElementById("nextContainer").style.display = "block";
 }
 
-function nextQuestion() {
-  currentQuestion++;
-  showQuestion();
-}
-
-function resetCalc() {
-  location.reload();
-}
-
-function showQuestion() {
-  const q = document.getElementById("question");
-  switch (currentQuestion) {
-    case 0:
-      q.innerHTML = '<label>اسمك الكريم:</label><input type="text" id="clientName">';
-      break;
-    case 1:
-      q.innerHTML = `<label>نوع الوظيفة:</label>
-        <select id="jobType">
-          <option value="">اختر</option>
-          <option value="عسكري">عسكري</option>
-          <option value="مدني">مدني</option>
-          <option value="خاص معتمد">خاص معتمد</option>
-          <option value="خاص غير معتمد">خاص غير معتمد</option>
-        </select>`;
-      break;
-    case 2:
-      q.innerHTML = '<label>تاريخ الميلاد (هجري):</label>' +
-        '<select id="birthYear">' +
-        Array.from({ length: 61 }, (_, i) => {
-          const year = 1370 + i;
-          return `<option value="${year}" ${year === 1412 ? 'selected' : ''}>${year}</option>`;
-        }).join('') +
-        '</select>';
-      break;
-    case 3:
-      if (document.getElementById("clientName")) answers.clientName = document.getElementById("clientName").value;
-      if (document.getElementById("jobType")) answers.jobType = document.getElementById("jobType").value;
-      if (document.getElementById("birthYear")) answers.birthYear = document.getElementById("birthYear").value;
-      if (answers.jobType === "عسكري") {
-        q.innerHTML = `<label>رتبتك:</label>
-          <select id="militaryRank">
-            <option>جندي</option><option>جندي أول</option><option>عريف</option><option>وكيل رقيب</option>
-            <option>رقيب</option><option>رقيب أول</option><option>رئيس رقباء</option><option>ملازم</option>
-            <option>ملازم أول</option><option>نقيب</option><option>رائد</option><option>مقدم</option>
-            <option>عقيد</option><option>عميد</option><option>لواء</option>
-          </select>`;
-      } else {
-        currentQuestion++;
-        showQuestion();
-      }
-      break;
-    case 4:
-      if (answers.jobType === "عسكري") answers.militaryRank = document.getElementById("militaryRank").value;
-      q.innerHTML = '<label>هل ترغب بحسبة ممتدة بعد التقاعد؟</label>' +
-        '<select id="extendAfterRetire">' +
-        '<option>نعم</option><option>لا</option>' +
-        '</select>';
-      break;
-    case 5:
-      answers.extendAfterRetire = document.getElementById("extendAfterRetire").value;
-      if (answers.extendAfterRetire === 'نعم') {
-        q.innerHTML = '<label>تاريخ التعيين (هجري):</label>' +
-          '<select id="joinYear">' +
-          Array.from({ length: 36 }, (_, i) => {
-            const year = 1410 + i;
-            return `<option value="${year}" ${year === 1420 ? 'selected' : ''}>${year}</option>`;
-          }).join('') +
-          '</select>';
-        currentQuestion++;
-      } else {
-        currentQuestion++;
-        showQuestion();
-      }
-      break;
-    case 6:
-      if (answers.extendAfterRetire === 'نعم') {
-        answers.joinYear = document.getElementById("joinYear").value;
-        currentQuestion++;
-      }
-      q.innerHTML = '<label>راتبك الشهري (ريال):</label><input type="number" id="salary">';
-      break;
-    case 7:
-      answers.salary = document.getElementById("salary").value;
-      q.innerHTML = '<label>راتبك الأساسي (ريال):</label><input type="number" id="baseSalary">';
-      break;
-    case 8:
-      answers.baseSalary = document.getElementById("baseSalary").value;
-      q.innerHTML = '<label>عدد أشهر التمويل:</label>' +
-        '<input type="range" id="months" min="12" max="360" step="1" value="240" oninput="document.getElementById(\'monthsLabel\').innerText = this.value">' +
-        '<div id="monthsLabel">240</div>';
-      break;
-    case 9:
-      answers.months = document.getElementById("months").value;
-      q.innerHTML = '<label>هل لديك التزامات؟</label>' +
-        '<select id="hasCommitments">' +
-        '<option>لا</option><option>نعم</option>' +
-        '</select>';
-      break;
-    default:
-      // الالتزامات تأتي في الجزء الثالث
-      break;
-  }
-}
-</script><script>
-let commitmentIndex = 0;
-let pendingCommitment = {};
-
-function askCommitmentDetails() {
-  const q = document.getElementById("question");
-  q.innerHTML = `
-    <label>نوع الالتزام:</label>
-    <select id="commitmentType">
-      <option>قرض سيارة</option>
-      <option>قرض استهلاكي</option>
-      <option>قرض شخصي</option>
-      <option>أخرى</option>
-    </select>
-  `;
-  currentQuestion = 'commitmentType';
-}
-
-function handleCommitmentFlow() {
-  const q = document.getElementById("question");
-  if (currentQuestion === 'commitmentType') {
-    pendingCommitment.type = document.getElementById("commitmentType").value;
-    q.innerHTML = '<label>قيمة القسط الشهري لهذا الالتزام:</label><input type="number" id="commitmentAmount">';
-    currentQuestion = 'commitmentAmount';
-  } else if (currentQuestion === 'commitmentAmount') {
-    pendingCommitment.amount = parseFloat(document.getElementById("commitmentAmount").value);
-    q.innerHTML = '<label>كم عدد الأشهر المتبقية لهذا الالتزام؟</label>' +
-      '<input type="range" id="commitmentMonths" min="1" max="360" step="1" value="24" oninput="document.getElementById(\'commitmentMonthsLabel\').innerText = this.value">' +
-      '<div id="commitmentMonthsLabel">24</div>';
-    currentQuestion = 'commitmentMonths';
-  } else if (currentQuestion === 'commitmentMonths') {
-    pendingCommitment.months = parseInt(document.getElementById("commitmentMonths").value);
-    if (pendingCommitment.type === 'قرض سيارة') {
-      q.innerHTML = '<label>هل لديك دفعة أخيرة لهذا القرض؟</label>' +
-        '<select id="hasFinalPayment"><option>لا</option><option>نعم</option></select>';
-      currentQuestion = 'hasFinalPayment';
-    } else {
-      saveCommitment();
+const generalQuestions = [
+  {
+    id: 'financeType',
+    label: 'اختر نوع التمويل تريد حسبته:',
+    type: 'select',
+    options: ['تمويل عقاري', 'تمويل شخصي أو تمويل استهلاكي']
+  },
+  {
+    id: 'clientName',
+    label: 'ادخل اسمك الكريم:',
+    type: 'text'
+  },
+  {
+    id: 'jobType',
+    label: 'ما نوع وظيفتك؟',
+    type: 'select',
+    options: ['عسكري', 'مدني', 'خاص شبه حكومي', 'خاص معتمد', 'خاص غير معتمد']
+  },
+  {
+    id: 'birthHijriDay',
+    label: 'اختر تاريخ الميلاد - اليوم:',
+    type: 'select',
+    options: Array.from({length: 30}, (_, i) => String(i+1).padStart(2, '0'))
+  },
+  {
+    id: 'birthHijriMonth',
+    label: 'اختر تاريخ الميلاد - الشهر:',
+    type: 'select',
+    options: Array.from({length: 12}, (_, i) => String(i+1).padStart(2, '0'))
+  },
+  {
+    id: 'birthHijriYear',
+    label: 'اختر تاريخ الميلاد - السنة:',
+    type: 'select',
+    options: Array.from({length: 61}, (_, i) => String(1370 + i))
+  },
+  {
+    id: 'rank',
+    label: 'اذكر الرتبة العسكرية:',
+    type: 'select',
+    options: ['جندي', 'جندي أول', 'عريف', 'وكيل رقيب', 'رقيب', 'رقيب أول', 'رئيس رقباء', 'ملازم', 'ملازم أول', 'نقيب', 'رائد', 'مقدم', 'عقيد', 'عميد', 'لواء'],
+    show: answers => answers.jobType === 'عسكري'
+  },
+  {
+    id: 'wantsExtended',
+    label: 'هل ترغب بحسبة ممتدة بعد التقاعد؟',
+    type: 'select',
+    options: ['نعم', 'لا'],
+    show: answers => {
+      if(answers.financeType !== 'تمويل عقاري') return false;
+      if(answers.jobType !== 'عسكري') return false;
+      const age = getHijriAge(answers.birthHijriYear);
+      const retireAge = getRetireAge(answers.rank);
+      return (retireAge - age) < 25;
     }
-  } else if (currentQuestion === 'hasFinalPayment') {
-    const answer = document.getElementById("hasFinalPayment").value;
-    if (answer === 'نعم') {
-      q.innerHTML = '<label>كم مبلغ الدفعة الأخيرة؟</label><input type="number" id="finalPaymentAmount">';
-      currentQuestion = 'finalPaymentAmount';
-    } else {
-      pendingCommitment.finalPayment = 0;
-      saveCommitment();
-    }
-  } else if (currentQuestion === 'finalPaymentAmount') {
-    pendingCommitment.finalPayment = parseFloat(document.getElementById("finalPaymentAmount").value);
-    saveCommitment();
+  },
+  {
+    id: 'enlistmentDay',
+    label: 'تاريخ التعيين - اليوم:',
+    type: 'select',
+    options: Array.from({length: 30}, (_, i) => String(i+1).padStart(2, '0')),
+    show: answers => answers.wantsExtended === 'نعم'
+  },
+  {
+    id: 'enlistmentMonth',
+    label: 'تاريخ التعيين - الشهر:',
+    type: 'select',
+    options: Array.from({length: 12}, (_, i) => String(i+1).padStart(2, '0')),
+    show: answers => answers.wantsExtended === 'نعم'
+  },
+  {
+    id: 'enlistmentYear',
+    label: 'تاريخ التعيين - السنة:',
+    type: 'select',
+    options: Array.from({length: 36}, (_, i) => String(1410 + i)),
+    show: answers => answers.wantsExtended === 'نعم'
+  },
+  {
+    id: 'basicSalary',
+    label: 'ما هو الراتب الأساسي التقاعدي؟',
+    type: 'number',
+    show: answers => answers.wantsExtended === 'نعم'
+  },
+  {
+    id: 'salary',
+    label: 'كم هو الراتب الشهري؟',
+    type: 'number'
+  },
+  {
+    id: 'supported',
+    label: 'هل التمويل مدعوم من سكني؟',
+    type: 'select',
+    options: ['مدعوم', 'غير مدعوم'],
+    show: answers => answers.financeType === 'تمويل عقاري'
+  },
+  {
+    id: 'bundle',
+    label: 'هل ترغب في دفعة مقدمة من سكني؟',
+    type: 'select',
+    options: ['نعم', 'لا'],
+    show: answers => answers.supported === 'مدعوم'
+  },
+  {
+    id: 'profitMargin',
+    label: 'كم نسبة الأرباح السنوية؟',
+    type: 'number',
+    default: 6
+  },
+  {
+    id: 'months',
+    label: 'اختر عدد أشهر التمويل:',
+    type: 'select',
+    dynamic: true
+  },
+  {
+    id: 'hasCommitments',
+    label: 'هل لديك التزامات مالية شهرية (مثل قرض سيارة أو استهلاكي)؟',
+    type: 'select',
+    options: ['نعم', 'لا']
   }
-}
-
-function saveCommitment() {
-  answers.commitments.push({ ...pendingCommitment });
-  pendingCommitment = {};
-  const q = document.getElementById("question");
-  q.innerHTML = '<label>هل لديك التزام آخر؟</label><select id="anotherCommitment"><option>لا</option><option>نعم</option></select>';
-  currentQuestion = 'anotherCommitment';
-}
-
-function handleAnotherCommitment() {
-  const another = document.getElementById("anotherCommitment").value;
-  if (another === 'نعم') {
-    askCommitmentDetails();
-  } else {
-    document.getElementById("nextContainer").style.display = "none";
-    document.getElementById("resetButtonContainer").style.display = "block";
-    calculate();
-  }
-}
-
-document.getElementById("nextContainer").addEventListener("click", () => {
-  if (typeof currentQuestion === 'string') {
-    if (['commitmentType', 'commitmentAmount', 'commitmentMonths', 'hasFinalPayment', 'finalPaymentAmount'].includes(currentQuestion)) {
-      handleCommitmentFlow();
-    } else if (currentQuestion === 'anotherCommitment') {
-      handleAnotherCommitment();
-    }
-  }
-});
+];
 </script><script>
 function calculate(){
+  const salary = parseFloat(answers.salary),
+        months = parseInt(answers.months),
+        years  = months / 12,
+        profitMargin = parseFloat(answers.profitMargin),
+        { financeType, supported, bundle } = answers;
+
+  let deductionRate = 0, extraSupport = 0, addCommodityFee = false;
+  if(financeType.includes('شخصي') || financeType.includes('استهلاكي')){
+    if(months > 60){ alert('مدة التمويل الشخصي لا تتجاوز 60 شهر'); return; }
+    deductionRate = 45;
+    addCommodityFee = true;
+  }else{
+    if(supported === 'مدعوم'){
+      if(bundle === 'لا'){ deductionRate = 65; extraSupport = salary < 10000 ? 150000 : 100000; }
+      else{ deductionRate = salary < 15000 ? 55 : 65; }
+    }else{ deductionRate = salary < 15000 ? 55 : 65; }
+  }
+
+  let allowedInst = salary * deductionRate / 100;
+  let commits = [...answers.commitments].sort((a,b)=>parseInt(a.months)-parseInt(b.months));
+  let balloonPhases = [];
+
+  commits.forEach((c) => {
+    if (c.type === 'قرض سيارة' && c.balloon === 'نعم' && c.balloonAmount) {
+      const start = parseInt(c.months) + 1;
+      const end = start + 23;
+      balloonPhases.push({ start, end, value: c.balloonAmount / 24 });
+    }
+  });
+
+  let futurePhases = [];
+  for(let m = 1; m <= months; m++) {
+    let activeCommits = commits.filter(c => m <= parseInt(c.months)).reduce((sum, c) => sum + (c.amount || 0), 0);
+    let balloonExtra = balloonPhases.reduce((sum, b) => (m >= b.start && m <= b.end) ? sum + b.value : sum, 0);
+    let available = allowedInst - activeCommits - balloonExtra;
+    if(financeType.includes('شخصي') || financeType.includes('استهلاكي')) available = Math.min(available, salary * 0.3333);
+    futurePhases.push({ month: m, inst: available });
+  }
+
+  let finalPhases = [];
+  for (let i = 0; i < futurePhases.length; i++) {
+    if (i === 0 || futurePhases[i].inst !== finalPhases[finalPhases.length - 1]?.inst) {
+      finalPhases.push({ from: futurePhases[i].month, to: futurePhases[i].month, inst: futurePhases[i].inst });
+    } else {
+      finalPhases[finalPhases.length - 1].to = futurePhases[i].month;
+    }
+  }
+
+  const totalInst = finalPhases.reduce((s,p)=>s + p.inst * (p.to - p.from + 1), 0);
+  const profitFactor = (years * profitMargin / 100) + 1;
+  const netFinance = totalInst / profitFactor;
+  let adminFee = netFinance * 0.01, vat = adminFee * 0.15;
+  if(adminFee + vat > 5750){ adminFee = 5000; vat = 750; }
+  const commodityFee = addCommodityFee ? netFinance * 0.01 : 0;
+  const finalNet = netFinance - (adminFee + vat + commodityFee);
+  const totalProfitWithFees = totalInst - finalNet;
+
+  let supportText = '';
+  if(financeType === 'تمويل عقاري' && supported === 'مدعوم'){
+    const sup = salary < 10000 ? 150000 : 100000;
+    if(bundle === 'نعم'){
+      supportText = `<p class="highlight">دعم حكومي مضاف: ${sup.toLocaleString()} ريال</p>`;
+    }else{
+      const dist = Math.min(months, 240),
+            monthly = Math.round(sup / dist);
+      supportText = `<p class="highlight">تم توزيع دعم الدفعة (${sup.toLocaleString()} ريال) على ${dist} شهر = ${monthly.toLocaleString()} ريال</p>`;
+    }
+  }
+
   const name = answers.clientName || "العميل";
-  const months = parseInt(answers.months || 0);
-  const salary = parseFloat(answers.salary || 0);
-  const baseSalary = parseFloat(answers.baseSalary || 0);
-  const birthYear = parseInt(answers.birthYear || 1412);
-  const joinYear = parseInt(answers.joinYear || 1420);
-  const hijriNow = 1446;
-  const currentAge = hijriNow - birthYear;
-  const rank = answers.militaryRank || 'جندي';
-  const retireAge = getRetirementAge(rank);
-  const serviceYears = hijriNow - joinYear;
-  const retirementSalary = answers.extendAfterRetire === 'نعم'
-    ? Math.round((baseSalary * serviceYears * 0.55) / 40)
-    : 0;
-
-  let preRetireMonths = (retireAge - currentAge) * 12;
-  if (preRetireMonths > months) preRetireMonths = months;
-  const postRetireMonths = months - preRetireMonths;
-
-  const preRetireInstallment = Math.round(salary * 0.55);
-  const postRetireInstallment = Math.round(retirementSalary * 0.55);
-
-  const finalNet = 360000;
-  const netFinance = 385000;
-  const totalProfit = 85000;
-  const totalWithFees = 97000;
-  const supportAmount = answers.supported === 'مدعوم' ? 100000 : 0;
-
-  const yearText = Math.floor(months / 12);
-  const monthText = months % 12;
-  const arabicYears = ["", "سنة واحدة", "سنتان", "ثلاث سنوات", "أربع سنوات", "خمس سنوات", "ست سنوات", "سبع سنوات", "ثماني سنوات", "تسع سنوات", "عشر سنوات"];
-  const arabicMonths = ["", "شهر واحد", "شهران", "ثلاثة أشهر", "أربعة أشهر", "خمسة أشهر", "ستة أشهر", "سبعة أشهر", "ثمانية أشهر", "تسعة أشهر", "عشرة أشهر", "أحد عشر شهرا"];
-  const durationText = `${months} شهر (${arabicYears[yearText] || `${yearText} سنة`} ${monthText > 0 ? "و " + (arabicMonths[monthText] || `${monthText} شهر`) : ""})`;
+  const duration = describeMonths(months);
+  const finalNetFixed = finalNet.toFixed(0);
 
   let html = '<div class="result"><h2>نتيجة الحسبة (التقريبية):</h2>';
   html += `<p style="color:#1565c0; font-size:36px;"><strong>مرحباً ومسهلا يا ${name}</strong></p>`;
-  html += `<p style="font-size:32px;">مدة التمويل: <strong>${durationText}</strong></p>`;
+  html += `<p style="font-size:32px;">مدة التمويل: <strong>${duration}</strong></p>`;
 
-  if (postRetireMonths > 0) {
-    html += `<p><strong>من الشهر 1 إلى ${preRetireMonths}:</strong> ${preRetireInstallment.toLocaleString()} ريال</p>`;
-    html += `<p><strong>من ${preRetireMonths+1} إلى ${months}:</strong> ${postRetireInstallment.toLocaleString()} ريال</p>`;
-  } else {
-    html += `<p><strong>من الشهر 1 إلى ${months}:</strong> ${preRetireInstallment.toLocaleString()} ريال</p>`;
+  if (finalPhases.every(p => p.inst <= 0)) {
+    html += `<p style="color:red; font-size:38px; font-weight:bold;">نعتذر منك لا يمكن تمويلك</p>`;
   }
 
-  if (preRetireInstallment <= 0 && postRetireInstallment <= 0) {
-    html += `<p style="color:red;font-size:36px;"><strong>نعتذر منك لا يمكن تمويلك</strong></p>`;
-  }
+  finalPhases.forEach(p=>{
+    html += `<p><strong>القسط من الشهر ${p.from} إلى ${p.to}:</strong> ${p.inst.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>`;
+  });
 
-  if (currentAge >= retireAge) {
-    html += `<p style="color:red; font-size:32px;"><strong>⚠️ العميل متقاعد حالياً أو تجاوز سن التقاعد.</strong></p>`;
-  }
-
-  html += `<p style="color: green; font-size: 44px; font-weight: bold;"> التمويل الصافي بعد خصم الرسوم النهائية: ${finalNet.toLocaleString()} ريال</p>`;
-  if(supportAmount) html += `<p class="highlight">دعم حكومي: ${supportAmount.toLocaleString()} ريال</p>`;
-  html += `<p style="color: green; font-size: 36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toLocaleString()} ريال</p>`;
-  html += `<p style="color: red; font-size: 36px;"><strong>الربح دون الرسوم:</strong> ${totalProfit.toLocaleString()} ريال</p>`;
-  html += `<p style="color: red; font-size: 42px;"><strong>الربح مع الرسوم:</strong> ${totalWithFees.toLocaleString()} ريال</p>`;
-  html += `<p><strong>بالأحرف:</strong> ${numberToArabicWords(finalNet)}</p>`;
-  html += `<h3 style="margin-top:30px;"> خذ لقطة شاشة وتواصل معنا: 📞0506214458  زورو موقعنا: hlooleqrr.com</h3>`;
-  html += `<div style="margin-top: 30px;"><button onclick="location.reload()" style="background-color:#e0f2f1;color:#00796b;padding:12px 28px;font-size:30px;border-radius:8px;border:none;">🔁 إعادة الحسبة</button></div>`;
-  html += '</div>';
+  html += `
+  <p style="color: green; font-size: 44px; font-weight: bold;"> التمويل الصافي بعد خصم الرسوم النهائية: ${finalNetFixed.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+  ${supportText}
+  <p style="color: green; font-size: 36px;"><strong>التمويل الصافي قبل خصم الرسوم:</strong> ${netFinance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+  <p style="color: red; font-size: 36px;"><strong>الربح دون الرسوم:</strong> ${(totalInst - netFinance).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+  <p style="color: red; font-size: 42px;"><strong>الربح مع الرسوم:</strong> ${totalProfitWithFees.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+  <p><strong>معامل الربح:</strong> ${profitFactor.toFixed(3)}</p>
+  <p><strong>الرسوم الإدارية:</strong> ${adminFee.toFixed(0)} ريال</p>
+  <p><strong>ضريبة الرسوم:</strong> ${vat.toFixed(0)} ريال</p>
+  ${addCommodityFee ? `<p><strong>رسوم السلع:</strong> ${commodityFee.toFixed(0)} ريال</p>` : ''}
+  <p><strong>إجمالي التمويل مع الأرباح:</strong> ${totalInst.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ريال</p>
+  <p><strong>بالأحرف:</strong> ${numberToArabicWords(parseInt(finalNetFixed))}</p>
+  <h3 style="margin-top:30px;"> خذ لقطة شاشة وتواصل معنا: 📞0506214458  زورو موقعنا: hlooleqrr.com</h3>
+  </div>`;
 
   document.getElementById('question').innerHTML = html;
 }
