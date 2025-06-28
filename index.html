@@ -191,17 +191,11 @@ function calculate(){
   const salary = parseFloat(answers.salary || 0);
   const basic = parseFloat(answers.baseSalary || 0);
   const birthYear = parseInt(answers.birthYear || 1412);
-  const birthMonth = parseInt(answers.birthMonth || 1);
-  const birthDay = parseInt(answers.birthDay || 1);
   const joinYear = parseInt(answers.joinYear || 1420);
-  const joinMonth = 1;
-  const joinDay = 1;
-  const today = new Date();
   const hijriNow = 1446;
   const currentAge = hijriNow - birthYear;
   const rank = answers.militaryRank || 'جندي';
   const retireAge = getRetirementAge(rank);
-  const ageAtJoin = birthYear - joinYear;
   const serviceYears = hijriNow - joinYear;
   const retirementSalary = answers.extendAfterRetire === 'نعم'
     ? Math.round((basic * serviceYears * 0.55) / 40)
@@ -243,16 +237,3 @@ function calculate(){
   document.getElementById('question').innerHTML = html;
 }
 </script>
-<script>
-function handleStartOrReset() {
-  if (!hasStarted) {
-    hasStarted = true;
-    document.getElementById('mainButton').style.display = 'none';
-    nextQuestion(); // يبدأ عرض أول سؤال
-  } else {
-    resetCalc(); // يعيد الحسبة إذا بدأت
-  }
-}
-</script>
-</body>
-</html>
