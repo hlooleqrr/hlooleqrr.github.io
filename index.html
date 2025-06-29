@@ -1,154 +1,172 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>حاسبة التمويل الممتد بعد التقاعد</title>
+  <meta charset="UTF-8" />
+  <title>حاسبة التمويل بعد التقاعد</title>
   <style>
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: #f4f6f8;
-      padding: 30px;
-      font-size: 24px;
-      text-align: center;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,.1);
-    }
+    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; text-align: center; font-size: 24px; padding: 30px; margin: 0; }
+    .step { display: none; max-width: 700px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,.1); }
+    .step.active { display: block; }
     input, select, button {
-      width: 92%;
-      padding: 15px;
-      margin: 15px 0;
-      font-size: 22px;
+      width: 90%; padding: 15px; margin: 15px 0;
+      font-size: 22px; border-radius: 6px;
     }
     .result {
-      background: #e6f7ff;
-      margin-top: 25px;
-      padding: 25px;
-      border: 2px solid #0099cc;
-      border-radius: 10px;
-      font-size: 26px;
-      line-height: 1.8;
+      background: #e6f7ff; padding: 20px;
+      margin-top: 20px; border: 2px solid #0099cc;
+      border-radius: 12px; font-size: 26px; line-height: 1.8;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>حاسبة التمويل الممتد بعد التقاعد</h2>
-    
-    <input type="text" id="clientName" placeholder="الاسم الكريم">
 
-    <select id="financeType">
-      <option disabled selected>اختر نوع التمويل</option>
-      <option value="person">تمويل شخصي أو استهلاكي</option>
-      <option value="realestate">تمويل عقاري</option>
-    </select>
+<div class="step active" id="step0">
+  <h2>حاسبة التمويل بعد التقاعد</h2>
+  <button onclick="nextStep()">ابدأ الحسبة</button>
+</div>
 
-    <select id="jobType" onchange="toggleMilitaryFields()">
-      <option disabled selected>جهة العمل</option>
-      <option value="civil">حكومي مدني</option>
-      <option value="private">قطاع خاص</option>
-      <option value="military">عسكري</option>
-    </select>
+<div class="step" id="step1">
+  <h3>ما اسمك الكريم؟</h3>
+  <input type="text" id="clientName">
+  <button onclick="nextStep()">التالي</button>
+</div>
 
-    <div id="militaryFields" style="display:none;">
-      <select id="rank">
-        <option disabled selected>اختر الرتبة</option>
-        <option value="جندي">جندي</option>
-        <option value="جندي أول">جندي أول</option>
-        <option value="عريف">عريف</option>
-        <option value="وكيل رقيب">وكيل رقيب</option>
-        <option value="رقيب">رقيب</option>
-        <option value="رقيب أول">رقيب أول</option>
-        <option value="رئيس رقباء">رئيس رقباء</option>
-        <option value="ملازم">ملازم</option>
-        <option value="ملازم أول">ملازم أول</option>
-        <option value="نقيب">نقيب</option>
-        <option value="رائد">رائد</option>
-        <option value="مقدم">مقدم</option>
-        <option value="عقيد">عقيد</option>
-        <option value="عميد">عميد</option>
-        <option value="لواء">لواء</option>
-      </select>
-    </div>
+<div class="step" id="step2">
+  <h3>نوع التمويل</h3>
+  <select id="financeType">
+    <option disabled selected>اختر نوع التمويل</option>
+    <option value="person">تمويل شخصي</option>
+    <option value="realestate">تمويل عقاري</option>
+  </select>
+  <button onclick="nextStep()">التالي</button>
+</div>
 
-    <input type="number" id="basicSalary" placeholder="الراتب الأساسي">
-    <input type="number" id="netFinanceBefore" placeholder="التمويل الصافي قبل التقاعد">
+<div class="step" id="step3">
+  <h3>جهة العمل</h3>
+  <select id="jobType" onchange="toggleRank()">
+    <option disabled selected>اختر جهة العمل</option>
+    <option value="civil">حكومي مدني</option>
+    <option value="private">قطاع خاص</option>
+    <option value="military">عسكري</option>
+  </select>
+  <button onclick="nextStep()">التالي</button>
+</div>
 
-    <button onclick="calculate()">عرض النتيجة</button>
+<div class="step" id="step4">
+  <h3>اختر الرتبة (للعسكري فقط)</h3>
+  <select id="rank">
+    <option disabled selected>اختر الرتبة</option>
+    <option value="جندي">جندي</option>
+    <option value="رقيب">رقيب</option>
+    <option value="رقيب أول">رقيب أول</option>
+    <option value="ملازم">ملازم</option>
+    <option value="عقيد">عقيد</option>
+  </select>
+  <button onclick="nextStep()">التالي</button>
+</div>
 
-    <div id="result" class="result" style="display:none;"></div>
-  </div>
+<div class="step" id="step5">
+  <h3>تاريخ الميلاد (هجري)</h3>
+  <select id="birthDay"></select>
+  <select id="birthMonth"></select>
+  <select id="birthYear"></select>
+  <button onclick="nextStep()">التالي</button>
+</div>
 
-  <script>
-    const retirementAges = {
-      "جندي": 44, "جندي أول": 44, "عريف": 46, "وكيل رقيب": 46,
-      "رقيب": 48, "رقيب أول": 50, "رئيس رقباء": 52,
-      "ملازم": 48, "ملازم أول": 50, "نقيب": 52, "رائد": 54,
-      "مقدم": 56, "عقيد": 58, "عميد": 60, "لواء": 60
-    };
+<div class="step" id="step6">
+  <h3>تاريخ التعيين (هجري)</h3>
+  <select id="hireDay"></select>
+  <select id="hireMonth"></select>
+  <select id="hireYear"></select>
+  <button onclick="nextStep()">التالي</button>
+</div>
 
-    const rankRaises = {
-      "جندي": 125, "جندي أول": 135, "عريف": 175, "وكيل رقيب": 210,
-      "رقيب": 250, "رقيب أول": 300, "رئيس رقباء": 360,
-      "ملازم": 380, "ملازم أول": 415, "نقيب": 495, "رائد": 265,
-      "مقدم": 470, "عقيد": 510, "عميد": 565, "لواء": 635
-    };
+<div class="step" id="step7">
+  <h3>التمويل الصافي قبل التقاعد</h3>
+  <input type="number" id="netBefore">
+  <button onclick="calculate()">عرض النتيجة</button>
+</div>
 
-    function toggleMilitaryFields() {
-      const job = document.getElementById("jobType").value;
-      document.getElementById("militaryFields").style.display = (job === "military") ? "block" : "none";
-    }
+<div class="step" id="step8">
+  <div class="result" id="resultBox"></div>
+</div>
 
-    function calculate() {
-      const name = document.getElementById('clientName').value.trim();
-      const financeType = document.getElementById('financeType').value;
-      const jobType = document.getElementById('jobType').value;
-      const rank = document.getElementById('rank').value;
-      const baseSalary = parseFloat(document.getElementById('basicSalary').value);
-      const netBefore = parseFloat(document.getElementById('netFinanceBefore').value);
+<script>
+  for (let i = 1; i <= 30; i++) {
+    birthDay.innerHTML += `<option value="${i}">${i}</option>`;
+    hireDay.innerHTML += `<option value="${i}">${i}</option>`;
+  }
+  for (let i = 1; i <= 12; i++) {
+    birthMonth.innerHTML += `<option value="${i}">${i}</option>`;
+    hireMonth.innerHTML += `<option value="${i}">${i}</option>`;
+  }
+  for (let y = 1370; y <= 1445; y++) {
+    birthYear.innerHTML += `<option value="${y}">${y}</option>`;
+    hireYear.innerHTML += `<option value="${y}">${y}</option>`;
+  }  const retirementAges = {
+    "جندي": 44, "رقيب": 48, "رقيب أول": 50, "ملازم": 48, "عقيد": 58
+  };
+  const baseSalaries = {
+    "جندي": 3220, "رقيب": 5260, "رقيب أول": 6180, "ملازم": 7590, "عقيد": 14365
+  };
+  const raises = {
+    "جندي": 125, "رقيب": 250, "رقيب أول": 300, "ملازم": 380, "عقيد": 510
+  };
 
-      if (!name || !financeType || !jobType || isNaN(baseSalary) || isNaN(netBefore) || (jobType === 'military' && !rank)) {
-        alert("يرجى تعبئة جميع الحقول المطلوبة");
-        return;
-      }
+  let currentStep = 0;
+  function nextStep() {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep++;
+    document.getElementById('step' + currentStep).classList.add('active');
+  }
 
-      const retirementAge = (jobType === 'military') ? retirementAges[rank] : 60;
-      const yearsService = retirementAge - 20;
-      const raise = (jobType === 'military') ? rankRaises[rank] : 0;
+  function toggleRank() {
+    const job = document.getElementById("jobType").value;
+    document.getElementById('step4').style.display = (job === "military") ? "block" : "none";
+  }
 
-      const lastSalary = baseSalary + (raise * yearsService);
-      const retirementSalary = (lastSalary * yearsService) / 40;
+  function calculate() {
+    const name = document.getElementById('clientName').value;
+    const type = document.getElementById('financeType').value;
+    const job = document.getElementById('jobType').value;
+    const rank = document.getElementById('rank').value || "مدني / خاص";
+    const birthYear = parseInt(document.getElementById('birthYear').value);
+    const hireYear = parseInt(document.getElementById('hireYear').value);
+    const netBefore = parseFloat(document.getElementById('netBefore').value);
 
-      let percent = 0;
-      if (financeType === 'person') {
-        percent = 0.25;
-      } else if (financeType === 'realestate') {
-        percent = retirementSalary < 15000 ? 0.55 : 0.65;
-      }
+    const currentYear = 1446;
+    const ageNow = currentYear - birthYear;
+    const retirementAge = (job === "military") ? retirementAges[rank] : 60;
+    const base = (job === "military") ? baseSalaries[rank] : 0;
+    const raise = (job === "military") ? raises[rank] : 0;
+    const yearsService = retirementAge - (currentYear - hireYear);
+    const lastSalary = base + (raise * yearsService);
+    const retirementSalary = (lastSalary * yearsService) / 40;
+    const monthsAvailable = (60 - retirementAge) * 12;
 
-      const installment = retirementSalary * percent;
-      const months = (60 - retirementAge) * 12;
-      const totalWithProfit = installment * months;
-      const profit = totalWithProfit * 0.045;
-      const netAfter = totalWithProfit - profit;
-      const totalFinance = netBefore + netAfter;
+    let percent = (type === "person") ? 0.25 : (retirementSalary < 15000 ? 0.55 : 0.65);
+    const installment = retirementSalary * percent;
+    const totalWithProfit = installment * monthsAvailable;
+    const profit = totalWithProfit * 0.045;
+    const netAfter = totalWithProfit - profit;
+    const totalFinance = netBefore + netAfter;
 
-      const f = (x) => parseFloat(x).toLocaleString('ar-EG');
+    const f = n => parseFloat(n).toLocaleString('ar-EG');
 
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('result').innerHTML = `
-        <strong>مرحباً ومسهلاً يا ${name}</strong><br>
-        رتبتك: ${rank || 'مدني/خاص'}، التقاعد عند سن ${retirementAge}<br><br>
-        تمويلك الصافي قبل التقاعد: ${f(netBefore)} ريال<br>
-        تمويلك الصافي بعد التقاعد: ${f(netAfter.toFixed(0))} ريال<br>
-        ✅ <strong>إجمالي التمويل دون خصم الرسوم:</strong> ${f(totalFinance.toFixed(0))} ريال
-      `;
-    }
-  </script>
+    document.getElementById('step7').classList.remove('active');
+    document.getElementById('step8').classList.add('active');
+    document.getElementById('resultBox').innerHTML = `
+      <strong>مرحباً ومسهلاً يا ${name}</strong><br>
+      العمر الحالي: ${ageNow} سنة – التقاعد عند سن ${retirementAge}<br>
+      عدد أشهر التمويل بعد التقاعد: ${monthsAvailable} شهر<br>
+      الراتب التقاعدي المحتسب: ${f(retirementSalary.toFixed(0))} ريال<br>
+      القسط الشهري بعد التقاعد: ${f(installment.toFixed(0))} ريال<br><br>
+      تمويلك الصافي قبل التقاعد: ${f(netBefore)} ريال<br>
+      تمويلك الصافي بعد التقاعد: ${f(netAfter.toFixed(0))} ريال<br>
+      ✅ <strong>إجمالي التمويل دون خصم الرسوم:</strong> ${f(totalFinance.toFixed(0))} ريال
+    `;
+  }
+</script>
+
 </body>
 </html>
