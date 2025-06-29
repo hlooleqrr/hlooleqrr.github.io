@@ -1,172 +1,250 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>حاسبة التمويل بعد التقاعد</title>
+  <meta charset="UTF-8">
+  <title>حاسبة التمويل بعد التقاعد – مع جدول الرواتب والعلاوات</title>
+  <script src="https://cdn.jsdelivr.net/npm/hijri-date/lib/hijri-date.min.js"></script>
   <style>
-    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; text-align: center; font-size: 24px; padding: 30px; margin: 0; }
-    .step { display: none; max-width: 700px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,.1); }
-    .step.active { display: block; }
-    input, select, button {
-      width: 90%; padding: 15px; margin: 15px 0;
-      font-size: 22px; border-radius: 6px;
-    }
-    .result {
-      background: #e6f7ff; padding: 20px;
-      margin-top: 20px; border: 2px solid #0099cc;
-      border-radius: 12px; font-size: 26px; line-height: 1.8;
-    }
+    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; margin:0; padding:20px; text-align:center; font-size:24px; }
+    .step { display:none; max-width:700px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.1); }
+    .step.active { display:block; }
+    input, select, button { width:90%; padding:15px; margin:15px 0; font-size:22px; border-radius:6px; }
+    .result { background:#e6f7ff; padding:20px; margin-top:20px; border:2px solid #0099cc; border-radius:12px; font-size:26px; line-height:1.6; text-align:right; }
+    table { width:100%; border-collapse:collapse; margin:20px 0; }
+    th, td { border:1px solid #ccc; padding:8px; }
+    th { background:#e6f7ff; }
   </style>
 </head>
 <body>
 
-<div class="step active" id="step0">
-  <h2>حاسبة التمويل بعد التقاعد</h2>
-  <button onclick="nextStep()">ابدأ الحسبة</button>
-</div>
+  <!-- خطوة 0: عرض التاريخ -->
+  <div class="step active" id="step0">
+    <h2>حاسبة التمويل بعد التقاعد</h2>
+    <p>اليوم (هجري): <span id="todayHijri"></span> | (ميلادي: <span id="todayGregorian"></span>)</p>
+    <button onclick="nextStep()">ابدأ الحسبة</button>
+  </div>
 
-<div class="step" id="step1">
-  <h3>ما اسمك الكريم؟</h3>
-  <input type="text" id="clientName">
-  <button onclick="nextStep()">التالي</button>
-</div>
+  <!-- خطوة 1 -->
+  <div class="step" id="step1">
+    <h3>ما اسمك الكريم؟</h3>
+    <input type="text" id="clientName" placeholder="الاسم الكريم">
+    <button onclick="nextStep()">التالي</button>
+  </div>
 
-<div class="step" id="step2">
-  <h3>نوع التمويل</h3>
-  <select id="financeType">
-    <option disabled selected>اختر نوع التمويل</option>
-    <option value="person">تمويل شخصي</option>
-    <option value="realestate">تمويل عقاري</option>
-  </select>
-  <button onclick="nextStep()">التالي</button>
-</div>
+  <!-- خطوة 2 -->
+  <div class="step" id="step2">
+    <h3>نوع التمويل</h3>
+    <select id="financeType">
+      <option disabled selected>اختر نوع التمويل</option>
+      <option value="person">تمويل شخصي</option>
+      <option value="realestate">تمويل عقاري</option>
+    </select>
+    <button onclick="nextStep()">التالي</button>
+  </div>
 
-<div class="step" id="step3">
-  <h3>جهة العمل</h3>
-  <select id="jobType" onchange="toggleRank()">
-    <option disabled selected>اختر جهة العمل</option>
-    <option value="civil">حكومي مدني</option>
-    <option value="private">قطاع خاص</option>
-    <option value="military">عسكري</option>
-  </select>
-  <button onclick="nextStep()">التالي</button>
-</div>
+  <!-- خطوة 3 -->
+  <div class="step" id="step3">
+    <h3>جهة العمل</h3>
+    <select id="jobType" onchange="toggleRank()">
+      <option disabled selected>اختر جهة العمل</option>
+      <option value="civil">حكومي مدني</option>
+      <option value="private">قطاع خاص</option>
+      <option value="military">عسكري</option>
+    </select>
+    <button onclick="nextStep()">التالي</button>
+  </div>
 
-<div class="step" id="step4">
-  <h3>اختر الرتبة (للعسكري فقط)</h3>
-  <select id="rank">
-    <option disabled selected>اختر الرتبة</option>
-    <option value="جندي">جندي</option>
-    <option value="رقيب">رقيب</option>
-    <option value="رقيب أول">رقيب أول</option>
-    <option value="ملازم">ملازم</option>
-    <option value="عقيد">عقيد</option>
-  </select>
-  <button onclick="nextStep()">التالي</button>
-</div>
+  <!-- خطوة 4 -->
+  <div class="step" id="step4">
+    <h3>اختر الرتبة (للعسكري فقط)</h3>
+    <select id="rank">
+      <option disabled selected>اختر الرتبة</option>
+      <option value="جندي">جندي</option>
+      <option value="جندي أول">جندي أول</option>
+      <option value="عريف">عريف</option>
+      <option value="وكيل رقيب">وكيل رقيب</option>
+      <option value="رقيب">رقيب</option>
+      <option value="رقيب أول">رقيب أول</option>
+      <option value="رئيس رقباء">رئيس رقباء</option>
+      <option value="ملازم">ملازم</option>
+      <option value="ملازم أول">ملازم أول</option>
+      <option value="نقيب">نقيب</option>
+      <option value="رائد">رائد</option>
+      <option value="مقدم">مقدم</option>
+      <option value="عقيد">عقيد</option>
+      <option value="عميد">عميد</option>
+      <option value="لواء">لواء</option>
+    </select>
+    <button onclick="nextStep()">التالي</button>
+  </div>
 
-<div class="step" id="step5">
-  <h3>تاريخ الميلاد (هجري)</h3>
-  <select id="birthDay"></select>
-  <select id="birthMonth"></select>
-  <select id="birthYear"></select>
-  <button onclick="nextStep()">التالي</button>
-</div>
+  <!-- خطوة 5 -->
+  <div class="step" id="step5">
+    <h3>تاريخ الميلاد (هجري)</h3>
+    <select id="birthDay"></select>
+    <select id="birthMonth"></select>
+    <select id="birthYear"></select>
+    <button onclick="nextStep()">التالي</button>
+  </div>
 
-<div class="step" id="step6">
-  <h3>تاريخ التعيين (هجري)</h3>
-  <select id="hireDay"></select>
-  <select id="hireMonth"></select>
-  <select id="hireYear"></select>
-  <button onclick="nextStep()">التالي</button>
-</div>
+  <!-- خطوة 6 -->
+  <div class="step" id="step6">
+    <h3>تاريخ التعيين (هجري)</h3>
+    <select id="hireDay"></select>
+    <select id="hireMonth"></select>
+    <select id="hireYear"></select>
+    <button onclick="nextStep()">التالي</button>
+  </div>
 
-<div class="step" id="step7">
-  <h3>التمويل الصافي قبل التقاعد</h3>
-  <input type="number" id="netBefore">
-  <button onclick="calculate()">عرض النتيجة</button>
-</div>
+  <!-- خطوة 7 -->
+  <div class="step" id="step7">
+    <h3>التمويل الصافي قبل التقاعد</h3>
+    <input type="number" id="netBefore" placeholder="مثال: 500000">
+    <button onclick="calculate()">عرض النتيجة</button>
+  </div>
 
-<div class="step" id="step8">
-  <div class="result" id="resultBox"></div>
-</div>
-
-<script>
+  <!-- خطوة 8: النتيجة والجدول -->
+  <div class="step" id="step8">
+    <div class="result" id="resultBox"></div>
+    <h4>جدول الرواتب والعلاوات وسن التقاعد</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>الرتبة</th><th>الراتب الأساسي</th><th>العلاوة السنوية</th><th>سن التقاعد</th>
+        </tr>
+      </thead>
+      <tbody id="rankTable"></tbody>
+    </table>
+  </div><script>
+document.addEventListener('DOMContentLoaded', () => {
+  // تعبئة الأيام
   for (let i = 1; i <= 30; i++) {
     birthDay.innerHTML += `<option value="${i}">${i}</option>`;
     hireDay.innerHTML += `<option value="${i}">${i}</option>`;
   }
-  for (let i = 1; i <= 12; i++) {
-    birthMonth.innerHTML += `<option value="${i}">${i}</option>`;
-    hireMonth.innerHTML += `<option value="${i}">${i}</option>`;
+  // تعبئة الشهور
+  for (let m = 1; m <= 12; m++) {
+    birthMonth.innerHTML += `<option value="${m}">${m}</option>`;
+    hireMonth.innerHTML += `<option value="${m}">${m}</option>`;
   }
-  for (let y = 1370; y <= 1445; y++) {
+  // تعبئة السنوات الهجرية
+  for (let y = 1370; y <= 1447; y++) {
     birthYear.innerHTML += `<option value="${y}">${y}</option>`;
     hireYear.innerHTML += `<option value="${y}">${y}</option>`;
-  }  const retirementAges = {
-    "جندي": 44, "رقيب": 48, "رقيب أول": 50, "ملازم": 48, "عقيد": 58
-  };
-  const baseSalaries = {
-    "جندي": 3220, "رقيب": 5260, "رقيب أول": 6180, "ملازم": 7590, "عقيد": 14365
-  };
-  const raises = {
-    "جندي": 125, "رقيب": 250, "رقيب أول": 300, "ملازم": 380, "عقيد": 510
-  };
+  }
 
-  let currentStep = 0;
-  function nextStep() {
-    document.getElementById('step' + currentStep).classList.remove('active');
+  // ملء جدول الرتب
+  const ranks = [
+    ["جندي",3220,130,44],["جندي أول",3395,145,44],["عريف",3765,175,46],
+    ["وكيل رقيب",4455,250,46],["رقيب",5260,300,48],["رقيب أول",6180,360,50],
+    ["رئيس رقباء",7215,360,52],["ملازم",7590,380,48],["ملازم أول",8365,440,50],
+    ["نقيب",9215,495,52],["رائد",11735,265,54],["مقدم",12735,470,56],
+    ["عقيد",14365,590,58],["عميد",16350,650,60],["لواء",18600,730,60]
+  ];
+  ranks.forEach(r => {
+    rankTable.innerHTML += `<tr>
+      <td>${r[0]}</td><td>${r[1].toLocaleString()}</td>
+      <td>${r[2].toLocaleString()}</td><td>${r[3]}</td>
+    </tr>`;
+  });
+
+  // عرض التاريخ الحالي
+  const todayHijri = new HijriDate();
+  document.getElementById('todayHijri').innerText =
+    `${todayHijri.getDate()}/${todayHijri.getMonth()+1}/${todayHijri.getFullYear()}`;
+  const todayGreg = todayHijri.toGregorian();
+  document.getElementById('todayGregorian').innerText =
+    `${todayGreg.getDate()}/${todayGreg.getMonth()+1}/${todayGreg.getFullYear()}`;
+});
+
+const retirementAges = {
+  "جندي":44,"جندي أول":44,"عريف":46,"وكيل رقيب":46,
+  "رقيب":48,"رقيب أول":50,"رئيس رقباء":52,"ملازم":48,
+  "ملازم أول":50,"نقيب":52,"رائد":54,"مقدم":56,
+  "عقيد":58,"عميد":60,"لواء":60
+};
+const baseSalaries = {
+  "جندي":3220,"جندي أول":3395,"عريف":3765,"وكيل رقيب":4455,
+  "رقيب":5260,"رقيب أول":6180,"رئيس رقباء":7215,"ملازم":7590,
+  "ملازم أول":8365,"نقيب":9215,"رائد":11735,"مقدم":12735,
+  "عقيد":14365,"عميد":16350,"لواء":18600
+};
+const raises = {
+  "جندي":130,"جندي أول":145,"عريف":175,"وكيل رقيب":250,
+  "رقيب":300,"رقيب أول":360,"رئيس رقباء":360,"ملازم":380,
+  "ملازم أول":440,"نقيب":495,"رائد":265,"مقدم":470,
+  "عقيد":590,"عميد":650,"لواء":730
+};
+
+let currentStep = 0;
+function nextStep() {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep++;
+  if (currentStep === 4 && jobType.value !== 'military') {
     currentStep++;
-    document.getElementById('step' + currentStep).classList.add('active');
+  }
+  document.getElementById('step' + currentStep).classList.add('active');
+}
+
+function calculate() {
+  const name = clientName.value.trim();
+  const type = financeType.value;
+  const job = jobType.value;
+  const rankVal = rank.value || 'مدني/خاص';
+  const bd = parseInt(birthDay.value), bm = parseInt(birthMonth.value)-1, by = parseInt(birthYear.value);
+  const hd = parseInt(hireDay.value), hm = parseInt(hireMonth.value)-1, hy = parseInt(hireYear.value);
+  const netBefore = parseFloat(netBefore.value);
+
+  if (!name || !type || !job || (job==='military' && !rank.value) ||
+      isNaN(bd)||isNaN(bm)||isNaN(by)||isNaN(hd)||isNaN(hm)||isNaN(hy)||isNaN(netBefore)) {
+    alert('يرجى إكمال جميع الحقول');
+    return;
   }
 
-  function toggleRank() {
-    const job = document.getElementById("jobType").value;
-    document.getElementById('step4').style.display = (job === "military") ? "block" : "none";
+  const birthHijri = new HijriDate(by,bm,bd),
+        hireHijri = new HijriDate(hy,hm,hd),
+        todayHijri = new HijriDate();
+
+  let ageNow = todayHijri.getFullYear() - birthHijri.getFullYear();
+  if (todayHijri.getMonth() < birthHijri.getMonth() ||
+      (todayHijri.getMonth() === birthHijri.getMonth() && todayHijri.getDate() < birthHijri.getDate())) {
+    ageNow--;
   }
 
-  function calculate() {
-    const name = document.getElementById('clientName').value;
-    const type = document.getElementById('financeType').value;
-    const job = document.getElementById('jobType').value;
-    const rank = document.getElementById('rank').value || "مدني / خاص";
-    const birthYear = parseInt(document.getElementById('birthYear').value);
-    const hireYear = parseInt(document.getElementById('hireYear').value);
-    const netBefore = parseFloat(document.getElementById('netBefore').value);
+  const retirementAge = retirementAges[rankVal],
+        retireHijri = new HijriDate(birthHijri.getFullYear() + retirementAge, bm, bd),
+        retireGreg = retireHijri.toGregorian();
 
-    const currentYear = 1446;
-    const ageNow = currentYear - birthYear;
-    const retirementAge = (job === "military") ? retirementAges[rank] : 60;
-    const base = (job === "military") ? baseSalaries[rank] : 0;
-    const raise = (job === "military") ? raises[rank] : 0;
-    const yearsService = retirementAge - (currentYear - hireYear);
-    const lastSalary = base + (raise * yearsService);
-    const retirementSalary = (lastSalary * yearsService) / 40;
-    const monthsAvailable = (60 - retirementAge) * 12;
+  const yearsService = retireHijri.getFullYear() - hireHijri.getFullYear();
+  const base = baseSalaries[rankVal] || 0;
+  const lastSalary = base + (raises[rankVal] || 0) * yearsService;
+  const retirementSalary = (lastSalary * yearsService) / 40;
 
-    let percent = (type === "person") ? 0.25 : (retirementSalary < 15000 ? 0.55 : 0.65);
-    const installment = retirementSalary * percent;
-    const totalWithProfit = installment * monthsAvailable;
-    const profit = totalWithProfit * 0.045;
-    const netAfter = totalWithProfit - profit;
-    const totalFinance = netBefore + netAfter;
+  const percent = (type==='person')?0.25:(retirementSalary<15000?0.55:0.65),
+        installment = retirementSalary * percent,
+        monthsAvailable = (60 - retirementAge) * 12,
+        totalWithProfit = installment * monthsAvailable,
+        profit = totalWithProfit * 0.045,
+        netAfter = totalWithProfit - profit,
+        totalFinance = netBefore + netAfter,
+        f = n => parseFloat(n).toLocaleString('ar-EG');
 
-    const f = n => parseFloat(n).toLocaleString('ar-EG');
-
-    document.getElementById('step7').classList.remove('active');
-    document.getElementById('step8').classList.add('active');
-    document.getElementById('resultBox').innerHTML = `
-      <strong>مرحباً ومسهلاً يا ${name}</strong><br>
-      العمر الحالي: ${ageNow} سنة – التقاعد عند سن ${retirementAge}<br>
-      عدد أشهر التمويل بعد التقاعد: ${monthsAvailable} شهر<br>
-      الراتب التقاعدي المحتسب: ${f(retirementSalary.toFixed(0))} ريال<br>
-      القسط الشهري بعد التقاعد: ${f(installment.toFixed(0))} ريال<br><br>
-      تمويلك الصافي قبل التقاعد: ${f(netBefore)} ريال<br>
-      تمويلك الصافي بعد التقاعد: ${f(netAfter.toFixed(0))} ريال<br>
-      ✅ <strong>إجمالي التمويل دون خصم الرسوم:</strong> ${f(totalFinance.toFixed(0))} ريال
-    `;
-  }
+  document.getElementById('step7').classList.remove('active');
+  document.getElementById('step8').classList.add('active');
+  resultBox.innerHTML = `
+    <strong>مرحباً ومسهلاً يا ${name}</strong><br>
+    <strong>العمر الحالي:</strong> ${ageNow} سنة<br>
+    <strong>تاريخ التقاعد (هجري):</strong> ${retireHijri.getDate()}/${retireHijri.getMonth()+1}/${retireHijri.getFullYear()}<br>
+    <strong>تاريخ التقاعد (ميلادي):</strong> ${retireGreg.getDate()}/${retireGreg.getMonth()+1}/${retireGreg.getFullYear()}<br>
+    <strong>سنوات الخدمة:</strong> ${yearsService} سنة<br>
+    <strong>الراتب الأساسي:</strong> ${f(base)} ريال<br>
+    <strong>آخر راتب قبل التقاعد:</strong> ${f(lastSalary)} ريال<br>
+    <strong>الراتب التقاعدي:</strong> ${f(retirementSalary.toFixed(2))} ريال<br>
+    <strong>التمويل الصافي قبل التقاعد:</strong> ${f(netBefore)} ريال<br>
+    <strong>التمويل الصافي بعد التقاعد:</strong> ${f(netAfter.toFixed(0))} ريال<br>
+    ✅ <strong>التمويل الصافي قبل + بعد التقاعد:</strong> ${f(totalFinance.toFixed(0))} ريال
+  `;
+}
 </script>
-
 </body>
 </html>
