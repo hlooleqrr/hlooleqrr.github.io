@@ -34,85 +34,140 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
-    select option { font-size: 30px; }
-    button {
+    #mainButton {
       background: #00796b;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover { background: #004d40; }
-    .small-reset {
-      font-size: 28px;
-      padding: 12px 20px;
-      margin-top: 22px;
-      background: #e3f2fd;
-      color: #1565c0;
-      border: none;
-      cursor: pointer;
-      border-radius: 15px;
-    }
-    .small-reset:hover { background: #bbdefb; }
-    footer {
-      font-size: 26px;
-      color: #666;
-      margin-top: 40px;
-      padding: 15px;
-    }
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInMove .6s forwards;
-    }
-    @keyframes fadeInMove {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .result p { margin: 12px 0; font-size: 30px; line-height: 1.6; }
-    .result h2, .result h3 { font-size: 34px; }
-    .highlight {
+      color: white;
       font-size: 36px;
-      font-weight: bold;
-      color: #004d40;
+      cursor: pointer;
+      border: none;
+      padding: 20px 40px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    #resetButtonContainer {
+      display: none;
+      margin-top: 20px;
+    }
+    #resetButton {
+      background: #ccc;
+      color: #333;
+      font-size: 28px;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 8px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>سرعة تملك العقار والحلول التمويلية</h1>
-    <p>حاسبة التمويل التقريبية</p>
-  </header>
-
-  <div class="container" id="form-container">
+  <header>حاسبة التمويل العقاري أو الشخصي</header>
+  <div class="container">
     <div id="question"></div>
-    <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
-    <div id="nextContainer" style="display:none">
+    <div id="nextContainer" style="display: none;">
       <button onclick="nextQuestion()">التالي</button>
     </div>
-    <div id="resetButtonContainer" style="display:none">
-      <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
+    <button id="mainButton" onclick="handleStartOrReset()">ابدأ الحسبة</button>
+    <div id="resetButtonContainer">
+      <button id="resetButton" onclick="handleStartOrReset()">🔁 إعادة الحسبة</button>
     </div>
   </div>
-
-  <footer>
-    <p id="datetimeFooter">جميع الحقوق محفوظة - سرعة تملك العقار</p>
-  </footer>
-
   <script>
-    function updateDateTime() {
-      const now = new Date();
-      const h = now.getHours().toString().padStart(2, '0');
-      const m = now.getMinutes().toString().padStart(2, '0');
-      const s = now.getSeconds().toString().padStart(2, '0');
-      const d = now.getDate().toString().padStart(2, '0');
-      const mo = (now.getMonth()+1).toString().padStart(2, '0');
-      const y = now.getFullYear();
-      document.getElementById('datetimeFooter').innerText =
-        `جميع الحقوق محفوظة - سرعة تملك العقار - التاريخ الميلادي: ${y}/${mo}/${d} - الوقت: ${h}:${m}:${s}`;
+    let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
+    let hasStarted = false;
+
+    const generalQuestions = [
+      {
+        key: 'financeType',
+        question: 'اختر نوع التمويل تريد حسبته:',
+        type: 'select',
+        options: ['تمويل شخصي أو تمويل استهلاكي', 'تمويل عقاري']
+      },
+      {
+        key: 'username',
+        question: 'ادخل اسمك الكريم:',
+        type: 'text'
+      },
+      {
+        key: 'jobType',
+        question: 'ما نوع وظيفتك؟',
+        type: 'select',
+        options: ['عسكري', 'مدني', 'خاص شبه حكومي', 'خاص معتمد', 'خاص غير معتمد']
+      },
+      {
+        key: 'birthHijriDay',
+        question: 'اختر يوم ميلادك (هجري):',
+        type: 'select',
+        options: Array.from({ length: 30 }, (_, i) => `${i + 1}`)
+      },
+      {
+        key: 'birthHijriMonth',
+        question: 'اختر شهر ميلادك (هجري):',
+        type: 'select',
+        options: Array.from({ length: 12 }, (_, i) => `${i + 1}`)
+      },
+      {
+        key: 'birthHijriYear',
+        question: 'اختر سنة الميلاد (هجري):',
+        type: 'select',
+        options: Array.from({ length: 61 }, (_, i) => `${1370 + i}`).reverse()
+      }
+    ];
+
+    function handleStartOrReset() {
+      if (!hasStarted) {
+        hasStarted = true;
+        document.getElementById('mainButton').style.display = 'none';
+        document.getElementById('resetButtonContainer').style.display = 'block';
+        showQuestion();
+      } else {
+        resetCalc();
+      }
     }
-    setInterval(updateDateTime, 1000); updateDateTime();
+
+    function resetCalc() {
+      answers = { commitments: [] };
+      step = commitmentStep = 0;
+      currentCommitment = {};
+      hasStarted = true;
+      document.getElementById('mainButton').style.display = 'none';
+      document.getElementById('resetButtonContainer').style.display = 'block';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const cont = document.getElementById('question');
+      cont.innerHTML = '';
+      document.getElementById('nextContainer').style.display = 'block';
+
+      let q = generalQuestions[step];
+      if (!q) return;
+
+      const label = document.createElement('label');
+      label.textContent = q.question;
+      cont.appendChild(label);
+
+      let input;
+      if (q.type === 'select') {
+        input = document.createElement('select');
+        input.innerHTML = q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+      } else {
+        input = document.createElement('input');
+        input.type = q.type;
+      }
+      input.id = 'input';
+      if (answers[q.key]) input.value = answers[q.key];
+      cont.appendChild(input);
+    }
+
+    function nextQuestion() {
+      const q = generalQuestions[step];
+      const input = document.getElementById('input');
+      if (input && input.value) {
+        answers[q.key] = input.value;
+        step++;
+        showQuestion();
+      }
+    }
   </script><script>
 let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
 let hasStarted = false;
@@ -177,7 +232,7 @@ const generalQuestions = [
     key: 'clientName',
     text: 'اكتب اسمك الكريم:',
     type: 'input',
-    placeholder: 'مثال: محمد',
+    placeholder: ': ',
     show: () => true
   },
   {
