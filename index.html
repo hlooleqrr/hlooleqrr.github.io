@@ -62,9 +62,7 @@
     <div id="resetButtonContainer">
       <button onclick="handleStartOrReset()">🔁 إعادة الحسبة</button>
     </div>
-  </div>
-
-<script>
+  </div><script>
 let answers = {};
 let step = 0;
 let commitmentStep = 0;
@@ -142,13 +140,13 @@ const generalQuestions = [
   }
 ];
 </script><script>
-// حساب سنة من تاريخ هجري بصيغة (1410/01/01)
+// تحويل التاريخ الهجري إلى سنة
 function getHijriYear(dateStr) {
   const parts = dateStr.split("/");
   return parseInt(parts[0]);
 }
 
-// حساب العمر الحالي
+// حساب عمر العميل الحالي
 function getAge(birthHijri) {
   const currentHijriYear = 1447;
   return currentHijriYear - getHijriYear(birthHijri);
@@ -172,7 +170,7 @@ function getRemainingYearsToRetire(answers) {
   return retirementAge - getAge(answers.birthHijri);
 }
 
-// عدد سنوات الخدمة (من تاريخ التعيين)
+// سنوات الخدمة
 function getServiceYears(answers) {
   const birthYear = getHijriYear(answers.birthHijri);
   const hireYear = getHijriYear(answers.hireDate);
@@ -180,14 +178,42 @@ function getServiceYears(answers) {
   return Math.max(0, years);
 }
 
-// حساب الراتب التقاعدي حسب نظام التقاعد
-function getRetirementSalary(answers) {
-  const service = getServiceYears(answers);
-  const salary = parseFloat(answers.salary);
-  return Math.floor((salary * 0.55 * service) / 40);
+// جدول رواتب الرتب العسكرية
+const militaryRanks = {
+  "جندي":         { base: 3220, increment: 125 },
+  "جندي أول":     { base: 3395, increment: 135 },
+  "عريف":         { base: 3765, increment: 175 },
+  "وكيل رقيب":    { base: 4455, increment: 210 },
+  "رقيب":         { base: 5260, increment: 250 },
+  "رقيب أول":     { base: 6180, increment: 300 },
+  "رئيس رقباء":   { base: 7215, increment: 360 },
+  "ملازم":        { base: 7590, increment: 380 },
+  "ملازم أول":    { base: 8360, increment: 405 },
+  "نقيب":         { base: 9215, increment: 470 },
+  "رائد":         { base: 11705, increment: 590 },
+  "مقدم":         { base: 12735, increment: 650 },
+  "عقيد":         { base: 14365, increment: 750 },
+  "عميد":         { base: 16350, increment: 800 },
+  "لواء":         { base: 18600, increment: 950 }
+};
+
+// حساب الراتب الأساسي تلقائيًا من الرتبة وسنوات الخدمة
+function getBasicSalaryFromRank(answers) {
+  if (!answers.rank) return 0;
+  const data = militaryRanks[answers.rank];
+  const years = getServiceYears(answers);
+  if (!data) return 0;
+  return data.base + (data.increment * years);
 }
 
-// احتساب القسط الشهري قبل وبعد التقاعد
+// حساب الراتب التقاعدي من الراتب الأساسي
+function getRetirementSalary(answers) {
+  const basic = getBasicSalaryFromRank(answers);
+  const years = getServiceYears(answers);
+  return Math.floor((basic * 0.55 * years) / 40);
+}
+
+// احتساب الأقساط الشهرية حسب التقاعد
 function calculateInstallments(answers, months) {
   const salary = parseFloat(answers.salary);
   const percent = 0.55;
@@ -214,117 +240,139 @@ function calculateInstallments(answers, months) {
   return result;
 }
 </script><script>
-// جدول الرواتب الابتدائية والعلاوات حسب الرتبة العسكرية
-const militaryRanks = {
-  "جندي":         { base: 3220, increment: 125 },
-  "جندي أول":     { base: 3395, increment: 135 },
-  "عريف":         { base: 3765, increment: 175 },
-  "وكيل رقيب":    { base: 4455, increment: 210 },
-  "رقيب":         { base: 5260, increment: 250 },
-  "رقيب أول":     { base: 6180, increment: 300 },
-  "رئيس رقباء":   { base: 7215, increment: 360 },
-  "ملازم":        { base: 7590, increment: 380 },
-  "ملازم أول":    { base: 8360, increment: 405 },
-  "نقيب":         { base: 9215, increment: 470 },
-  "رائد":         { base: 11705, increment: 590 },
-  "مقدم":         { base: 12735, increment: 650 },
-  "عقيد":         { base: 14365, increment: 750 },
-  "عميد":         { base: 16350, increment: 800 },
-  "لواء":         { base: 18600, increment: 950 }
-};
-
-// حساب سنوات الخدمة (مرة أخرى للتكامل)
-function getServiceYears(answers) {
-  const birthYear = getHijriYear(answers.birthHijri);
-  const hireYear = getHijriYear(answers.hireDate);
-  const years = hireYear - birthYear - 18;
-  return Math.max(0, years);
-}
-
-// حساب الراتب الأساسي تلقائيًا من الرتبة والخدمة
-function getBasicSalaryFromRank(answers) {
-  if (!answers.rank) return 0;
-  const data = militaryRanks[answers.rank];
-  const years = getServiceYears(answers);
-  if (!data) return 0;
-  return data.base + (data.increment * years);
-}
-
-// حساب الراتب التقاعدي من الراتب الأساسي
-function getRetirementSalary(answers) {
-  const basic = getBasicSalaryFromRank(answers);
-  const years = getServiceYears(answers);
-  return Math.floor((basic * 0.55 * years) / 40);
-}
-</script>// مثال للأسئلة الخاصة بالالتزامات
+// الأسئلة الخاصة بالالتزامات
 const commitmentQuestions = [
   {
-    key: "commitmentType",
+    key: "type",
     text: "ما نوع الالتزام؟",
     type: "select",
     options: ["قرض سيارة", "قرض استهلاكي", "أخرى"]
   },
   {
-    key: "monthlyInstallment",
-    text: "كم قيمة القسط الشهري؟",
-    type: "number"
+    key: "monthly",
+    text: "ما هو القسط الشهري لهذا الالتزام؟",
+    type: "input"
   },
   {
-    key: "remainingMonths",
-    text: "كم عدد الأشهر المتبقية؟",
+    key: "months",
+    text: "كم عدد الأشهر المتبقية لهذا الالتزام؟",
     type: "select",
-    options: generateMonthsOptions(1, 360) // مثلًا من 1 إلى 360 شهر
+    options: Array.from({ length: 360 }, (_, i) => `${i + 1} شهر`)
   },
   {
-    key: "hasFinalPayment",
-    text: "هل لديك دفعة أخيرة؟",
+    key: "hasFinal",
+    text: "هل يوجد دفعة أخيرة؟",
     type: "select",
     options: ["نعم", "لا"],
-    show: a => a.commitmentType === "قرض سيارة"
+    show: c => c.type === "قرض سيارة"
   },
   {
-    key: "finalPaymentAmount",
-    text: "كم مبلغ الدفعة الأخيرة؟",
-    type: "number",
-    show: a => a.hasFinalPayment === "نعم"
+    key: "finalAmount",
+    text: "ما هي قيمة الدفعة الأخيرة؟",
+    type: "input",
+    show: c => c.hasFinal === "نعم"
+  },
+  {
+    key: "more",
+    text: "هل لديك التزام آخر؟",
+    type: "select",
+    options: ["نعم", "لا"]
   }
-];<!-- ✅ الجزء الخامس النهائي: مطابقة لصورة النتيجة -->
+];
+
+// معالجة ظهور أسئلة الالتزامات المتكررة
+function showCommitmentQuestion() {
+  const q = commitmentQuestions[commitmentStep];
+  if (q.show && !q.show(currentCommitment)) {
+    commitmentStep++;
+    showCommitmentQuestion();
+    return;
+  }
+
+  const cont = document.getElementById("question");
+  cont.innerHTML = `<label>${q.text}</label><br/>`;
+
+  if (q.type === "select") {
+    const select = document.createElement("select");
+    q.options.forEach(opt => {
+      const o = document.createElement("option");
+      o.text = opt;
+      o.value = opt;
+      select.appendChild(o);
+    });
+    select.onchange = () => { currentCommitment[q.key] = select.value; };
+    cont.appendChild(select);
+  } else {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.oninput = () => { currentCommitment[q.key] = input.value; };
+    cont.appendChild(input);
+  }
+}
+
+function handleCommitmentNext() {
+  commitmentStep++;
+  if (commitmentStep >= commitmentQuestions.length) return;
+
+  const currentQ = commitmentQuestions[commitmentStep];
+  if (currentQ.key === "more") {
+    const answer = currentCommitment.more;
+    answers.commitments.push(currentCommitment);
+    if (answer === "نعم") {
+      commitmentStep = 0;
+      currentCommitment = {};
+      showCommitmentQuestion();
+    } else {
+      showResult(); // انتهينا من جميع الالتزامات
+    }
+  } else {
+    showCommitmentQuestion();
+  }
+}
+</script><!-- ✅ الجزء الخامس النهائي: النتيجة النهائية الكاملة -->
 <div id="resultContainer" style="display:none; text-align:center; direction:rtl; margin-top:30px; font-size:32px;">
   <h3 style="margin-bottom: 0;">نتيجة الحسبة <span style="color:#666;">(التقريبية):</span></h3>
   <div id="greeting" style="color:#007bff; font-weight:bold;">مرحباً ومسهلاً يا <span id="clientNameResult">نايف</span></div>
 
   <div style="margin: 20px 0;">
-    مدة التمويل: <strong>84 شهر (7 سنوات)</strong><br>
-    القسط من الشهر <strong>1</strong> إلى <strong>60</strong>: 1,517 ريال<br>
-    القسط من الشهر <strong>61</strong> إلى <strong>84</strong>: 3,850 ريال
+    <span id="financeDuration"></span><br>
+    <div id="installmentsDetails"></div>
   </div>
 
-  <div style="color:green; font-size:36px; font-weight:bold; margin-top:15px;">
-    التمويل الصافي بعد خصم الرسوم النهائية: 141,649 ريال
+  <div id="retirementSalaryLine" style="margin-bottom: 20px; display:none;">
+    <strong>الراتب التقاعدي المحتسب هو:</strong> <span id="retirementSalaryAmount" style="color:#000;">--</span> ريال
   </div>
 
-  <div style="color:#008000; font-weight:bold; margin-top:10px;">
-    دعم حكومي مضاف: 150,000 ريال
+  <div id="finalNetLine" style="color:green; font-size:36px; font-weight:bold; margin-top:15px;">
+    التمويل الصافي بعد خصم الرسوم النهائية: <span id="netFinanceAmount">--</span> ريال
   </div>
 
-  <div style="color:#008000; font-weight:bold; margin-top:10px;">
-    التمويل الصافي قبل خصم الرسوم: 143,297 ريال
+  <div id="supportedLine" style="color:#008000; font-weight:bold; margin-top:10px; display:none;">
+    دعم حكومي مضاف: <span id="supportAmount">--</span> ريال
+  </div>
+
+  <div id="beforeFeesLine" style="color:#008000; font-weight:bold; margin-top:10px;">
+    التمويل الصافي قبل خصم الرسوم: <span id="beforeFeesAmount">--</span> ريال
   </div>
 
   <div style="color:#c00; font-weight:bold; margin-top:20px;">
-    الربح دون الرسوم: 40,123 ريال
+    الربح دون الرسوم: <span id="pureProfit">--</span> ريال
   </div>
 
   <div style="color:#c00; font-weight:bold;">
-    الربح مع الرسوم: 41,771 ريال
+    الربح مع الرسوم: <span id="totalProfit">--</span> ريال
   </div>
 
-  <div style="margin-top: 15px;">معامل الربح: 1.280</div>
-  <div style="margin-top: 10px;">الرسوم الإدارية: 1,433 ريال</div>
-  <div style="margin-top: 10px;">ضريبة الرسوم: 215 ريال</div>
-  <div style="margin-top: 10px;">إجمالي التمويل مع الأرباح: 183,420 ريال</div>
+  <div style="margin-top: 15px;">معامل الربح: <span id="profitRatio">--</span></div>
+  <div style="margin-top: 10px;">الرسوم الإدارية: <span id="fees">--</span> ريال</div>
+  <div style="margin-top: 10px;">ضريبة الرسوم: <span id="tax">--</span> ريال</div>
+  <div style="margin-top: 10px;">إجمالي التمويل مع الأرباح: <span id="totalFinanceWithProfit">--</span> ريال</div>
 
-  <div style="margin-top: 25px; font-size:28px;">باختصار: 141 ألف و649 ريال</div>
+  <div id="summaryLine" style="margin-top: 25px; font-size:28px;">باختصار: <span id="summaryText">--</span></div>
+
+  <div id="cannotFinance" style="color:red; font-size:28px; margin-top: 20px; display:none;">
+    نعتذر منك لا يمكن تمويلك
+  </div>
 
   <div style="margin-top: 30px; font-size: 30px;">
     خذ لقطة شاشة وتواصل معنا: <strong dir="ltr">📞 0506214458</strong><br>
@@ -338,6 +386,95 @@ const commitmentQuestions = [
   </div>
 </div>
 
+<footer style="margin-top:50px; font-size: 20px; color:#555;">
+  جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - 
+  <span id="dateTimeNow"></span>
+</footer>
+
+<script>
+  document.getElementById('dateTimeNow').innerText = new Date().toLocaleString('ar-EG', { hour12: false });
+</script>// ✅ الجزء السابع: منطق القسط المتدرج في التمويل الشخصي عند وجود التزامات
+function calculatePersonalFinanceInstallments(answers, months) {
+  const salary = parseFloat(answers.salary);
+  const maxPersonalInstallment = Math.floor(salary * 0.3333); // 33.33% من الراتب
+  const maxDeduction = Math.floor(salary * 0.45); // 45% من الراتب لو فيه التزامات
+
+  // حساب مجموع الالتزامات الشهرية
+  let monthlyCommitments = Array(months).fill(0);
+
+  if (answers.commitments && answers.commitments.length) {
+    answers.commitments.forEach(commit => {
+      const startMonth = 1;
+      const endMonth = parseInt(commit.remainingMonths);
+      const value = parseFloat(commit.monthlyInstallment);
+      for (let i = startMonth; i <= endMonth; i++) {
+        monthlyCommitments[i - 1] += value;
+      }
+
+      // دفعة أخيرة لقرض السيارة
+      if (commit.commitmentType === 'قرض سيارة' && commit.hasFinalPayment === 'نعم') {
+        const final = parseFloat(commit.finalPaymentAmount);
+        const start = Math.max(endMonth + 1, months - 24 + 1);
+        const end = Math.min(start + 23, months);
+        const finalPerMonth = Math.ceil(final / 24);
+        for (let i = start; i <= end; i++) {
+          monthlyCommitments[i - 1] += finalPerMonth;
+        }
+      }
+    });
+  }
+
+  // الآن حساب القسط الشخصي المتدرج بناءً على الالتزامات
+  const installments = [];
+  for (let i = 0; i < months; i++) {
+    const available = maxDeduction - monthlyCommitments[i];
+    const allowed = Math.min(maxPersonalInstallment, Math.max(0, available));
+    installments.push({ from: i + 1, to: i + 1, amount: allowed });
+  }
+
+  return installments;
+}<!-- ✅ الجزء الثامن: عرض النتيجة النهائية + الفوتر -->
+<div id="resultContainer" style="display:none; text-align:center; direction:rtl; margin-top:30px; font-size:32px;">
+  <h3 style="margin-bottom: 0;">نتيجة الحسبة <span style="color:#666;">(التقريبية):</span></h3>
+  
+  <div id="greeting" style="color:#007bff; font-weight:bold;">مرحباً ومسهلاً يا <span id="clientNameResult"></span></div>
+
+  <div id="financeDuration" style="margin: 20px 0;"></div>
+
+  <div id="retirementSalaryLine" style="margin-bottom: 20px; display:none;">
+    <strong>الراتب التقاعدي المحتسب هو:</strong>
+    <span id="retirementSalaryAmount" style="color:#000;">--</span> ريال
+  </div>
+
+  <div id="installmentsDetails" style="margin-bottom: 30px;"></div>
+
+  <div id="financeNetAfter" style="color:green; font-size:36px; font-weight:bold; margin-top:15px;"></div>
+  <div id="supportAmountLine" style="color:#008000; font-weight:bold; margin-top:10px;"></div>
+  <div id="financeNetBefore" style="color:#008000; font-weight:bold; margin-top:10px;"></div>
+
+  <div id="profitWithoutFees" style="color:#c00; font-weight:bold; margin-top:20px;"></div>
+  <div id="profitWithFees" style="color:#c00; font-weight:bold;"></div>
+
+  <div id="profitRatioLine" style="margin-top: 15px;"></div>
+  <div id="feesLine" style="margin-top: 10px;"></div>
+  <div id="vatLine" style="margin-top: 10px;"></div>
+  <div id="totalWithProfitLine" style="margin-top: 10px;"></div>
+
+  <div id="finalSummaryLine" style="margin-top: 25px; font-size:28px;"></div>
+
+  <div style="margin-top: 30px; font-size: 30px;">
+    خذ لقطة شاشة وتواصل معنا: <strong dir="ltr">📞 0506214458</strong><br>
+    زورونا في موقعنا: <strong>hlooleqrr.com</strong>
+  </div>
+
+  <div id="resetButtonContainer" style="display:block; margin-top: 25px;">
+    <button onclick="resetCalc()" style="font-size: 30px; background:#e0efff; border:none; padding: 10px 25px; border-radius: 10px;">
+      🔁 إعادة الحسبة
+    </button>
+  </div>
+</div>
+
+<!-- ✅ فوتر -->
 <footer style="margin-top:50px; font-size: 20px; color:#555;">
   جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - 
   <span id="dateTimeNow"></span>
