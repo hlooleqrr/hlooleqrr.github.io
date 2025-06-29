@@ -1,121 +1,213 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8">
   <title>حاسبة التمويل بعد التقاعد</title>
   <script src="https://cdn.jsdelivr.net/npm/hijri-date/lib/hijri-date.min.js"></script>
   <style>
-    body { font-family: Tajawal,sans-serif; background:#f4f6f8; margin:0; padding:20px; text-align:center; font-size:24px }
-    .step { display:none; max-width:700px; margin:auto; padding:30px; background:#fff; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.1) }
-    .step.active { display:block }
-    input,select,button { width:90%; padding:15px; margin:15px 0; font-size:22px; border-radius:6px }
-    .result { background:#e6f7ff; padding:20px; margin-top:20px; border:2px solid #0099cc; border-radius:12px; text-align:right }
+    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; text-align: center; font-size: 24px; }
+    .step { display: none; max-width: 700px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+    .step.active { display: block; }
+    input, select, button { width: 90%; padding: 15px; margin: 15px 0; font-size: 22px; border-radius: 6px; }
+    .result { background: #e6f7ff; padding: 20px; margin-top: 20px; border: 2px solid #0099cc; border-radius: 12px; text-align: right; }
   </style>
 </head>
 <body>
 
   <div class="step active" id="step0">
     <h2>حاسبة التمويل بعد التقاعد</h2>
+    <p>اليوم (هجري): <span id="todayHijri"></span> | (ميلادي): <span id="todayGregorian"></span></p>
     <button onclick="goTo(1)">ابدأ الحسبة</button>
   </div>
 
-  <div class="step" id="step1"><h3>1. ما اسمك الكريم؟</h3><input id="clientName" placeholder="الاسم الكريم"><button onclick="goTo(2)">التالي</button></div>
+  <div class="step" id="step1">
+    <h3>1. ما اسمك الكريم؟</h3>
+    <input id="clientName" placeholder="الاسم الكريم">
+    <button onclick="goTo(2)">التالي</button>
+  </div>
 
-  <div class="step" id="step2"><h3>2. نوع التمويل</h3><select id="financeType"><option disabled selected>اختر نوع التمويل</option><option value="person">تمويل شخصي</option><option value="realestate">تمويل عقاري</option></select><button onclick="goTo(3)">التالي</button></div>
+  <div class="step" id="step2">
+    <h3>2. نوع التمويل</h3>
+    <select id="financeType">
+      <option disabled selected>اختر نوع التمويل</option>
+      <option value="person">تمويل شخصي</option>
+      <option value="realestate">تمويل عقاري</option>
+    </select>
+    <button onclick="goTo(3)">التالي</button>
+  </div>
 
-  <div class="step" id="step3"><h3>3. جهة العمل</h3><select id="jobType"><option disabled selected>اختر جهة العمل</option><option value="civil">حكومي/مدني</option><option value="private">قطاع خاص</option><option value="military">عسكري</option></select><button onclick="goTo(4)">التالي</button></div>
+  <div class="step" id="step3">
+    <h3>3. جهة العمل</h3>
+    <select id="jobType">
+      <option disabled selected>اختر جهة العمل</option>
+      <option value="civil">حكومي/مدني</option>
+      <option value="private">قطاع خاص</option>
+      <option value="military">عسكري</option>
+    </select>
+    <button onclick="goTo(4)">التالي</button>
+  </div>
 
-  <div class="step" id="step4"><h3>4. اختر الرتبة (إذا كنت عسكرياً)</h3><select id="rank"><option disabled selected>اختر الرتبة</option><option>جندي</option><option>جندي أول</option><option>عريف</option><option>وكيل رقيب</option><option>رقيب</option><option>رقيب أول</option><option>رئيس رقباء</option><option>ملازم</option><option>ملازم أول</option><option>نقيب</option><option>رائد</option><option>مقدم</option><option>عقيد</option><option>عميد</option><option>لواء</option></select><button onclick="goTo(5)">التالي</button></div>
+  <div class="step" id="step4">
+    <h3>4. اختر الرتبة (إن كنت عسكرياً)</h3>
+    <select id="rank">
+      <option disabled selected>اختر الرتبة</option>
+      <option>جندي</option><option>جندي أول</option><option>عريف</option>
+      <option>وكيل رقيب</option><option>رقيب</option><option>رقيب أول</option>
+      <option>رئيس رقباء</option><option>ملازم</option><option>ملازم أول</option>
+      <option>نقيب</option><option>رائد</option><option>مقدم</option>
+      <option>عقيد</option><option>عميد</option><option>لواء</option>
+    </select>
+    <button onclick="goTo(5)">التالي</button>
+  </div>
 
-  <div class="step" id="step5"><h3>5. تاريخ الميلاد (هجري)</h3><select id="birthDay"></select><select id="birthMonth"></select><select id="birthYear"></select><button onclick="goTo(6)">التالي</button></div>
+  <div class="step" id="step5">
+    <h3>5. تاريخ الميلاد (هجري)</h3>
+    <select id="birthDay"></select>
+    <select id="birthMonth"></select>
+    <select id="birthYear"></select>
+    <button onclick="goTo(6)">التالي</button>
+  </div>
 
-  <div class="step" id="step6"><h3>6. تاريخ اليوم (هجري)</h3><select id="todayDay"></select><select id="todayMonth"></select><select id="todayYear"></select><button onclick="goTo(7)">التالي</button></div>
+  <div class="step" id="step6">
+    <h3>6. تاريخ التعيين (هجري)</h3>
+    <select id="hireDay"></select>
+    <select id="hireMonth"></select>
+    <select id="hireYear"></select>
+    <button onclick="goTo(7)">التالي</button>
+  </div>
 
-  <div class="step" id="step7"><h3>7. تاريخ التعيين (هجري)</h3><select id="hireDay"></select><select id="hireMonth"></select><select id="hireYear"></select><button onclick="goTo(8)">التالي</button></div>
+  <div class="step" id="step7">
+    <h3>7. التمويل الصافي قبل التقاعد (ريال)</h3>
+    <input type="number" id="netBefore" placeholder="مثال: 500000">
+    <button onclick="goTo(8)">التالي</button>
+  </div>
 
-  <div class="step" id="step8"><h3>8. التمويل الصافي قبل التقاعد (ريال)</h3><input type="number" id="netBefore" placeholder="مثال: 500000"><button onclick="goTo(9)">التالي</button></div>
+  <div class="step" id="step8">
+    <h3>8. نسبة الربح السنوية (%)</h3>
+    <input type="number" id="profitRate" placeholder="مثال: 5">
+    <button onclick="goTo(9)">التالي</button>
+  </div>
 
-  <div class="step" id="step9"><h3>9. نسبة الربح السنوية (%)</h3><input type="number" id="profitRate" placeholder="مثال: 5"><button onclick="goTo(10)">التالي</button></div>
+  <div class="step" id="step9">
+    <div id="info9" style="text-align:right; font-size:20px;"></div>
+    <h3>9. عدد أشهر التمويل بعد التقاعد</h3>
+    <select id="periodSelect"></select>
+    <button id="calcBtn">عرض النتيجة</button>
+  </div>
 
-  <div class="step" id="step10"><div id="info10" style="text-align:right;font-size:20px"></div><h3>10. عدد أشهر التمويل بعد التقاعد</h3><select id="periodSelect"><option disabled selected>اختر عدد الأشهر</option></select><button id="calcBtn">عرض النتيجة</button></div>
-
-  <div class="step" id="step11"><div class="result" id="resultBox"></div></div>
+  <div class="step" id="step10">
+    <div class="result" id="resultBox"></div>
+  </div>
 
 <script>
-const steps = [...document.querySelectorAll('.step')];
-function goTo(i){
-  steps.forEach(s=>s.classList.remove('active'));
-  steps[i].classList.add('active');
-  if(i===10) setupStep10();
-}
+  const steps = [...document.querySelectorAll('.step')];
+  function goTo(i){
+    steps.forEach(s=>s.classList.remove('active'));
+    steps[i].classList.add('active');
+    if(i===9) setupStep9();
+  }
 
-function fill(id,s,e){
-  const sel=document.getElementById(id);
-  for(let i=s;i<=e;i++){ const o=document.createElement('option'); o.value=o.text=i; sel.appendChild(o); }
-}
-fill('birthDay',1,30); fill('birthMonth',1,12); fill('birthYear',1370,1450);
-fill('todayDay',1,30); fill('todayMonth',1,12); fill('todayYear',1440,1465);
-fill('hireDay',1,30); fill('hireMonth',1,12); fill('hireYear',1370,1450);
+  function fill(id, start, end){
+    const sel = document.getElementById(id);
+    for(let i=start;i<=end;i++){
+      const o=document.createElement('option');
+      o.value=o.text=i;
+      sel.appendChild(o);
+    }
+  }
+  fill('birthDay',1,30); fill('hireDay',1,30);
+  fill('birthMonth',1,12); fill('hireMonth',1,12);
+  fill('birthYear',1370,1447); fill('hireYear',1370,1447);
 
-const retirementAges = {جندي:44,'جندي أول':44,عريف:46,'وكيل رقيب':46,رقيب:48,'رقيب أول':50,'رئيس رقباء':52,ملازم:48,'ملازم أول':50,نقيب:52,رائد:54,مقدم:56,عقيد:58,عميد:60,لواء:60};
-const baseSalaries={جندي:3220,'جندي أول':3395,عريف:3765,'وكيل رقيب':4455,رقيب:5260,'رقيب أول':6180,'رئيس رقباء':7215,ملازم:7590,'ملازم أول':8365,نقيب:9215,رائد:11735,مقدم:12735,عقيد:14365,عميد:16350,لواء:18600};
-const raises={جندي:130,'جندي أول':145,عريف:175,'وكيل رقيب':250,رقيب:300,'رقيب أول':360,'رئيس رقباء':360,ملازم:380,'ملازم أول':440,نقيب:495,رائد:265,مقدم:470,عقيد:590,عميد:650,لواء:730};
+  window.addEventListener('DOMContentLoaded',()=>{
+    const h=new HijriDate(), g=h.toGregorian();
+    document.getElementById('todayHijri').innerText = `${h.getDate()}/${h.getMonth()+1}/${h.getFullYear()}`;
+    document.getElementById('todayGregorian').innerText = `${g.getDate()}/${g.getMonth()+1}/${g.getFullYear()}`;
+  });
 
-function setupStep10(){
-  const by=+birthYear.value,bm=+birthMonth.value-1,bd=+birthDay.value;
-  const ty=+todayYear.value,tm=+todayMonth.value-1,td=+todayDay.value;
-  const birth=new HijriDate(by,bm,bd),today=new HijriDate(ty,tm,td);
-  let age=today.getFullYear()-birth.getFullYear();
-  if(today.getMonth()<birth.getMonth()||(today.getMonth()===birth.getMonth()&&today.getDate()<birth.getDate())) age--;
+  const retirementAges={
+    جندي:44,'جندي أول':44,عريف:46,'وكيل رقيب':46,رقيب:48,
+    'رقيب أول':50,'رئيس رقباء':52,ملازم:48,'ملازم أول':50,
+    نقيب:52,رائد:54,مقدم:56,عقيد:58,عميد:60,لواء:60
+  };
+  const baseSalaries={
+    جندي:3220,'جندي أول':3395,عريف:3765,'وكيل رقيب':4455,رقيب:5260,
+    'رقيب أول':6180,'رئيس رقباء':7215,ملازم:7590,'ملازم أول':8365,
+    نقيب:9215,رائد:11735,مقدم:12735,عقيد:14365,عميد:16350,لواء:18600
+  };
+  const raises={
+    جندي:130,'جندي أول':145,عريف:175,'وكيل رقيب':250,رقيب:300,
+    'رقيب أول':360,'رئيس رقباء':360,ملازم:380,'ملازم أول':440,
+    نقيب:495,رائد:265,مقدم:470,عقيد:590,عميد:650,لواء:730
+  };
 
-  const rankVal=rank.value;
-  const retireAge=retirementAges[rankVal]||60;
+  function setupStep9(){
+    if (!birthYear.value || !birthMonth.value || !birthDay.value || (jobType.value === 'military' && !rank.value)) return;
+    const by = +birthYear.value, bm = +birthMonth.value - 1, bd = +birthDay.value;
+    let birth = new HijriDate(by, bm, bd), today = new HijriDate();
+    let age = today.getFullYear()-birth.getFullYear();
+    if(today.getMonth()<birth.getMonth() || (today.getMonth()===birth.getMonth() && today.getDate()<birth.getDate())) age--;
+    const retireAge = retirementAges[rank.value]||60;
+    const mRetire  = (retireAge-age)*12;
+    const m60      = (60-age)*12;
+    const avail    = Math.max(0, m60 - mRetire);
+    document.getElementById('info9').innerHTML = `
+      العميل عمره ${age} سنة.<br>
+      يتقاعد عند ${retireAge} بعد ${mRetire} شهر.<br>
+      يبلغ 60 بعد ${m60} شهر.<br>
+      فترة التمويل المتاحة: ${avail} شهر.
+    `;
+    const sel=document.getElementById('periodSelect');
+    sel.innerHTML='';
+    for(let i=1;i<=avail;i++){
+      const o=document.createElement('option');
+      o.value=o.text=i;
+      sel.appendChild(o);
+    }
+  }
 
-  const monthsToRetire=(retireAge-age)*12;
-  const monthsTo60=(60-age)*12;
-  const avail=Math.max(0,monthsTo60-monthsToRetire);
-
-  document.getElementById('info10').innerHTML=`العميل عمره ${age} سنة. يتقاعد عند ${retireAge}. عدد أشهر التمويل المتاحة: ${avail}.`;
-  const sel=document.getElementById('periodSelect');
-  sel.innerHTML=`<option disabled selected>اختر عدد الأشهر</option>`;
-  for(let i=1;i<=avail;i++){const o=document.createElement('option');o.value=o.text=i;sel.appendChild(o);}
-}
-
-// حساب النتيجة النهائية
-document.getElementById('calcBtn').addEventListener('click',()=>{
-  const bd=+birthDay.value,bm=+birthMonth.value-1,by=+birthYear.value;
-  const td=+todayDay.value,tm=+todayMonth.value-1,ty=+todayYear.value;
-  const hd=+hireDay.value,hm=+hireMonth.value-1,hy=+hireYear.value;
-  const baseRank=baseSalaries[rank.value]||0;
-  const raise=raises[rank.value]||0;
-
-  const birth=new HijriDate(by,bm,bd), today=new HijriDate(ty,tm,td), hire=new HijriDate(hy,hm,hd);
-  let age=today.getFullYear()-birth.getFullYear(); if(today.getMonth()<birth.getMonth()||(today.getMonth()===birth.getMonth()&&today.getDate()<birth.getDate())) age--;
-  let monthsService=(today.getFullYear()-hire.getFullYear())*12 + (today.getMonth()-hire.getMonth());
-  if(today.getDate()<hire.getDate()) monthsService--;
-
-  const yearsService=Math.floor(monthsService/12);
-  const lastBase=baseRank + raise*yearsService;
-  const retirementSalary=(lastBase*monthsService)/420;
-
-  const period=+periodSelect.value;
-  const netB=parseFloat(netBefore.value);
-  const profitPct=parseFloat(profitRate.value)/100;
-  const installment=retirementSalary*(financeType.value==='person'?0.25:(retirementSalary<15000?0.55:0.65));
-  const totalWithProfit=installment*period;
-  const profit=totalWithProfit*profitPct;
-  const netAfter=totalWithProfit-profit;
-  const totalFinance=netB+netAfter;
-
-  goTo(11);
-  resultBox.innerHTML=`
-    <strong>الراتب الأساسي الحالي:</strong> ${lastBase.toLocaleString('ar-EG')} ريال<br>
-    <strong>مدة الخدمة:</strong> ${yearsService} سنة (${monthsService} شهر)<br>
-    <strong>الراتب التقاعدي:</strong> ${retirementSalary.toLocaleString('ar-EG',{maximumFractionDigits:0})} ريال<br>
-    <strong>تمويل بعد التقاعد (قسط):</strong> ${installment.toLocaleString('ar-EG',{maximumFractionDigits:0})} ريال × ${period} شهر <br>
-    <strong>إجمالي قبل + بعد:</strong> ${totalFinance.toLocaleString('ar-EG',{maximumFractionDigits:0})} ريال
-  `;
-});
+  document.getElementById('calcBtn').addEventListener('click', ()=>{
+    const name = clientName.value.trim(), type = financeType.value, job = jobType.value, rankVal = rank.value,
+          bd = +birthDay.value, bm = +birthMonth.value - 1, by = +birthYear.value,
+          hd = +hireDay.value, hm = +hireMonth.value - 1, hy = +hireYear.value,
+          netBefore = parseFloat(netBefore.value), profitPct = parseFloat(profitRate.value)/100, period = +periodSelect.value;
+    if(!name||!type||!job||(job==='military'&&!rankVal)||isNaN(bd)||isNaN(bm)||isNaN(by)||isNaN(hd)||isNaN(hm)||isNaN(hy)||isNaN(netBefore)||isNaN(profitPct)||isNaN(period)){
+      return alert('يرجى إكمال جميع الحقول');
+    }
+    let birth=new HijriDate(by,bm,bd), today=new HijriDate();
+    let age = today.getFullYear()-birth.getFullYear();
+    if(today.getMonth()<birth.getMonth() || (today.getMonth()===birth.getMonth() && today.getDate()<birth.getDate())) age--;
+    const retireAge = retirementAges[rankVal]||60;
+    const retireHijri=new HijriDate(birth.getFullYear()+retireAge,bm,bd);
+    const retireGreg=retireHijri.toGregorian();
+    const yearsService = retireHijri.getFullYear() - (new HijriDate(hy,hm,hd)).getFullYear();
+    const base = baseSalaries[rankVal]||0;
+    const lastSalary = base + (raises[rankVal]||0)*yearsService;
+    const retirementSalary = (lastSalary*yearsService)/40;
+    const installment = retirementSalary*(type==='person'?0.25:(retirementSalary<15000?0.55:0.65));
+    const totalWithProfit = installment*period;
+    const profit = totalWithProfit*profitPct;
+    const netAfter = totalWithProfit - profit;
+    const totalFinance = netBefore + netAfter;
+    const f = n => parseFloat(n).toLocaleString('ar-EG');
+    goTo(10);
+    resultBox.innerHTML=`
+      <strong>مرحباً ${name}</strong><br>
+      <strong>العمر:</strong> ${age} سنة<br>
+      <strong>يتقاعد:</strong> ${retireHijri.getDate()}/${retireHijri.getMonth()+1}/${retireHijri.getFullYear()} هـ<br>
+      <strong>(${retireGreg.getDate()}/${retireGreg.getMonth()+1}/${retireGreg.getFullYear()} م)</strong><br>
+      <strong>سنوات الخدمة:</strong> ${yearsService} سنة<br>
+      <strong>الراتب الأساسي:</strong> ${f(base)} ريال<br>
+      <strong>آخر راتب:</strong> ${f(lastSalary)} ريال<br>
+      <strong>الراتب التقاعدي:</strong> ${f(retirementSalary.toFixed(2))} ريال<br>
+      <strong>تمويل قبل التقاعد:</strong> ${f(netBefore)} ريال<br>
+      <strong>أشهر التمويل:</strong> ${period} شهر<br>
+      <strong>نسبة الربح:</strong> ${(profitPct*100).toFixed(2)}%<br>
+      <strong>الربح:</strong> ${f(profit.toFixed(2))} ريال<br>
+      <strong>تمويل بعد التقاعد:</strong> ${f(netAfter.toFixed(0))} ريال<br>
+      ✅ <strong>الإجمالي قبل+بعد:</strong> ${f(totalFinance.toFixed(0))} ريال
+    `;
+  });
 </script>
 
 </body>
