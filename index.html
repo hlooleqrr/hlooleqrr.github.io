@@ -390,4 +390,101 @@ function updateDateTime() {
     `جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية - التاريخ الهجري: ${hijri} - الميلادي: ${y}-${mo}-${d} - الوقت: ${h}:${m}:${s}`;
 }
 setInterval(updateDateTime, 1000); updateDateTime();
+</script><script>
+function handleStartOrReset() {
+  if (!hasStarted) {
+    hasStarted = true;
+    document.getElementById('mainButton').style.display = 'none';
+    document.getElementById('resetButtonContainer').style.display = 'block';
+    showQuestion();
+  } else {
+    resetCalc();
+  }
+}
+
+function resetCalc() {
+  answers = { commitments: [] };
+  step = commitmentStep = 0;
+  currentCommitment = {};
+  hasStarted = true;
+  document.getElementById('mainButton').style.display = 'none';
+  document.getElementById('resetButtonContainer').style.display = 'block';
+  document.getElementById('resultContainer').style.display = 'none';
+  showQuestion();
+}
+
+function showQuestion() {
+  const container = document.getElementById('question');
+  container.innerHTML = '';
+  document.getElementById('nextContainer').style.display = 'block';
+  let q;
+  if (step < generalQuestions.length) {
+    q = generalQuestions[step];
+    if (q.show && !q.show(answers)) {
+      step++;
+      showQuestion();
+      return;
+    }
+  } else if (answers.hasCommitments === 'نعم') {
+    q = commitmentQuestions[commitmentStep];
+    if (q.show && !q.show(currentCommitment)) {
+      commitmentStep++;
+      showQuestion();
+      return;
+    }
+  } else {
+    calculateResult();
+    return;
+  }
+
+  const label = document.createElement('label');
+  label.innerText = q.text;
+  container.appendChild(label);
+
+  if (q.type === 'input') {
+    const input = document.createElement('input');
+    input.placeholder = q.placeholder || '';
+    input.type = 'text';
+    input.oninput = (e) => {
+      if (step < generalQuestions.length) answers[q.key] = e.target.value;
+      else currentCommitment[q.key] = e.target.value;
+    };
+    container.appendChild(input);
+  } else if (q.type === 'select') {
+    const select = document.createElement('select');
+    q.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.innerText = opt;
+      select.appendChild(option);
+    });
+    select.onchange = (e) => {
+      if (step < generalQuestions.length) answers[q.key] = e.target.value;
+      else currentCommitment[q.key] = e.target.value;
+    };
+    container.appendChild(select);
+  }
+}
+
+function nextQuestion() {
+  if (step < generalQuestions.length) {
+    step++;
+  } else if (answers.hasCommitments === 'نعم') {
+    const current = commitmentQuestions[commitmentStep];
+    if (current.key === 'another' && currentCommitment.another === 'لا') {
+      answers.commitments.push(currentCommitment);
+      answers.hasCommitments = 'لا';
+      calculateResult();
+      return;
+    } else if (current.key === 'another' && currentCommitment.another === 'نعم') {
+      answers.commitments.push(currentCommitment);
+      currentCommitment = {};
+      commitmentStep = 0;
+      showQuestion();
+      return;
+    }
+    commitmentStep++;
+  }
+  showQuestion();
+}
 </script>
