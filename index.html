@@ -71,6 +71,7 @@
       <button id="resetButton" onclick="handleStartOrReset()">🔁 إعادة الحسبة</button>
     </div>
   </div>
+
   <script>
     let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
     let hasStarted = false;
@@ -155,7 +156,6 @@
         input.type = q.type;
       }
       input.id = 'input';
-      if (answers[q.key]) input.value = answers[q.key];
       cont.appendChild(input);
     }
 
@@ -168,205 +168,203 @@
         showQuestion();
       }
     }
-  </script><script>
-let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
-let hasStarted = false;
-
-// ✅ جدول الرواتب العسكرية
+  </script>
+</body>
+</html><script>
+// ✅ تعريف الرتب العسكرية وتفاصيل الراتب الأساسي والعلاوة
 const militaryRanksData = {
-  "جندي": { base: 3220, increment: 125, maxGrade: 15 },
-  "عريف": { base: 3765, increment: 155, maxGrade: 15 },
-  "وكيل رقيب": { base: 4455, increment: 180, maxGrade: 15 },
-  "رقيب": { base: 5260, increment: 210, maxGrade: 15 },
-  "رقيب أول": { base: 6180, increment: 240, maxGrade: 15 },
-  "رئيس رقباء": { base: 7215, increment: 280, maxGrade: 15 },
-  "ملازم": { base: 7590, increment: 380, maxGrade: 15 },
-  "ملازم أول": { base: 8835, increment: 415, maxGrade: 15 },
-  "نقيب": { base: 10600, increment: 495, maxGrade: 15 },
-  "رائد": { base: 13515, increment: 265, maxGrade: 15 },
-  "مقدم": { base: 14645, increment: 470, maxGrade: 15 },
-  "عقيد": { base: 16520, increment: 510, maxGrade: 15 },
-  "عميد": { base: 18600, increment: 570, maxGrade: 15 },
-  "لواء": { base: 21390, increment: 665, maxGrade: 15 }
+  "جندي":        { base: 3220, increment: 125, maxGrade: 15, retireAge: 44 },
+  "جندي أول":     { base: 3395, increment: 135, maxGrade: 15, retireAge: 44 },
+  "عريف":        { base: 3765, increment: 155, maxGrade: 15, retireAge: 46 },
+  "وكيل رقيب":     { base: 4455, increment: 180, maxGrade: 15, retireAge: 46 },
+  "رقيب":        { base: 5260, increment: 210, maxGrade: 15, retireAge: 48 },
+  "رقيب أول":     { base: 6180, increment: 250, maxGrade: 15, retireAge: 50 },
+  "رئيس رقباء":    { base: 7215, increment: 280, maxGrade: 15, retireAge: 52 },
+  "ملازم":       { base: 7590, increment: 380, maxGrade: 15, retireAge: 48 },
+  "ملازم أول":     { base: 8835, increment: 415, maxGrade: 15, retireAge: 50 },
+  "نقيب":        { base: 10600, increment: 495, maxGrade: 15, retireAge: 52 },
+  "رائد":        { base: 13515, increment: 265, maxGrade: 15, retireAge: 54 },
+  "مقدم":        { base: 14645, increment: 470, maxGrade: 15, retireAge: 56 },
+  "عقيد":        { base: 16520, increment: 510, maxGrade: 15, retireAge: 58 },
+  "عميد":        { base: 18600, increment: 570, maxGrade: 15, retireAge: 60 },
+  "لواء":        { base: 21390, increment: 665, maxGrade: 15, retireAge: 60 }
 };
 
-// ✅ تحويل هجري إلى ميلادي تقريبي
+// ✅ تحويل هجري إلى ميلادي (تقريبي)
 function hijriToGregorianApprox(hYear, hMonth, hDay) {
   const hijriDays = (hYear - 1) * 354 + (hMonth - 1) * 29.5 + hDay;
-  const gregorianDate = new Date(622, 6, 16);
+  const gregorianDate = new Date(622, 6, 16); // 16 يوليو 622م
   gregorianDate.setDate(gregorianDate.getDate() + Math.floor(hijriDays));
   return gregorianDate;
 }
 
-// ✅ حساب سنوات الخدمة
+// ✅ حساب سنوات الخدمة بناءً على تاريخ التعيين بالهجري
 function calculateServiceYears(hireHijriYear, hireHijriMonth, hireHijriDay) {
   const hireDate = hijriToGregorianApprox(hireHijriYear, hireHijriMonth, hireHijriDay);
   const today = new Date();
-  const years = (today - hireDate) / (1000 * 60 * 60 * 24 * 365.25);
-  return Math.floor(years);
+  const diffYears = (today - hireDate) / (1000 * 60 * 60 * 24 * 365.25);
+  return Math.floor(diffYears);
 }
 
-// ✅ الراتب الأساسي النهائي
+// ✅ حساب الراتب الأساسي النهائي بناء على سنوات الخدمة والرتبة
 function getFinalBasicSalary(rank, serviceYears) {
-  const data = militaryRanksData[rank];
-  if (!data) return 0;
-  const grade = Math.min(serviceYears, data.maxGrade);
-  return data.base + data.increment * (grade - 1);
+  const rankData = militaryRanksData[rank];
+  if (!rankData) return 0;
+  const grade = Math.min(serviceYears, rankData.maxGrade);
+  return rankData.base + rankData.increment * (grade - 1);
 }
 
-// ✅ احتساب الراتب التقاعدي تلقائيًا
+// ✅ حساب الراتب التقاعدي النهائي
 function calculateRetirementSalary(rank, hireHijriYear, hireHijriMonth, hireHijriDay) {
   const serviceYears = calculateServiceYears(hireHijriYear, hireHijriMonth, hireHijriDay);
-  const finalBasic = getFinalBasicSalary(rank, serviceYears);
-  const retirement = Math.round((finalBasic * serviceYears / 40) * 0.55);
+  const basicSalary = getFinalBasicSalary(rank, serviceYears);
+  const retirement = Math.round((basicSalary * serviceYears / 40) * 0.55);
   return {
     serviceYears: serviceYears,
-    finalBasicSalary: finalBasic,
-    retirementSalary: retirement
+    finalBasic: basicSalary,
+    retirement: retirement
   };
 }
+
+// ✅ معرفة سن التقاعد حسب الرتبة
+function getRetirementAge(rank) {
+  const rankData = militaryRanksData[rank];
+  return rankData ? rankData.retireAge : 60;
+}
 </script><script>
-// ✅ أسئلة الحاسبة العامة بالتسلسل
+let answers = { commitments: [] }, step = 0, commitmentStep = 0, currentCommitment = {};
+let hasStarted = false;
+
+// ✅ أسئلة عامة حسب الترتيب المعتمد
 const generalQuestions = [
   {
-    key: 'clientName',
-    text: 'اكتب اسمك الكريم:',
-    type: 'input',
-    placeholder: ': ',
+    key: "financeType",
+    question: "اختر نوع التمويل تريد حسبته:",
+    type: "select",
+    options: ["تمويل شخصي أو تمويل استهلاكي", "تمويل عقاري"],
+  },
+  {
+    key: "clientName",
+    question: "ادخل اسمك الكريم",
+    type: "text"
+  },
+  {
+    key: "jobType",
+    question: "ما نوع وظيفتك؟",
+    type: "select",
+    options: ["عسكري", "مدني", "خاص شبه حكومي", "خاص معتمد", "خاص غير معتمد"]
+  },
+  {
+    key: "birthHijriYear",
+    question: "اختر سنة الميلاد (هجري):",
+    type: "select",
+    options: Array.from({ length: 61 }, (_, i) => 1370 + i).reverse(),
     show: () => true
   },
   {
-    key: 'financeType',
-    text: 'اختر نوع التمويل تريد حسبته:',
-    type: 'select',
-    options: ['تمويل شخصي أو تمويل استهلاكي', 'تمويل عقاري'],
+    key: "birthHijriMonth",
+    question: "اختر شهر الميلاد (هجري):",
+    type: "select",
+    options: Array.from({ length: 12 }, (_, i) => i + 1),
     show: () => true
   },
   {
-    key: 'jobType',
-    text: 'ما نوع وظيفتك؟',
-    type: 'select',
-    options: ['عسكري', 'مدني', 'خاص شبه حكومي', 'خاص معتمد', 'خاص غير معتمد'],
+    key: "birthHijriDay",
+    question: "اختر يوم الميلاد (هجري):",
+    type: "select",
+    options: Array.from({ length: 30 }, (_, i) => i + 1),
     show: () => true
   },
   {
-    key: 'birthHijriYear',
-    text: 'اختر سنة ميلادك (هجري):',
-    type: 'select',
-    options: Array.from({ length: 61 }, (_, i) => `${1370 + i}`),
-    show: () => true
-  },
-  {
-    key: 'birthHijriMonth',
-    text: 'اختر شهر ميلادك (هجري):',
-    type: 'select',
-    options: Array.from({ length: 12 }, (_, i) => `${i + 1}`),
-    show: () => true
-  },
-  {
-    key: 'birthHijriDay',
-    text: 'اختر يوم ميلادك (هجري):',
-    type: 'select',
-    options: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
-    show: () => true
-  },
-  {
-    key: 'rank',
-    text: 'اختر رتبتك العسكرية:',
-    type: 'select',
+    key: "rank",
+    question: "اذكر الرتبة العسكرية:",
+    type: "select",
     options: Object.keys(militaryRanksData),
-    show: (a) => a.jobType === 'عسكري'
+    show: (a) => a.jobType === "عسكري"
   },
   {
-    key: 'retireExtended',
-    text: 'مدة تقاعدك أقل من 25 سنة، هل ترغب بالحسبة بعد التقاعد؟',
-    type: 'select',
-    options: ['نعم', 'لا'],
+    key: "extendedRetirement",
+    question: "هل ترغب بالحسبة ممتدة بعد التقاعد؟",
+    type: "select",
+    options: ["نعم", "لا"],
     show: (a) => {
-      if (a.jobType !== 'عسكري') return false;
-      const year = parseInt(a.birthHijriYear);
-      const ageNow = 1446 - year;
-      const rankAge = getRetireAgeByRank(a.rank);
-      return rankAge - ageNow < 25;
+      if (a.jobType !== "عسكري" || !a.birthHijriYear || !a.rank) return false;
+      const retirementAge = getRetirementAge(a.rank);
+      const currentAge = 1446 - parseInt(a.birthHijriYear);
+      return retirementAge - currentAge < 25;
     }
   },
   {
-    key: 'hireHijriYear',
-    text: 'اختر سنة التعيين (هجري):',
-    type: 'select',
-    options: Array.from({ length: 35 }, (_, i) => `${1412 - i}`),
-    show: (a) => a.retireExtended === 'نعم'
+    key: "hireHijriYear",
+    question: "اختر سنة التعيين (هجري):",
+    type: "select",
+    options: Array.from({ length: 36 }, (_, i) => 1412 - i).reverse(),
+    show: (a) => a.extendedRetirement === "نعم"
   },
   {
-    key: 'hireHijriMonth',
-    text: 'اختر شهر التعيين (هجري):',
-    type: 'select',
-    options: Array.from({ length: 12 }, (_, i) => `${i + 1}`),
-    show: (a) => a.retireExtended === 'نعم'
+    key: "hireHijriMonth",
+    question: "اختر شهر التعيين (هجري):",
+    type: "select",
+    options: Array.from({ length: 12 }, (_, i) => i + 1),
+    show: (a) => a.extendedRetirement === "نعم"
   },
   {
-    key: 'hireHijriDay',
-    text: 'اختر يوم التعيين (هجري):',
-    type: 'select',
-    options: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
-    show: (a) => a.retireExtended === 'نعم'
-  }
+    key: "hireHijriDay",
+    question: "اختر يوم التعيين (هجري):",
+    type: "select",
+    options: Array.from({ length: 30 }, (_, i) => i + 1),
+    show: (a) => a.extendedRetirement === "نعم"
+  },
+  {
+    key: "salary",
+    question: "ما هو راتبك الشهري الصافي؟",
+    type: "number",
+  },
+  {
+    key: "hasCommitments",
+    question: "هل لديك التزامات شهرية؟",
+    type: "select",
+    options: ["نعم", "لا"]
+  },
 ];
 
-// ✅ سن التقاعد حسب الرتبة العسكرية
-function getRetireAgeByRank(rank) {
-  const map = {
-    "جندي": 44, "جندي أول": 44, "عريف": 46, "وكيل رقيب": 46,
-    "رقيب": 48, "رقيب أول": 50, "رئيس رقباء": 52,
-    "ملازم": 48, "ملازم أول": 50, "نقيب": 52, "رائد": 54,
-    "مقدم": 56, "عقيد": 58, "عميد": 60, "لواء": 60
-  };
-  return map[rank] || 60;
-}
-</script><script>
-// ✅ أسئلة الالتزامات المتكررة
+// ✅ أسئلة الالتزامات (تتكرر)
 const commitmentQuestions = [
   {
-    key: 'type',
-    text: 'ما نوع الالتزام؟',
-    type: 'select',
-    options: ['قرض سيارة', 'قرض استهلاكي', 'بطاقة ائتمانية', 'أخرى'],
-    show: () => true
+    key: "type",
+    question: "ما نوع الالتزام؟",
+    type: "select",
+    options: ["قرض سيارة", "قرض استهلاكي", "أخرى"]
   },
   {
-    key: 'monthly',
-    text: 'كم قيمة القسط الشهري؟',
-    type: 'input',
-    placeholder: 'مثال: 1500',
-    show: () => true
+    key: "amount",
+    question: "كم القسط الشهري؟",
+    type: "number"
   },
   {
-    key: 'months',
-    text: 'كم عدد الأشهر المتبقية؟',
-    type: 'select',
-    options: Array.from({ length: 60 }, (_, i) => `${i + 1}`),
-    show: () => true
+    key: "months",
+    question: "كم عدد الأشهر المتبقية؟",
+    type: "select",
+    options: Array.from({ length: 60 }, (_, i) => i + 1)
   },
   {
-    key: 'hasFinal',
-    text: 'هل لديك دفعة أخيرة؟',
-    type: 'select',
-    options: ['نعم', 'لا'],
-    show: (a) => a.type === 'قرض سيارة'
+    key: "hasFinalPayment",
+    question: "هل لديك دفعة أخيرة؟",
+    type: "select",
+    options: ["نعم", "لا"],
+    show: (a) => a.type === "قرض سيارة"
   },
   {
-    key: 'finalAmount',
-    text: 'كم مبلغ الدفعة الأخيرة؟',
-    type: 'input',
-    placeholder: 'مثال: 45000',
-    show: (a) => a.type === 'قرض سيارة' && a.hasFinal === 'نعم'
+    key: "finalPayment",
+    question: "كم مبلغ الدفعة الأخيرة؟",
+    type: "number",
+    show: (a) => a.type === "قرض سيارة" && a.hasFinalPayment === "نعم"
   },
   {
-    key: 'another',
-    text: 'هل لديك التزام آخر؟',
-    type: 'select',
-    options: ['نعم', 'لا'],
-    show: () => true
+    key: "more",
+    question: "هل لديك التزام آخر؟",
+    type: "select",
+    options: ["نعم", "لا"]
   }
 ];
 </script><!-- ✅ الجزء الخامس: النتيجة النهائية النهائية بالشكل الكامل والتنسيق المطابق للصورة -->
