@@ -355,4 +355,35 @@ function showResult(monthlyInsts, netAmount, profit, profitWithFees, months){
 
   container.style.display = 'block';
 }
+</script><div id="resultContainer" style="display:none">
+  <div id="resultBox" class="container result fade-in"></div>
+  <div id="resetButtonContainer" style="text-align:center">
+    <button class="small-reset" onclick="resetCalc()">🔁 إعادة الحسبة</button>
+  </div>
+</div>
+
+<footer>
+  <p id="datetimeFooter">جميع الحقوق محفوظة - سرعة تملك العقار والحلول التمويلية</p>
+</footer>
+
+<script>
+function updateDateTime() {
+  const now = new Date();
+  const gYear = now.getFullYear();
+  const gMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+  const gDay = now.getDate().toString().padStart(2, '0');
+  const gHours = now.getHours().toString().padStart(2, '0');
+  const gMinutes = now.getMinutes().toString().padStart(2, '0');
+
+  const hijri = new Intl.DateTimeFormat('ar-TN-u-ca-islamic', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  }).format(now).replace(/(\d+)\/(\d+)\/(\d+)/, (_, d, m, y) => `${y}/${m.padStart(2,'0')}/${d.padStart(2,'0')}`);
+
+  document.getElementById('datetimeFooter').innerText =
+    `جميع الحقوق محفوظة - سرعة تملك العقار - التاريخ الهجري: ${hijri} - الميلادي: ${gYear}/${gMonth}/${gDay} - الوقت: ${gHours}:${gMinutes}`;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
 </script>
+</body>
+</html>
