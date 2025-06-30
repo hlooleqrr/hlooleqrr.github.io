@@ -1,158 +1,112 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>حاسبة التمويل بعد التقاعد</title>
-  <style>
-    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; padding: 20px; text-align: center; font-size: 20px; }
-    .box { max-width: 650px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
-    input, select, button { width: 90%; padding: 15px; margin: 12px 0; font-size: 20px; border-radius: 6px; }
-    .result { background: #e1f5fe; border: 2px solid #29b6f6; padding: 20px; margin-top: 20px; border-radius: 10px; }
-    .error { background: #ffebee; color: #b71c1c; padding: 20px; margin-top: 20px; border-radius: 10px; border: 2px solid #ef5350; }
-  </style>
-</head>
-<body>
+<div class="container">
+  <h2>حاسبة التمويل التقاعدي (الممتد)</h2>
 
-<div class="box">
-  <h2>حاسبة التمويل بعد التقاعد</h2>
+  <!-- 📅 تاريخ اليوم (هجري) -->
+  <label>📅 تاريخ اليوم (هجري):</label><br>
+  <input type="number" id="todayYear" placeholder="السنة" style="width:30%;">
+  <input type="number" id="todayMonth" placeholder="الشهر" style="width:30%;">
+  <input type="number" id="todayDay" placeholder="اليوم" style="width:30%;"><br><br>
 
-  <input id="name" placeholder="الاسم الكريم">
+  <!-- 🎖️ الرتبة العسكرية -->
+  <label>🎖️ اختر الرتبة العسكرية:</label><br>
+  <select id="rank" style="width:95%;">
+    <option value="جندي">جندي</option>
+    <option value="عريف">عريف</option>
+    <option value="رقيب">رقيب</option>
+    <option value="رقيب أول">رقيب أول</option>
+    <option value="رئيس رقباء">رئيس رقباء</option>
+    <option value="ملازم">ملازم</option>
+    <option value="ملازم أول">ملازم أول</option>
+    <option value="نقيب">نقيب</option>
+    <option value="رائد">رائد</option>
+    <option value="مقدم">مقدم</option>
+    <option value="عقيد">عقيد</option>
+    <option value="عميد">عميد</option>
+    <option value="لواء">لواء</option>
+  </select><br><br>
 
-  <h4>تاريخ اليوم (هجري)</h4>
-  <select id="todayDay"></select><select id="todayMonth"></select><select id="todayYear"></select>
+  <!-- 📆 تاريخ التعيين -->
+  <label>📆 تاريخ التعيين (هجري):</label><br>
+  <input type="number" id="appointYear" placeholder="السنة" style="width:30%;">
+  <input type="number" id="appointMonth" placeholder="الشهر" style="width:30%;">
+  <input type="number" id="appointDay" placeholder="اليوم" style="width:30%;"><br><br>
 
-  <h4>تاريخ الميلاد (هجري)</h4>
-  <select id="birthDay"></select><select id="birthMonth"></select><select id="birthYear"></select>
+  <!-- 🎂 تاريخ الميلاد -->
+  <label>🎂 تاريخ الميلاد (هجري):</label><br>
+  <input type="number" id="birthYear" placeholder="السنة" style="width:30%;">
+  <input type="number" id="birthMonth" placeholder="الشهر" style="width:30%;">
+  <input type="number" id="birthDay" placeholder="اليوم" style="width:30%;"><br><br>
 
-  <h4>تاريخ التعيين (هجري)</h4>
-  <select id="hireDay"></select><select id="hireMonth"></select><select id="hireYear"></select>
+  <!-- 💸 التمويل الصافي قبل التقاعد -->
+  <label>💼 كم التمويل الصافي قبل التقاعد؟</label><br>
+  <input type="number" id="preRetirementNet" placeholder="أدخل المبلغ" style="width:95%;"><br><br>
 
-  <h4>رتبتك العسكرية</h4>
-  <select id="rank">
-    <option disabled selected>اختر الرتبة</option>
-    <option>جندي</option><option>جندي أول</option><option>عريف</option><option>وكيل رقيب</option>
-    <option>رقيب</option><option>رقيب أول</option><option>رئيس رقباء</option>
-    <option>ملازم</option><option>ملازم أول</option><option>نقيب</option><option>رائد</option>
-    <option>مقدم</option><option>عقيد</option><option>عميد</option><option>لواء</option>
-  </select>
+  <!-- 📈 هامش الربح -->
+  <label>📈 أدخل هامش الربح المتوقع (٪):</label><br>
+  <input type="number" id="profitMargin" placeholder="مثال: 4.5" style="width:95%;"><br><br>
 
-  <h4>نوع التمويل</h4>
-  <select id="financeType">
-    <option disabled selected>اختر نوع التمويل</option>
-    <option value="person">تمويل شخصي</option>
-    <option value="realestate">تمويل عقاري</option>
-  </select>
+  <button onclick="calculateRetirement()">🔍 احسب التمويل</button>
 
-  <h4>نسبة هامش الربح (%)</h4>
-  <input type="number" id="profit" placeholder="مثال: 5">
-
-  <button onclick="calculate()">عرض النتيجة</button>
-
-  <div id="result" style="display:none;"></div>
+  <div id="result" style="margin-top: 30px; font-size: 26px;"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hijri-date/lib/hijri-date.min.js"></script>
 <script>
-  function fill(id, start, end) {
-    const el = document.getElementById(id);
-    for (let i = start; i <= end; i++) {
-      const op = document.createElement("option");
-      op.value = i; op.text = i;
-      el.appendChild(op);
-    }
+function calculateRetirement() {
+  const todayY = parseInt(document.getElementById("todayYear").value);
+  const birthY = parseInt(document.getElementById("birthYear").value);
+  const appointY = parseInt(document.getElementById("appointYear").value);
+  const rank = document.getElementById("rank").value;
+  const profitMargin = parseFloat(document.getElementById("profitMargin").value);
+  const preRetirementNet = parseFloat(document.getElementById("preRetirementNet").value);
+
+  const ranks = {
+    "جندي":        { retireAge: 44, base: 3220, step: 125 },
+    "عريف":        { retireAge: 46, base: 3765, step: 150 },
+    "رقيب":        { retireAge: 48, base: 5260, step: 265 },
+    "رقيب أول":    { retireAge: 50, base: 6180, step: 310 },
+    "رئيس رقباء":  { retireAge: 52, base: 7215, step: 360 },
+    "ملازم":       { retireAge: 48, base: 7590, step: 380 },
+    "ملازم أول":   { retireAge: 50, base: 8970, step: 440 },
+    "نقيب":        { retireAge: 52, base: 10600, step: 495 },
+    "رائد":        { retireAge: 54, base: 13535, step: 265 },
+    "مقدم":        { retireAge: 56, base: 14645, step: 470 },
+    "عقيد":        { retireAge: 58, base: 15980, step: 510 },
+    "عميد":        { retireAge: 60, base: 17420, step: 555 },
+    "لواء":        { retireAge: 60, base: 18600, step: 580 }
+  };
+
+  if (!ranks[rank] || isNaN(profitMargin)) {
+    alert("الرجاء إدخال جميع البيانات بشكل صحيح");
+    return;
   }
 
-  ['todayDay','birthDay','hireDay'].forEach(id => fill(id,1,30));
-  ['todayMonth','birthMonth','hireMonth'].forEach(id => fill(id,1,12));
-  ['todayYear','birthYear','hireYear'].forEach(id => fill(id,1370,1450));
+  const retireAge = ranks[rank].retireAge;
+  const base = ranks[rank].base;
+  const step = ranks[rank].step;
 
-  const retirementAges = {
-    "جندي":44, "جندي أول":44, "عريف":46, "وكيل رقيب":46, "رقيب":48, "رقيب أول":50,
-    "رئيس رقباء":52, "ملازم":48, "ملازم أول":50, "نقيب":52, "رائد":54, "مقدم":56,
-    "عقيد":58, "عميد":60, "لواء":60
-  };
+  const retireY = birthY + retireAge;
+  const serviceYears = retireY - appointY;
+  const baseAtRetire = base + (step * serviceYears);
+  const retirementSalary = (baseAtRetire * serviceYears / 40) * 0.55;
+  const monthsAvailable = (60 - retireAge) * 12;
+  const years = monthsAvailable / 12;
 
-  const baseSal = {
-    "جندي":3220,"جندي أول":3395,"عريف":3765,"وكيل رقيب":4455,"رقيب":5260,"رقيب أول":6180,
-    "رئيس رقباء":7215,"ملازم":7590,"ملازم أول":8365,"نقيب":9215,"رائد":11735,"مقدم":12735,
-    "عقيد":14365,"عميد":16350,"لواء":18600
-  };
+  const totalRequested = 100000; // افتراضي، يمكن تغييره لاحقًا
+  const profitFactor = (years * profitMargin / 100) + 1;
+  const netFinance = totalRequested / profitFactor;
+  const profit = totalRequested - netFinance;
 
-  const raises = {
-    "جندي":130,"جندي أول":145,"عريف":175,"وكيل رقيب":250,"رقيب":300,"رقيب أول":360,
-    "رئيس رقباء":360,"ملازم":380,"ملازم أول":440,"نقيب":495,"رائد":265,"مقدم":470,
-    "عقيد":590,"عميد":650,"لواء":730
-  };
+  const totalNetWithPre = isNaN(preRetirementNet) ? Math.round(netFinance) : Math.round(netFinance + preRetirementNet);
 
-  function calculate(){
-    const name = document.getElementById('name').value.trim();
-    const rank = document.getElementById('rank').value;
-    const financeType = document.getElementById('financeType').value;
-    const profitRate = parseFloat(document.getElementById('profit').value) / 100;
-
-    const tY = +document.getElementById('todayYear').value, tM = +document.getElementById('todayMonth').value -1, tD = +document.getElementById('todayDay').value;
-    const bY = +document.getElementById('birthYear').value, bM = +document.getElementById('birthMonth').value -1, bD = +document.getElementById('birthDay').value;
-    const hY = +document.getElementById('hireYear').value, hM = +document.getElementById('hireMonth').value -1, hD = +document.getElementById('hireDay').value;
-
-    if (!name || !rank || !financeType || isNaN(profitRate)) return alert("يرجى تعبئة جميع الحقول");
-
-    const today = new HijriDate(tY, tM, tD);
-    const birth = new HijriDate(bY, bM, bD);
-    const hire = new HijriDate(hY, hM, hD);
-
-    let age = tY - bY;
-    if (tM < bM || (tM === bM && tD < bD)) age--;
-
-    const retireAge = retirementAges[rank] || 60;
-    const retireYear = bY + retireAge;
-    const monthsToRetire = (retireYear - tY) * 12;
-
-    const maxMonths = (60 - retireAge) * 12;
-
-    let service = tY - hY;
-    if (tM < hM || (tM === hM && tD < hD)) service--;
-
-    const base = baseSal[rank];
-    const raise = raises[rank];
-    const finalBase = base + (raise * service);
-
-    const retirementSalary = (finalBase * service) / 40;
-
-    let installment;
-    if (financeType === 'person') {
-      installment = retirementSalary * 0.25;
-    } else {
-      installment = retirementSalary < 15000 ? retirementSalary * 0.55 : retirementSalary * 0.65;
-    }
-
-    const totalPayment = installment * maxMonths;
-    const profit = totalPayment * profitRate;
-    const netFinance = totalPayment - profit;
-
-    const f = n => parseFloat(n).toLocaleString('ar-EG');
-    const res = document.getElementById('result');
-    res.style.display = 'block';
-
-    if (netFinance < 1000) {
-      res.innerHTML = `<div class="error">❌ نعتذر، لا يمكن تمويلك بناءً على هذه المعطيات.</div>`;
-    } else {
-      res.innerHTML = `
-        <div class="result">
-        <strong>مرحباً يا ${name}</strong><br><br>
-        عمرك الآن: ${age} سنة<br>
-        سنوات الخدمة: ${service} سنة<br>
-        التقاعد بعد: ${monthsToRetire} شهر<br>
-        عدد أشهر التمويل بعد التقاعد: ${maxMonths} شهر<br><br>
-        الراتب التقاعدي المحتسب: <strong>${f(retirementSalary.toFixed(0))} ريال</strong><br>
-        القسط الشهري المسموح: ${f(installment.toFixed(0))} ريال<br><br>
-        إجمالي التمويل مع الربح: ${f(totalPayment.toFixed(0))} ريال<br>
-        الربح: ${f(profit.toFixed(0))} ريال<br>
-        التمويل الصافي بعد التقاعد: <strong>${f(netFinance.toFixed(0))} ريال</strong>
-        </div>
-      `;
-    }
-  }
+  document.getElementById("result").innerHTML =
+    `<strong>📌 تاريخ التقاعد:</strong> ${retireY}<br>` +
+    `<strong>📌 سنوات الخدمة:</strong> ${serviceYears} سنة<br>` +
+    `<strong>📌 الراتب عند التقاعد:</strong> ${Math.round(baseAtRetire)} ريال<br>` +
+    `<strong>📌 الراتب التقاعدي:</strong> ${Math.round(retirementSalary)} ريال<br>` +
+    `<strong>📌 عدد أشهر التمويل بعد التقاعد:</strong> ${monthsAvailable} شهر<br>` +
+    `<strong>📌 التمويل الصافي بعد التقاعد:</strong> ${Math.round(netFinance)} ريال<br>` +
+    `<strong>📌 التمويل الصافي قبل التقاعد (المدخل):</strong> ${isNaN(preRetirementNet) ? "—" : preRetirementNet} ريال<br>` +
+    `<strong>📌 المجموع الكلي للتمويل:</strong> ${totalNetWithPre} ريال<br>` +
+    `<strong>📌 الربح المتوقع:</strong> ${Math.round(profit)} ريال`;
+}
 </script>
-
-</body>
-</html>
