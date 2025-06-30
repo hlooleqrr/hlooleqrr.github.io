@@ -231,7 +231,7 @@
             <label>تاريخ اليوم (هجري):</label><br>
             <select class="modern-input" id="todayDay">${opts(1,30)}</select>
             <select class="modern-input" id="todayMonth">${opts(1,12)}</select>
-            <select class="modern-input" id="todayYear">${opts(1370,1430)}</select>`;
+            <select class="modern-input" id="todayYear">${opts(1430,1460)}</select>`;
           break;
         case 2:
           q.innerHTML = `
@@ -267,7 +267,6 @@
           q.innerHTML = `<input class="modern-input" type="number" id="paymentAmount" placeholder="مبلغ الدفعة">`;
           break;
         case 8:
-          // احسب مدة الخدمة أولاً لتحديد maxDuration
           const retireAge = retireAgeMap[answers.rank];
           maxDuration = Math.max((60 - retireAge) * 12, 0);
           q.innerHTML = `
@@ -334,10 +333,10 @@
     }
 
     function d(id){ return document.getElementById(id).value; }
-    function opts(start,end){
-      let html='';
-      for(let v=start;v<=end;v++){
-        html+=`<option>${v}</option>`;
+    function opts(start, end){
+      let html = '';
+      for(let v = start; v <= end; v++){
+        html += `<option>${v.toString().padStart(2,'0')}</option>`;
       }
       return html;
     }
