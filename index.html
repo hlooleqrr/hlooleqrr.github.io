@@ -1,112 +1,221 @@
-<div class="container">
-  <h2>حاسبة التمويل التقاعدي (الممتد)</h2>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>سرعة تملك العقار والحلول التمويلية</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background: #f4f6f8; margin: 0; text-align: center; font-size: 32px; }
+    header { background: #005c48; color: #fff; padding: 25px; font-size: 34px; }
+    .container { max-width: 650px; margin: 25px auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,.1); }
+    input, select, button { width: 92%; padding: 20px; margin: 18px 0; font-size: 32px; border-radius: 5px; border: 1px solid #ccc; }
+    #resultContainer { display:none; text-align: center; margin-top: 30px; font-size: 32px; }
+    #resetButton { display:none; margin-top:20px; }
+    .sliderValue { font-weight:bold; }
+  </style>
+</head>
+<body>
+  <header>سرعة تملك العقار والحلول التمويلية</header>
+  <div class="container" id="formContainer">
+    <button id="startButton">ابدأ الحسبة</button>
+    <div id="question" style="display:none;"></div>
+    <div id="nextContainer" style="display:none;">
+      <button id="nextButton">التالي</button>
+    </div>
+  </div>
 
-  <!-- 📅 تاريخ اليوم (هجري) -->
-  <label>📅 تاريخ اليوم (هجري):</label><br>
-  <input type="number" id="todayYear" placeholder="السنة" style="width:30%;">
-  <input type="number" id="todayMonth" placeholder="الشهر" style="width:30%;">
-  <input type="number" id="todayDay" placeholder="اليوم" style="width:30%;"><br><br>
+  <div class="container" id="resultContainer">
+    <h3>نتيجة الحسبة:</h3>
+    <div id="greeting"></div>
+    <div id="retirementInfo"></div>
+    <div id="financeInfo"></div>
+    <div id="breakdown"></div>
+    <button id="resetButton">🔁 إعادة الحسبة</button>
+  </div>
 
-  <!-- 🎖️ الرتبة العسكرية -->
-  <label>🎖️ اختر الرتبة العسكرية:</label><br>
-  <select id="rank" style="width:95%;">
-    <option value="جندي">جندي</option>
-    <option value="عريف">عريف</option>
-    <option value="رقيب">رقيب</option>
-    <option value="رقيب أول">رقيب أول</option>
-    <option value="رئيس رقباء">رئيس رقباء</option>
-    <option value="ملازم">ملازم</option>
-    <option value="ملازم أول">ملازم أول</option>
-    <option value="نقيب">نقيب</option>
-    <option value="رائد">رائد</option>
-    <option value="مقدم">مقدم</option>
-    <option value="عقيد">عقيد</option>
-    <option value="عميد">عميد</option>
-    <option value="لواء">لواء</option>
-  </select><br><br>
+  <script>
+    const basicSalaryMap = {
+      "جندي": 3220, "جندي أول": 3395, "عريف": 3765, "وكيل رقيب": 4455,
+      "رقيب": 5260, "رقيب أول": 6180, "رئيس رقباء": 7215,
+      "ملازم": 7590, "ملازم أول": 8835, "نقيب": 10600, "رائد": 13515,
+      "مقدم": 14645, "عقيد": 16500, "عميد": 18805, "لواء": 21000, "فريق": 22000
+    };
+    const allowanceMap = {
+      "جندي": 130, "جندي أول": 145, "عريف": 175, "وكيل رقيب": 200,
+      "رقيب": 250, "رقيب أول": 280, "رئيس رقباء": 330,
+      "ملازم": 380, "ملازم أول": 440, "نقيب": 490, "رائد": 540,
+      "مقدم": 615, "عقيد": 670, "عميد": 725, "لواء": 780, "فريق": 830
+    };
 
-  <!-- 📆 تاريخ التعيين -->
-  <label>📆 تاريخ التعيين (هجري):</label><br>
-  <input type="number" id="appointYear" placeholder="السنة" style="width:30%;">
-  <input type="number" id="appointMonth" placeholder="الشهر" style="width:30%;">
-  <input type="number" id="appointDay" placeholder="اليوم" style="width:30%;"><br><br>
+    let step = 0, answers = {};
 
-  <!-- 🎂 تاريخ الميلاد -->
-  <label>🎂 تاريخ الميلاد (هجري):</label><br>
-  <input type="number" id="birthYear" placeholder="السنة" style="width:30%;">
-  <input type="number" id="birthMonth" placeholder="الشهر" style="width:30%;">
-  <input type="number" id="birthDay" placeholder="اليوم" style="width:30%;"><br><br>
+    document.getElementById('startButton').onclick = startCalc;
+    document.getElementById('nextButton').onclick  = nextStep;
+    document.getElementById('resetButton').onclick = resetCalc;
 
-  <!-- 💸 التمويل الصافي قبل التقاعد -->
-  <label>💼 كم التمويل الصافي قبل التقاعد؟</label><br>
-  <input type="number" id="preRetirementNet" placeholder="أدخل المبلغ" style="width:95%;"><br><br>
+    function startCalc() {
+      document.getElementById('startButton').style.display = 'none';
+      document.getElementById('question').style.display  = 'block';
+      document.getElementById('nextContainer').style.display = 'block';
+      showStep();
+    }
 
-  <!-- 📈 هامش الربح -->
-  <label>📈 أدخل هامش الربح المتوقع (٪):</label><br>
-  <input type="number" id="profitMargin" placeholder="مثال: 4.5" style="width:95%;"><br><br>
+    function nextStep() {
+      // حفظ الإجابة
+      switch(step) {
+        case 0: answers.name = document.getElementById('inputName').value.trim(); break;
+        case 1:
+          answers.today = {
+            y:+document.getElementById('todayYear').value,
+            m:+document.getElementById('todayMonth').value,
+            d:+document.getElementById('todayDay').value
+          }; break;
+        case 2: answers.financeType = document.getElementById('financeType').value; break;
+        case 3: answers.rank = document.getElementById('rank').value; break;
+        case 4:
+          answers.appoint = {
+            y:+document.getElementById('appointYear').value,
+            m:+document.getElementById('appointMonth').value,
+            d:+document.getElementById('appointDay').value
+          }; break;
+        case 5:
+          answers.birth = {
+            y:+document.getElementById('birthYear').value,
+            m:+document.getElementById('birthMonth').value,
+            d:+document.getElementById('birthDay').value
+          }; break;
+        case 6: answers.margin  = parseFloat(document.getElementById('profitMargin').value); break;
+        case 7: answers.payment = parseFloat(document.getElementById('paymentAmount').value); break;
+        case 8: answers.duration= +document.getElementById('duration').value; break;
+      }
+      step++;
+      if (step <= 8) showStep();
+      else showResult();
+    }
 
-  <button onclick="calculateRetirement()">🔍 احسب التمويل</button>
+    function showStep() {
+      const q = document.getElementById('question');
+      q.innerHTML = '';
+      document.getElementById('nextButton').style.display = 'inline-block';
+      switch(step) {
+        case 0:
+          q.innerHTML = `<input type="text" id="inputName" placeholder="الاسم الكريم">`;
+          break;
+        case 1:
+          q.innerHTML = `
+            <label>تاريخ اليوم (هجري):</label><br>
+            <select id="todayDay">${[...Array(30)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
+            <select id="todayMonth">${[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
+            <select id="todayYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>
+          `;
+          break;
+        case 2:
+          q.innerHTML = `
+            <select id="financeType">
+              <option value="عقاري">تمويل عقاري</option>
+              <option value="شخصي">تمويل شخصي</option>
+            </select>`;
+          break;
+        case 3:
+          q.innerHTML = `
+            <select id="rank">
+              ${Object.keys(basicSalaryMap).map(r=>`<option>${r}</option>`).join('')}
+            </select>`;
+          break;
+        case 4:
+          q.innerHTML = `
+            <label>تاريخ التعيين (هجري):</label><br>
+            <select id="appointDay">${[...Array(30)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
+            <select id="appointMonth">${[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
+            <select id="appointYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>
+          `;
+          break;
+        case 5:
+          q.innerHTML = `
+            <label>تاريخ الميلاد (هجري):</label><br>
+            <select id="birthDay">${[...Array(30)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
+            <select id="birthMonth">${[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
+            <select id="birthYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>
+          `;
+          break;
+        case 6:
+          q.innerHTML = `<input type="number" id="profitMargin" placeholder="نسبة هامش الربح (%)">`;
+          break;
+        case 7:
+          q.innerHTML = `<input type="number" id="paymentAmount" placeholder="مبلغ الدفعة">`;
+          break;
+        case 8:
+          // حساب العمر الحالي والمتاح
+          const currentAge = answers.today.y - answers.birth.y - (answers.today.m < answers.birth.m ? 1 : 0);
+          const availMonths = currentAge < 60 ? (60 - currentAge) * 12 : 0;
+          q.innerHTML = `
+            <label>اختر مدة التمويل (بالشهور حتى ${availMonths}):</label><br>
+            <input type="range" id="duration" min="1" max="${availMonths}" value="${availMonths}" oninput="this.nextElementSibling.textContent=this.value">
+            <span class="sliderValue">${availMonths}</span>
+          `;
+          break;
+      }
+      document.getElementById('nextButton').textContent = step<8 ? 'التالي' : 'عرض النتيجة';
+    }
 
-  <div id="result" style="margin-top: 30px; font-size: 26px;"></div>
-</div>
+    function showResult() {
+      // إخفاء النموذج
+      document.getElementById('formContainer').style.display = 'none';
 
-<script>
-function calculateRetirement() {
-  const todayY = parseInt(document.getElementById("todayYear").value);
-  const birthY = parseInt(document.getElementById("birthYear").value);
-  const appointY = parseInt(document.getElementById("appointYear").value);
-  const rank = document.getElementById("rank").value;
-  const profitMargin = parseFloat(document.getElementById("profitMargin").value);
-  const preRetirementNet = parseFloat(document.getElementById("preRetirementNet").value);
+      // حساب مدة الخدمة
+      const serviceMonths = 
+        (answers.today.y - answers.appoint.y) * 12 +
+        (answers.today.m - answers.appoint.m);
 
-  const ranks = {
-    "جندي":        { retireAge: 44, base: 3220, step: 125 },
-    "عريف":        { retireAge: 46, base: 3765, step: 150 },
-    "رقيب":        { retireAge: 48, base: 5260, step: 265 },
-    "رقيب أول":    { retireAge: 50, base: 6180, step: 310 },
-    "رئيس رقباء":  { retireAge: 52, base: 7215, step: 360 },
-    "ملازم":       { retireAge: 48, base: 7590, step: 380 },
-    "ملازم أول":   { retireAge: 50, base: 8970, step: 440 },
-    "نقيب":        { retireAge: 52, base: 10600, step: 495 },
-    "رائد":        { retireAge: 54, base: 13535, step: 265 },
-    "مقدم":        { retireAge: 56, base: 14645, step: 470 },
-    "عقيد":        { retireAge: 58, base: 15980, step: 510 },
-    "عميد":        { retireAge: 60, base: 17420, step: 555 },
-    "لواء":        { retireAge: 60, base: 18600, step: 580 }
-  };
+      // الراتب والمعاش
+      const sal       = basicSalaryMap[answers.rank];
+      const allowance = allowanceMap[answers.rank] || 0;
+      const gross     = sal + allowance;
+      const pension   = gross * serviceMonths / 420;
 
-  if (!ranks[rank] || isNaN(profitMargin)) {
-    alert("الرجاء إدخال جميع البيانات بشكل صحيح");
-    return;
-  }
+      // العمر والمدة المتاحة
+      const currentAge = answers.today.y - answers.birth.y - (answers.today.m < answers.birth.m ? 1 : 0);
+      const availMonths = currentAge < 60 ? (60 - currentAge) * 12 : 0;
 
-  const retireAge = ranks[rank].retireAge;
-  const base = ranks[rank].base;
-  const step = ranks[rank].step;
+      // حساب التمويل
+      const ratio          = answers.financeType==='عقاري' ? 0.55 : 0.25;
+      const monthlyCap     = pension * ratio;
+      const totalWithProfit= monthlyCap * answers.duration;
+      const factor         = (answers.duration/12)*(answers.margin/100) + 1;
+      const net            = totalWithProfit / factor;
+      const profit         = totalWithProfit - net;
+      const netWithPay     = net + answers.payment;
 
-  const retireY = birthY + retireAge;
-  const serviceYears = retireY - appointY;
-  const baseAtRetire = base + (step * serviceYears);
-  const retirementSalary = (baseAtRetire * serviceYears / 40) * 0.55;
-  const monthsAvailable = (60 - retireAge) * 12;
-  const years = monthsAvailable / 12;
+      // عرض النتائج
+      document.getElementById('greeting').textContent = `مرحباً ومسهلاً يا ${answers.name}`;
+      document.getElementById('retirementInfo').innerHTML = `
+        <strong>الراتب التقاعدي المحتسب:</strong> ${pension.toFixed(2)} ريال<br>
+        <strong>العلاوة الدورية:</strong> ${allowance} ريال<br>
+        <strong>مدة الخدمة:</strong> ${serviceMonths} شهراً`;
+      document.getElementById('financeInfo').innerHTML = `
+        <strong>العمر الحالي:</strong> ${currentAge} سنة<br>
+        <strong>المدة المتاحة للتمويل:</strong> ${availMonths} شهراً<br>
+        <strong>نوع التمويل:</strong> ${answers.financeType}<br>
+        <strong>مدة التمويل:</strong> ${answers.duration} شهراً<br>
+        <strong>الحد الأقصى للقسط (${ratio*100}%):</strong> ${monthlyCap.toFixed(2)} ريال`;
+      document.getElementById('breakdown').innerHTML = `
+        <strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(2)} ريال<br>
+        <strong>معامل الربح:</strong> ${factor.toFixed(3)}<br>
+        <strong>الصافي بعد القسمة:</strong> ${net.toFixed(2)} ريال<br>
+        <strong>الأرباح:</strong> ${profit.toFixed(2)} ريال<br>
+        <strong>الصافي مع الدفعة:</strong> ${netWithPay.toFixed(2)} ريال
+      `;
+      document.getElementById('resultContainer').style.display = 'block';
+      document.getElementById('resetButton').style.display   = 'inline-block';
+    }
 
-  const totalRequested = 100000; // افتراضي، يمكن تغييره لاحقًا
-  const profitFactor = (years * profitMargin / 100) + 1;
-  const netFinance = totalRequested / profitFactor;
-  const profit = totalRequested - netFinance;
-
-  const totalNetWithPre = isNaN(preRetirementNet) ? Math.round(netFinance) : Math.round(netFinance + preRetirementNet);
-
-  document.getElementById("result").innerHTML =
-    `<strong>📌 تاريخ التقاعد:</strong> ${retireY}<br>` +
-    `<strong>📌 سنوات الخدمة:</strong> ${serviceYears} سنة<br>` +
-    `<strong>📌 الراتب عند التقاعد:</strong> ${Math.round(baseAtRetire)} ريال<br>` +
-    `<strong>📌 الراتب التقاعدي:</strong> ${Math.round(retirementSalary)} ريال<br>` +
-    `<strong>📌 عدد أشهر التمويل بعد التقاعد:</strong> ${monthsAvailable} شهر<br>` +
-    `<strong>📌 التمويل الصافي بعد التقاعد:</strong> ${Math.round(netFinance)} ريال<br>` +
-    `<strong>📌 التمويل الصافي قبل التقاعد (المدخل):</strong> ${isNaN(preRetirementNet) ? "—" : preRetirementNet} ريال<br>` +
-    `<strong>📌 المجموع الكلي للتمويل:</strong> ${totalNetWithPre} ريال<br>` +
-    `<strong>📌 الربح المتوقع:</strong> ${Math.round(profit)} ريال`;
-}
-</script>
+    function resetCalc() {
+      step = 0; answers = {};
+      document.getElementById('resultContainer').style.display = 'none';
+      document.getElementById('formContainer').style.display   = 'block';
+      document.getElementById('startButton').style.display     = 'inline-block';
+      document.getElementById('question').style.display        = 'none';
+      document.getElementById('nextContainer').style.display   = 'none';
+    }
+  </script>
+</body>
+</html>
