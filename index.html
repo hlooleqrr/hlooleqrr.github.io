@@ -45,6 +45,12 @@
       "ملازم": 380, "ملازم أول": 440, "نقيب": 490, "رائد": 540,
       "مقدم": 615, "عقيد": 670, "عميد": 725, "لواء": 780, "فريق": 830
     };
+    const retireAgeMap = {
+      "جندي":44,"جندي أول":44,"عريف":46,"وكيل رقيب":48,
+      "رقيب":50,"رقيب أول":50,"رئيس رقباء":52,
+      "ملازم":44,"ملازم أول":44,"نقيب":48,"رائد":50,
+      "مقدم":52,"عقيد":54,"عميد":56,"لواء":58,"فريق":60
+    };
 
     let step = 0, answers = {};
 
@@ -60,7 +66,6 @@
     }
 
     function nextStep() {
-      // حفظ الإجابة
       switch(step) {
         case 0: answers.name = document.getElementById('inputName').value.trim(); break;
         case 1:
@@ -70,7 +75,7 @@
             d:+document.getElementById('todayDay').value
           }; break;
         case 2: answers.financeType = document.getElementById('financeType').value; break;
-        case 3: answers.rank = document.getElementById('rank').value; break;
+        case 3: answers.rank        = document.getElementById('rank').value; break;
         case 4:
           answers.appoint = {
             y:+document.getElementById('appointYear').value,
@@ -105,8 +110,7 @@
             <label>تاريخ اليوم (هجري):</label><br>
             <select id="todayDay">${[...Array(30)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
             <select id="todayMonth">${[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
-            <select id="todayYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>
-          `;
+            <select id="todayYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>`;
           break;
         case 2:
           q.innerHTML = `
@@ -126,16 +130,14 @@
             <label>تاريخ التعيين (هجري):</label><br>
             <select id="appointDay">${[...Array(30)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
             <select id="appointMonth">${[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
-            <select id="appointYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>
-          `;
+            <select id="appointYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>`;
           break;
         case 5:
           q.innerHTML = `
             <label>تاريخ الميلاد (هجري):</label><br>
             <select id="birthDay">${[...Array(30)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
             <select id="birthMonth">${[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('')}</select>
-            <select id="birthYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>
-          `;
+            <select id="birthYear">${[...Array(80)].map((_,i)=>`<option>${1370+i}</option>`).join('')}</select>`;
           break;
         case 6:
           q.innerHTML = `<input type="number" id="profitMargin" placeholder="نسبة هامش الربح (%)">`;
@@ -144,66 +146,62 @@
           q.innerHTML = `<input type="number" id="paymentAmount" placeholder="مبلغ الدفعة">`;
           break;
         case 8:
-          // حساب العمر الحالي والمتاح
-          const currentAge = answers.today.y - answers.birth.y - (answers.today.m < answers.birth.m ? 1 : 0);
-          const availMonths = currentAge < 60 ? (60 - currentAge) * 12 : 0;
+          const retireAge   = retireAgeMap[answers.rank];
+          const availMonths = Math.max((60 - retireAge) * 12, 0);
           q.innerHTML = `
             <label>اختر مدة التمويل (بالشهور حتى ${availMonths}):</label><br>
             <input type="range" id="duration" min="1" max="${availMonths}" value="${availMonths}" oninput="this.nextElementSibling.textContent=this.value">
-            <span class="sliderValue">${availMonths}</span>
-          `;
+            <span class="sliderValue">${availMonths}</span>`;
           break;
       }
-      document.getElementById('nextButton').textContent = step<8 ? 'التالي' : 'عرض النتيجة';
+      document.getElementById('nextButton').textContent = step < 8 ? 'التالي' : 'عرض النتيجة';
     }
 
     function showResult() {
-      // إخفاء النموذج
       document.getElementById('formContainer').style.display = 'none';
 
-      // حساب مدة الخدمة
-      const serviceMonths = 
-        (answers.today.y - answers.appoint.y) * 12 +
-        (answers.today.m - answers.appoint.m);
+      // حساب مدة الخدمة من تاريخ التعيين إلى تاريخ التقاعد
+      const retireAge   = retireAgeMap[answers.rank];
+      const retireYear  = answers.birth.y + retireAge;
+      const retireMonth = answers.birth.m;
+      const serviceMonths = (retireYear - answers.appoint.y) * 12 +
+                            (retireMonth - answers.appoint.m);
 
-      // الراتب والمعاش
+      // حساب الراتب التقاعدي
       const sal       = basicSalaryMap[answers.rank];
       const allowance = allowanceMap[answers.rank] || 0;
       const gross     = sal + allowance;
       const pension   = gross * serviceMonths / 420;
 
-      // العمر والمدة المتاحة
-      const currentAge = answers.today.y - answers.birth.y - (answers.today.m < answers.birth.m ? 1 : 0);
-      const availMonths = currentAge < 60 ? (60 - currentAge) * 12 : 0;
+      // المدة المتاحة للتمويل بعد التقاعد حتى 60 سنة
+      const availMonths = Math.max((60 - retireAge) * 12, 0);
 
       // حساب التمويل
-      const ratio          = answers.financeType==='عقاري' ? 0.55 : 0.25;
-      const monthlyCap     = pension * ratio;
-      const totalWithProfit= monthlyCap * answers.duration;
-      const factor         = (answers.duration/12)*(answers.margin/100) + 1;
-      const net            = totalWithProfit / factor;
-      const profit         = totalWithProfit - net;
-      const netWithPay     = net + answers.payment;
+      const ratio           = answers.financeType === 'عقاري' ? 0.55 : 0.25;
+      const monthlyCap      = pension * ratio;
+      const totalWithProfit = monthlyCap * answers.duration;
+      const factor          = (answers.duration/12) * (answers.margin/100) + 1;
+      const net             = totalWithProfit / factor;
+      const profit          = totalWithProfit - net;
+      const netWithPay      = net + answers.payment;
 
       // عرض النتائج
       document.getElementById('greeting').textContent = `مرحباً ومسهلاً يا ${answers.name}`;
       document.getElementById('retirementInfo').innerHTML = `
-        <strong>الراتب التقاعدي المحتسب:</strong> ${pension.toFixed(2)} ريال<br>
         <strong>العلاوة الدورية:</strong> ${allowance} ريال<br>
-        <strong>مدة الخدمة:</strong> ${serviceMonths} شهراً`;
+        <strong>مدة الخدمة حتى التقاعد (${retireAge} سنة):</strong> ${serviceMonths} شهراً<br>
+        <strong>الراتب التقاعدي المحتسب:</strong> ${pension.toFixed(2)} ريال`;
       document.getElementById('financeInfo').innerHTML = `
-        <strong>العمر الحالي:</strong> ${currentAge} سنة<br>
-        <strong>المدة المتاحة للتمويل:</strong> ${availMonths} شهراً<br>
+        <strong>المدة المتاحة بعد التقاعد:</strong> ${availMonths} شهراً<br>
         <strong>نوع التمويل:</strong> ${answers.financeType}<br>
-        <strong>مدة التمويل:</strong> ${answers.duration} شهراً<br>
+        <strong>مدة التمويل المختارة:</strong> ${answers.duration} شهراً<br>
         <strong>الحد الأقصى للقسط (${ratio*100}%):</strong> ${monthlyCap.toFixed(2)} ريال`;
       document.getElementById('breakdown').innerHTML = `
         <strong>إجمالي التمويل مع الأرباح:</strong> ${totalWithProfit.toFixed(2)} ريال<br>
         <strong>معامل الربح:</strong> ${factor.toFixed(3)}<br>
         <strong>الصافي بعد القسمة:</strong> ${net.toFixed(2)} ريال<br>
         <strong>الأرباح:</strong> ${profit.toFixed(2)} ريال<br>
-        <strong>الصافي مع الدفعة:</strong> ${netWithPay.toFixed(2)} ريال
-      `;
+        <strong>الصافي مع الدفعة:</strong> ${netWithPay.toFixed(2)} ريال`;
       document.getElementById('resultContainer').style.display = 'block';
       document.getElementById('resetButton').style.display   = 'inline-block';
     }
