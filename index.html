@@ -249,9 +249,9 @@
         case 4:
           q.innerHTML = `
             <label>تاريخ التعيين (هجري):</label><br>
-            <select class="modern-input" id="appointDay">${opts(1,30)}</select>
-            <select class="modern-input" id="appointMonth">${opts(1,12)}</select>
-            <select class="modern-input" id="appointYear">${opts(1370,1430)}</select>`;
+            <select class="modern-input" id="appointDay">${opts(1,30,1)}</select>
+            <select class="modern-input" id="appointMonth">${opts(1,12,1)}</select>
+            <select class="modern-input" id="appointYear">${opts(1410,1460,1430)}</select>`;
           break;
         case 5:
           q.innerHTML = `
@@ -268,7 +268,9 @@
           break;
         case 8:
           const retireAge = retireAgeMap[answers.rank];
-          maxDuration = Math.max((60 - retireAge) * 12, 0);
+          maxDuration = answers.financeType === 'شخصي'
+                        ? 60
+                        : Math.max((60 - retireAge) * 12, 0);
           q.innerHTML = `
             <label>مدة التمويل (بالشهور حتى ${maxDuration}):</label>
             <div id="durationPicker">
@@ -278,11 +280,11 @@
             </div>`;
           document.getElementById('durationMinus').onclick = ()=>{
             let v=+document.getElementById('durationValue').textContent;
-            if(v>1) document.getElementById('durationValue').textContent= v-1;
+            if(v>1) document.getElementById('durationValue').textContent = v-1;
           };
           document.getElementById('durationPlus').onclick = ()=>{
             let v=+document.getElementById('durationValue').textContent;
-            if(v<maxDuration) document.getElementById('durationValue').textContent= v+1;
+            if(v<maxDuration) document.getElementById('durationValue').textContent = v+1;
           };
           break;
       }
@@ -301,7 +303,7 @@
       const gross     = sal + allowance;
       const pension   = gross * serviceMonths / 420;
 
-      const ratio          = answers.financeType==='عقاري'? 0.55 : 0.25;
+      const ratio          = answers.financeType === 'عقاري' ? 0.55 : 0.25;
       const monthlyCap     = pension * ratio;
       const totalWithProfit= monthlyCap * answers.duration;
       const factor         = (answers.duration/12)*(answers.margin/100) + 1;
@@ -309,15 +311,15 @@
       const profit         = totalWithProfit - net;
       const netWithPay     = net + answers.payment;
 
-      document.getElementById('greeting').textContent = `مرحباً ومسهلاً يا ${answers.name}`;
-      document.getElementById('serviceMonths').textContent    = serviceMonths + ' شهر';
-      document.getElementById('pension').textContent          = pension.toFixed(2) + ' ريال';
-      document.getElementById('chosenDuration').textContent   = answers.duration + ' شهر';
-      document.getElementById('monthlyCap').textContent       = monthlyCap.toFixed(2) + ' ريال';
-      document.getElementById('totalWithProfit').textContent  = totalWithProfit.toFixed(2) + ' ريال';
-      document.getElementById('net').textContent              = net.toFixed(2) + ' ريال';
-      document.getElementById('profit').textContent           = profit.toFixed(2) + ' ريال';
-      document.getElementById('netWithPay').textContent       = netWithPay.toFixed(2) + ' ريال';
+      document.getElementById('greeting').textContent        = `مرحباً ومسهلاً يا ${answers.name}`;
+      document.getElementById('serviceMonths').textContent   = serviceMonths + ' شهر';
+      document.getElementById('pension').textContent         = pension.toFixed(2) + ' ريال';
+      document.getElementById('chosenDuration').textContent  = answers.duration + ' شهر';
+      document.getElementById('monthlyCap').textContent      = monthlyCap.toFixed(2) + ' ريال';
+      document.getElementById('totalWithProfit').textContent = totalWithProfit.toFixed(2) + ' ريال';
+      document.getElementById('net').textContent             = net.toFixed(2) + ' ريال';
+      document.getElementById('profit').textContent          = profit.toFixed(2) + ' ريال';
+      document.getElementById('netWithPay').textContent      = netWithPay.toFixed(2) + ' ريال';
 
       document.getElementById('resultContainer').style.display = 'block';
       resetBtn.style.display = 'inline-block';
@@ -333,10 +335,11 @@
     }
 
     function d(id){ return document.getElementById(id).value; }
-    function opts(start, end){
+    function opts(start, end, selected) {
       let html = '';
-      for(let v = start; v <= end; v++){
-        html += `<option>${v.toString().padStart(2,'0')}</option>`;
+      for (let v = start; v <= end; v++) {
+        const sel = (v === selected) ? ' selected' : '';
+        html += `<option${sel}>${v.toString().padStart(2,'0')}</option>`;
       }
       return html;
     }
