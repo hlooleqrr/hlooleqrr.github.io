@@ -1,348 +1,421 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
-  <title>سرعة تملك العقار والحلول التمويلية</title>
-  <style>
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: #eef2f5;
-      margin: 0;
-      text-align: center;
-      font-size: 32px;
-      color: #333;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>سرعة تملك العقار والحلول التمويلية - حاسبة الراتب التقاعدي</title>
+
+<!-- استدعاء خطوط Google Tajawal -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal&display=swap');
+</style>
+
+<style>
+  /* قاعدة الخط */
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: linear-gradient(135deg, #e0f2f1, #ffffff);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #012a26;
+  }
+  header {
+    background: #004d40;
+    color: #b2dfdb;
+    padding: 22px 18px;
+    font-size: 30px;
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: 1.5px;
+    box-shadow: 0 5px 12px rgba(0,77,64,.4);
+  }
+  main {
+    flex: 1;
+    max-width: 700px;
+    margin: 30px auto 50px;
+    background: white;
+    border-radius: 18px;
+    padding: 30px 32px;
+    box-shadow: 0 12px 30px rgba(0,77,64,.25);
+    transition: box-shadow 0.3s ease;
+  }
+  main:hover {
+    box-shadow: 0 20px 40px rgba(0,77,64,.4);
+  }
+  h1 {
+    font-weight: 900;
+    font-size: 34px;
+    margin-bottom: 30px;
+    color: #004d40;
+    text-align: center;
+  }
+  label {
+    display: block;
+    font-weight: 700;
+    font-size: 20px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    color: #00695c;
+    user-select: none;
+  }
+  select, input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 2px solid #b2dfdb;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    color: #004d40;
+    font-weight: 600;
+    background-color: #e0f2f1;
+    cursor: pointer;
+  }
+  select:focus, input[type="text"]:focus, input[type="date"]:focus {
+    border-color: #004d40;
+    outline: none;
+    background-color: #c8e6c9;
+  }
+  input[type="text"]::placeholder {
+    font-weight: 400;
+    color: #00796b99;
+  }
+  button {
+    margin-top: 36px;
+    background-color: #00796b;
+    border: none;
+    border-radius: 14px;
+    padding: 18px 0;
+    width: 100%;
+    color: #e0f2f1;
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0,121,107,0.6);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button:hover {
+    background-color: #004d40;
+    box-shadow: 0 8px 20px rgba(0,77,64,0.9);
+  }
+  #militaryFields {
+    margin-top: 0;
+  }
+  #militaryFields select {
+    cursor: pointer;
+  }
+  .note {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #004d40cc;
+    user-select: none;
+  }
+  .result-container {
+    margin-top: 48px;
+    background-color: #b2dfdb;
+    padding: 28px 24px;
+    border-radius: 16px;
+    box-shadow: inset 0 0 12px rgba(0,77,64,0.3);
+    color: #004d40;
+    text-align: center;
+    font-weight: 700;
+  }
+  .result-container h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  .result-text {
+    font-size: 22px;
+    margin: 14px 0;
+  }
+  .highlight {
+    color: #004d40;
+    font-weight: 900;
+    font-size: 28px;
+  }
+  .salary-number {
+    font-size: 42px;
+    font-weight: 900;
+    color: #00796b;
+    margin-top: 24px;
+  }
+  footer {
+    background-color: #004d40;
+    color: #a7c7c4;
+    font-size: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    user-select: none;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    font-weight: 600;
+  }
+  footer a {
+    color: #80cbc4;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
+  /* Scroll bar for selects in some browsers */
+  select::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  select::-webkit-scrollbar-thumb {
+    background-color: #00796b;
+    border-radius: 8px;
+  }
+  @media (max-width: 768px) {
+    main {
+      margin: 20px 12px 80px;
+      padding: 24px 20px;
     }
-    header {
-      background: #005c48;
-      color: #fff;
-      padding: 25px;
-      font-size: 36px;
+    button {
+      font-size: 20px;
+      padding: 16px 0;
     }
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    label {
+      font-size: 18px;
     }
-    input, select, button {
-      font-family: inherit;
-      font-size: 32px;
-      margin: 20px 0;
+    input[type="text"], input[type="date"], select {
+      font-size: 16px;
+      padding: 12px 14px;
     }
-    .modern-input {
-      width: 100%;
-      padding: 18px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      transition: border-color .3s;
-    }
-    .modern-input:focus {
-      border-color: #005c48;
-      outline: none;
-    }
-    #startButton, #nextButton, #resetButton {
-      background: #005c48;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 18px 30px;
-      cursor: pointer;
-      transition: background .3s;
-    }
-    #startButton:hover, #nextButton:hover, #resetButton:hover {
-      background: #007b5a;
-    }
-    /* duration picker */
-    #durationPicker {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-      margin: 30px 0;
-    }
-    #durationPicker button {
-      width: 60px;
-      height: 60px;
-      font-size: 36px;
-      border: none;
-      border-radius: 50%;
-      background: #005c48;
-      color: #fff;
-      cursor: pointer;
-      transition: background .3s;
-    }
-    #durationPicker button:hover {
-      background: #007b5a;
-    }
-    #durationValue {
-      font-size: 48px;
-      font-weight: bold;
-      width: 140px;
-    }
-    /* result styling */
-    #resultContainer {
-      display: none;
-      text-align: right;
-    }
-    .result-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .result-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-      text-align: right;
-    }
-    .result-card h4 {
-      margin: 0 0 10px;
-      color: #005c48;
-    }
-    .result-value {
-      font-size: 36px;
-      font-weight: bold;
-      margin-top: 5px;
-      color: #333;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <header>سرعة تملك العقار والحلول التمويلية</header>
 
-  <div class="container" id="formContainer">
-    <button id="startButton">ابدأ الحسبة</button>
-    <div id="question" style="display:none;"></div>
-    <div id="nextContainer" style="display:none;">
-      <button id="nextButton">التالي</button>
-    </div>
+<header>سرعة تملك العقار والحلول التمويلية</header>
+
+<main>
+  <h1>حاسبة الراتب التقاعدي</h1>
+
+  <label for="clientName">الاسم الكريم:</label>
+  <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" autocomplete="off" />
+
+  <label for="retirementType">اختر نوع التقاعد:</label>
+  <select id="retirementType" aria-label="اختر نوع التقاعد">
+    <option value="" disabled selected>اختر النوع</option>
+    <option value="military">تقاعد عسكري</option>
+    <option value="civil">تقاعد مدني</option>
+  </select>
+
+  <div id="militaryFields" style="display:none;">
+    <label for="rank">اختر الرتبة العسكرية:</label>
+    <select id="rank" aria-label="اختر الرتبة العسكرية">
+      <option value="" disabled selected>اختر الرتبة</option>
+      <option value="جندي">جندي</option>
+      <option value="عريف">عريف</option>
+      <option value="وكيل رقيب">وكيل رقيب</option>
+      <option value="رقيب">رقيب</option>
+      <option value="رقيب أول">رقيب أول</option>
+      <option value="رئيس رقباء">رئيس رقباء</option>
+      <option value="ملازم">ملازم</option>
+      <option value="ملازم أول">ملازم أول</option>
+      <option value="نقيب">نقيب</option>
+      <option value="رائد">رائد</option>
+      <option value="مقدم">مقدم</option>
+      <option value="عقيد">عقيد</option>
+      <option value="عميد">عميد</option>
+      <option value="لواء">لواء</option>
+    </select>
+    <div class="note">اختيار الرتبة ضروري لحساب الراتب الأساسي والعلاوات بدقة.</div>
   </div>
 
-  <div class="container" id="resultContainer">
-    <h3>نتيجة الحسبة:</h3>
-    <div id="greeting"></div>
-    <div class="result-grid">
-      <div class="result-card">
-        <h4>مدة الخدمة حتى التقاعد</h4>
-        <div id="serviceMonths" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>الراتب التقاعدي</h4>
-        <div id="pension" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>مدة التمويل المختارة</h4>
-        <div id="chosenDuration" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>الحد الأقصى للقسط الشهري</h4>
-        <div id="monthlyCap" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>إجمالي التمويل مع الأرباح</h4>
-        <div id="totalWithProfit" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>الصافي بعد القسمة</h4>
-        <div id="net" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>الأرباح</h4>
-        <div id="profit" class="result-value"></div>
-      </div>
-      <div class="result-card">
-        <h4>الصافي مع الدفعة</h4>
-        <div id="netWithPay" class="result-value"></div>
-      </div>
-    </div>
-    <button id="resetButton">🔁 إعادة الحسبة</button>
-  </div>
+  <label for="birthDateHijri">تاريخ الميلاد (هجري):</label>
+  <input type="text" id="birthDateHijri" placeholder="YYYY/MM/DD" autocomplete="off" aria-describedby="birthDateHelp" />
+  <div class="note" id="birthDateHelp">استخدم الصيغة الهجرية: سنة/شهر/يوم (مثال: 1400/07/15)</div>
 
-  <script>
-    const basicSalaryMap = {
-      "جندي": 3220, "جندي أول": 3395, "عريف": 3765, "وكيل رقيب": 4455,
-      "رقيب": 5260, "رقيب أول": 6180, "رئيس رقباء": 7215,
-      "ملازم": 7590, "ملازم أول": 8835, "نقيب": 10600, "رائد": 13515,
-      "مقدم": 14645, "عقيد": 16500, "عميد": 18805, "لواء": 21000, "فريق": 22000
-    };
-    const allowanceMap = {
-      "جندي": 130, "جندي أول": 145, "عريف": 175, "وكيل رقيب": 200,
-      "رقيب": 250, "رقيب أول": 280, "رئيس رقباء": 330,
-      "ملازم": 380, "ملازم أول": 440, "نقيب": 490, "رائد": 540,
-      "مقدم": 615, "عقيد": 670, "عميد": 725, "لواء": 780, "فريق": 830
-    };
-    const retireAgeMap = {
-      "جندي":44,"جندي أول":44,"عريف":46,"وكيل رقيب":48,
-      "رقيب":50,"رقيب أول":50,"رئيس رقباء":52,
-      "ملازم":44,"ملازم أول":44,"نقيب":48,"رائد":50,
-      "مقدم":52,"عقيد":54,"عميد":56,"لواء":58,"فريق":60
-    };
-    let step = 0, answers = {}, maxDuration = 0;
+  <label for="joinDateHijri">تاريخ التعيين (هجري):</label>
+  <input type="text" id="joinDateHijri" placeholder="YYYY/MM/DD" autocomplete="off" aria-describedby="joinDateHelp" />
+  <div class="note" id="joinDateHelp">استخدم الصيغة الهجرية: سنة/شهر/يوم (مثال: 1420/01/10)</div>
 
-    const startBtn = document.getElementById('startButton');
-    const nextBtn  = document.getElementById('nextButton');
-    const resetBtn = document.getElementById('resetButton');
+  <p class="note" style="margin-top:30px;">
+    لكي تكون الحسبة دقيقة، يمكنك الاطلاع على صورة الرتب والرواتب الأساسية والعلاوات لمعرفة آخر راتب أساسي مستلم.
+  </p>
 
-    startBtn.onclick = startCalc;
-    nextBtn.onclick  = nextStep;
-    resetBtn.onclick = resetCalc;
+  <button id="calculateBtn" aria-label="ابدأ الحسبة">ابدأ الحسبة</button>
 
-    function startCalc() {
-      startBtn.style.display = 'none';
-      document.getElementById('question').style.display = 'block';
-      document.getElementById('nextContainer').style.display = 'block';
-      showStep();
+  <div id="result" class="result-container" style="display:none;"></div>
+</main>
+
+<footer>
+  سرعة تملك العقار والحلول التمويلية - الحلول معنا بلا تعقيد - جوالك: <span style="direction:ltr;">0555555555</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" rel="noopener">hlooleqrr.com</a>
+  <br />
+  <span id="dateTime"></span>
+</footer>
+
+<script>
+  // ----- تحويل التاريخ الهجري (نموذجي و تقريبي) -----
+  // التاريخ الهجري إلى تاريخ ميلادي تقريبي (يسمح الحساب)
+  function hijriToGregorian(year, month, day) {
+    // خوارزمية تقريبية (قد تكون دقيقة لتقدير عمر الخدمة)
+    // المرجع: https://www.staff.science.uu.nl/~gent0113/islam/islam_tabcal.htm
+    let jd = Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
+    let l = jd + 68569;
+    let n = Math.floor((4 * l) / 146097);
+    l = l - Math.floor((146097 * n + 3) / 4);
+    let i = Math.floor((4000 * (l + 1)) / 1461001);
+    l = l - Math.floor((1461 * i) / 4) + 31;
+    let j = Math.floor((80 * l) / 2447);
+    let dayG = l - Math.floor((2447 * j) / 80);
+    l = Math.floor(j / 11);
+    let monthG = j + 2 - 12 * l;
+    let yearG = 100 * (n - 49) + i + l;
+    return new Date(yearG, monthG -1, dayG);
+  }
+
+  // التاريخ الميلادي إلى هجري (تقريبي)
+  function gregorianToHijri(gDate) {
+    let jd = (gDate / 86400000) + 2440587.5;
+    let islamic = (jd - 1948439.5) / 29.530588853;
+    let year = Math.floor(islamic);
+    let month = Math.floor((islamic - year) * 12);
+    let day = Math.floor((((islamic - year) * 12) - month) * 29.5) + 1;
+    return { year: 1350 + year, month: month + 1, day: day };
+  }
+
+  function hijriToString(h) {
+    const months = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة",
+                    "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+    return `${h.day} ${months[h.month - 1]} ${h.year} هـ`;
+  }
+
+  // استدعاء العناصر
+  const retirementTypeSelect = document.getElementById('retirementType');
+  const militaryFields = document.getElementById('militaryFields');
+  const rankSelect = document.getElementById('rank');
+  const calculateBtn = document.getElementById('calculateBtn');
+  const resultDiv = document.getElementById('result');
+  const clientNameInput = document.getElementById('clientName');
+  const birthDateHijriInput = document.getElementById('birthDateHijri');
+  const joinDateHijriInput = document.getElementById('joinDateHijri');
+
+  // بيانات الرواتب الأساسية العسكرية والدرجات (نموذج تبسيطي)
+  // بناءً على أعلى درجة 15، مع تحديث واقعي ممكن من الصور
+  const militaryRanks = {
+    "جندي": 3200,
+    "عريف": 3500,
+    "وكيل رقيب": 3800,
+    "رقيب": 4200,
+    "رقيب أول": 4500,
+    "رئيس رقباء": 4800,
+    "ملازم": 5200,
+    "ملازم أول": 5600,
+    "نقيب": 6000,
+    "رائد": 6500,
+    "مقدم": 7000,
+    "عقيد": 7600,
+    "عميد": 8200,
+    "لواء": 9000
+  };
+
+  // الاستماع لتغيير نوع التقاعد
+  retirementTypeSelect.addEventListener('change', () => {
+    if (retirementTypeSelect.value === 'military') {
+      militaryFields.style.display = 'block';
+      rankSelect.setAttribute('required', 'required');
+    } else {
+      militaryFields.style.display = 'none';
+      rankSelect.removeAttribute('required');
+    }
+    clearResult();
+  });
+
+  function clearResult() {
+    resultDiv.style.display = 'none';
+    resultDiv.innerHTML = '';
+  }
+
+  // حساب سنوات الخدمة بناء على تواريخ التعيين والميلاد (هجري)
+  function calculateServiceYears(birthHijri, joinHijri) {
+    // تحويل الهجري إلى ميلادي
+    const birthG = hijriToGregorian(...birthHijri.split('/').map(x => +x));
+    const joinG = hijriToGregorian(...joinHijri.split('/').map(x => +x));
+
+    if (isNaN(birthG) || isNaN(joinG)) {
+      return null;
     }
 
-    function nextStep() {
-      switch(step) {
-        case 0: answers.name    = document.getElementById('inputName').value.trim();              break;
-        case 1:
-          answers.today        = { y:+d('todayYear'), m:+d('todayMonth'), d:+d('todayDay') };    break;
-        case 2: answers.financeType= d('financeType');                                            break;
-        case 3: answers.rank    = d('rank');                                                      break;
-        case 4:
-          answers.appoint      = { y:+d('appointYear'), m:+d('appointMonth'), d:+d('appointDay') }; break;
-        case 5:
-          answers.birth        = { y:+d('birthYear'), m:+d('birthMonth'), d:+d('birthDay') };     break;
-        case 6: answers.margin  = parseFloat(d('profitMargin'));                                   break;
-        case 7: answers.payment = parseFloat(d('paymentAmount'));                                  break;
-        case 8: answers.duration= +document.getElementById('durationValue').textContent;           break;
+    // حساب سن التقاعد 60 سنة هجري (تقريب)
+    const retirementHijriYear = birthHijri.split('/')[0]*1 + 60; // سنة هجري + 60
+    // مفترض أن التقويم الهجري متساوي لكن للتحويل نعيد حساب ميلادي للتقاعد
+    const retirementG = hijriToGregorian(retirementHijriYear, ...birthHijri.split('/').slice(1).map(x => +x));
+
+    // حساب مدة الخدمة بالأشهر حتى التقاعد أو الآن إذا متجاوز التقاعد
+    const now = new Date();
+    const endDate = (retirementG > now) ? now : retirementG;
+
+    let months = (endDate.getFullYear() - joinG.getFullYear()) * 12 + (endDate.getMonth() - joinG.getMonth());
+    if (endDate.getDate() < joinG.getDate()) months--;
+
+    let years = Math.floor(months / 12);
+    let remMonths = months % 12;
+    if(years < 0) years = 0;
+    if(remMonths < 0) remMonths = 0;
+
+    return { years, months, remMonths, endDate, retirementG };
+  }
+
+  // صياغة الرقم بالعربية (مبسطة)
+  function numberToArabicWords(number) {
+    // مكتبة مبسطة أو يمكن استدعاء مكتبة خارجية في مشروع حقيقي
+    return new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'SAR' }).format(number);
+  }
+
+  // الترحيب حسب الوقت
+  function getGreeting(name) {
+    const hour = new Date().getHours();
+    if(hour >= 5 && hour < 12) return `صباحك خير يا ${name}`;
+    if(hour >= 12 && hour < 18) return `مساءك خير يا ${name}`;
+    return `مساء الخير يا ${name}`;
+  }
+
+  // تحويل رقم إلى نص (مبسّط) للراتب (ألف ريال)
+  function formatSalaryText(num) {
+    return new Intl.NumberFormat('ar-EG').format(num) + " ريال سعودي";
+  }
+
+  // التحقق من صحة تاريخ هجري بسيط (YYYY/MM/DD)
+  function isValidHijriDate(str) {
+    const hijriRegex = /^(\d{4})\/(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])$/;
+    return hijriRegex.test(str);
+  }
+
+  // الحساب الأساسي
+  function calculateSalary() {
+    clearResult();
+    let name = clientNameInput.value.trim();
+    if(!name) {
+      alert('يرجى إدخال الاسم الكريم');
+      return;
+    }
+    let type = retirementTypeSelect.value;
+    if(!type) {
+      alert('يرجى اختيار نوع التقاعد');
+      return;
+    }
+    let rank = null;
+    if(type === 'military') {
+      rank = rankSelect.value;
+      if(!rank) {
+        alert('يرجى اختيار الرتبة العسكرية');
+        return;
       }
-      step++;
-      if (step <= 8) showStep();
-      else showResult();
     }
 
-    function showStep() {
-      const q = document.getElementById('question');
-      q.innerHTML = '';
-      nextBtn.style.display = 'inline-block';
-      switch(step) {
-        case 0:
-          q.innerHTML = `<input class="modern-input" type="text" id="inputName" placeholder="الاسم الكريم">`;
-          break;
-        case 1:
-          q.innerHTML = `
-            <label>تاريخ اليوم (هجري):</label><br>
-            <select class="modern-input" id="todayDay">${opts(1,30)}</select>
-            <select class="modern-input" id="todayMonth">${opts(1,12)}</select>
-            <select class="modern-input" id="todayYear">${opts(1430,1460)}</select>`;
-          break;
-        case 2:
-          q.innerHTML = `
-            <select class="modern-input" id="financeType">
-              <option value="عقاري">تمويل عقاري</option>
-              <option value="شخصي">تمويل شخصي</option>
-            </select>`;
-          break;
-        case 3:
-          q.innerHTML = `
-            <select class="modern-input" id="rank">
-              ${Object.keys(basicSalaryMap).map(r=>`<option>${r}</option>`).join('')}
-            </select>`;
-          break;
-        case 4:
-          q.innerHTML = `
-            <label>تاريخ التعيين (هجري):</label><br>
-            <select class="modern-input" id="appointDay">${opts(1,30,1)}</select>
-            <select class="modern-input" id="appointMonth">${opts(1,12,1)}</select>
-            <select class="modern-input" id="appointYear">${opts(1410,1460,1430)}</select>`;
-          break;
-        case 5:
-          q.innerHTML = `
-            <label>تاريخ الميلاد (هجري):</label><br>
-            <select class="modern-input" id="birthDay">${opts(1,30)}</select>
-            <select class="modern-input" id="birthMonth">${opts(1,12)}</select>
-            <select class="modern-input" id="birthYear">${opts(1370,1430)}</select>`;
-          break;
-        case 6:
-          q.innerHTML = `<input class="modern-input" type="number" id="profitMargin" placeholder="نسبة هامش الربح (%)">`;
-          break;
-        case 7:
-          q.innerHTML = `<input class="modern-input" type="number" id="paymentAmount" placeholder="مبلغ الدفعة">`;
-          break;
-        case 8:
-          const retireAge = retireAgeMap[answers.rank];
-          maxDuration = answers.financeType === 'شخصي'
-                        ? 60
-                        : Math.max((60 - retireAge) * 12, 0);
-          q.innerHTML = `
-            <label>مدة التمويل (بالشهور حتى ${maxDuration}):</label>
-            <div id="durationPicker">
-              <button id="durationMinus">−</button>
-              <div id="durationValue">${maxDuration}</div>
-              <button id="durationPlus">+</button>
-            </div>`;
-          document.getElementById('durationMinus').onclick = ()=>{
-            let v=+document.getElementById('durationValue').textContent;
-            if(v>1) document.getElementById('durationValue').textContent = v-1;
-          };
-          document.getElementById('durationPlus').onclick = ()=>{
-            let v=+document.getElementById('durationValue').textContent;
-            if(v<maxDuration) document.getElementById('durationValue').textContent = v+1;
-          };
-          break;
-      }
-      nextBtn.textContent = step < 8 ? 'التالي' : 'عرض النتيجة';
+    const birthHijri = birthDateHijriInput.value.trim();
+    if(!isValidHijriDate(birthHijri)) {
+      alert('يرجى إدخال تاريخ الميلاد الهجري بشكل صحيح (YYYY/MM/DD)');
+      return;
     }
-
-    function showResult() {
-      document.getElementById('formContainer').style.display   = 'none';
-      const retireAge = retireAgeMap[answers.rank];
-      const retireYear= answers.birth.y + retireAge;
-      const retireMonth= answers.birth.m;
-      const serviceMonths = (retireYear - answers.appoint.y) * 12 + (retireMonth - answers.appoint.m);
-
-      const sal       = basicSalaryMap[answers.rank];
-      const allowance = allowanceMap[answers.rank] || 0;
-      const gross     = sal + allowance;
-      const pension   = gross * serviceMonths / 420;
-
-      const ratio          = answers.financeType === 'عقاري' ? 0.55 : 0.25;
-      const monthlyCap     = pension * ratio;
-      const totalWithProfit= monthlyCap * answers.duration;
-      const factor         = (answers.duration/12)*(answers.margin/100) + 1;
-      const net            = totalWithProfit / factor;
-      const profit         = totalWithProfit - net;
-      const netWithPay     = net + answers.payment;
-
-      document.getElementById('greeting').textContent        = `مرحباً ومسهلاً يا ${answers.name}`;
-      document.getElementById('serviceMonths').textContent   = serviceMonths + ' شهر';
-      document.getElementById('pension').textContent         = pension.toFixed(2) + ' ريال';
-      document.getElementById('chosenDuration').textContent  = answers.duration + ' شهر';
-      document.getElementById('monthlyCap').textContent      = monthlyCap.toFixed(2) + ' ريال';
-      document.getElementById('totalWithProfit').textContent = totalWithProfit.toFixed(2) + ' ريال';
-      document.getElementById('net').textContent             = net.toFixed(2) + ' ريال';
-      document.getElementById('profit').textContent          = profit.toFixed(2) + ' ريال';
-      document.getElementById('netWithPay').textContent      = netWithPay.toFixed(2) + ' ريال';
-
-      document.getElementById('resultContainer').style.display = 'block';
-      resetBtn.style.display = 'inline-block';
-    }
-
-    function resetCalc() {
-      step = 0; answers = {};
-      document.getElementById('resultContainer').style.display = 'none';
-      document.getElementById('formContainer')  .style.display = 'block';
-      document.getElementById('startButton')    .style.display = 'inline-block';
-      document.getElementById('question')       .style.display = 'none';
-      document.getElementById('nextContainer')  .style.display = 'none';
-    }
-
-    function d(id){ return document.getElementById(id).value; }
-    function opts(start, end, selected) {
-      let html = '';
-      for (let v = start; v <= end; v++) {
-        const sel = (v === selected) ? ' selected' : '';
-        html += `<option${sel}>${v.toString().padStart(2,'0')}</option>`;
-      }
-      return html;
-    }
-  </script>
-</body>
-</html>
+    const joinHijri = joinDateHijriInput.value.trim();
+    if(!isValidHijriDate(joinHijri)) {
+      alert('ير
