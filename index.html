@@ -5,13 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>سرعة تملك العقار والحلول التمويلية - حاسبة الراتب التقاعدي</title>
 
-<!-- استدعاء خطوط Google Tajawal -->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal&display=swap');
-</style>
-
-<style>
-  /* قاعدة الخط */
   body {
     font-family: 'Tajawal', sans-serif;
     background: linear-gradient(135deg, #e0f2f1, #ffffff);
@@ -60,7 +55,7 @@
     color: #00695c;
     user-select: none;
   }
-  select, input[type="text"], input[type="date"] {
+  select, input[type="text"] {
     width: 100%;
     padding: 14px 18px;
     font-size: 18px;
@@ -73,7 +68,7 @@
     background-color: #e0f2f1;
     cursor: pointer;
   }
-  select:focus, input[type="text"]:focus, input[type="date"]:focus {
+  select:focus, input[type="text"]:focus {
     border-color: #004d40;
     outline: none;
     background-color: #c8e6c9;
@@ -141,6 +136,22 @@
     color: #00796b;
     margin-top: 24px;
   }
+  #resetBtn {
+    margin-top: 25px;
+    width: 180px;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 12px;
+    background-color: #004d40;
+    color: #b2dfdb;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,77,64,0.7);
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  #resetBtn:hover {
+    background-color: #00796b;
+  }
   footer {
     background-color: #004d40;
     color: #a7c7c4;
@@ -162,28 +173,20 @@
   footer a:hover {
     text-decoration: underline;
   }
-  /* Scroll bar for selects in some browsers */
-  select::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  select::-webkit-scrollbar-thumb {
-    background-color: #00796b;
-    border-radius: 8px;
-  }
   @media (max-width: 768px) {
     main {
       margin: 20px 12px 80px;
       padding: 24px 20px;
     }
-    button {
-      font-size: 20px;
-      padding: 16px 0;
+    button, #resetBtn {
+      font-size: 18px;
+      padding: 14px 0;
+      width: 100%;
     }
     label {
       font-size: 18px;
     }
-    input[type="text"], input[type="date"], select {
+    input[type="text"], select {
       font-size: 16px;
       padding: 12px 14px;
     }
@@ -226,16 +229,21 @@
       <option value="عميد">عميد</option>
       <option value="لواء">لواء</option>
     </select>
-    <div class="note">اختيار الرتبة ضروري لحساب الراتب الأساسي والعلاوات بدقة.</div>
   </div>
 
-  <label for="birthDateHijri">تاريخ الميلاد (هجري):</label>
-  <input type="text" id="birthDateHijri" placeholder="YYYY/MM/DD" autocomplete="off" aria-describedby="birthDateHelp" />
-  <div class="note" id="birthDateHelp">استخدم الصيغة الهجرية: سنة/شهر/يوم (مثال: 1400/07/15)</div>
+  <label>تاريخ الميلاد الهجري:</label>
+  <div style="display:flex; gap:10px;">
+    <select id="birthYear"></select>
+    <select id="birthMonth"></select>
+    <select id="birthDay"></select>
+  </div>
 
-  <label for="joinDateHijri">تاريخ التعيين (هجري):</label>
-  <input type="text" id="joinDateHijri" placeholder="YYYY/MM/DD" autocomplete="off" aria-describedby="joinDateHelp" />
-  <div class="note" id="joinDateHelp">استخدم الصيغة الهجرية: سنة/شهر/يوم (مثال: 1420/01/10)</div>
+  <label>تاريخ التعيين الهجري:</label>
+  <div style="display:flex; gap:10px;">
+    <select id="joinYear"></select>
+    <select id="joinMonth"></select>
+    <select id="joinDay"></select>
+  </div>
 
   <p class="note" style="margin-top:30px;">
     لكي تكون الحسبة دقيقة، يمكنك الاطلاع على صورة الرتب والرواتب الأساسية والعلاوات لمعرفة آخر راتب أساسي مستلم.
@@ -244,20 +252,79 @@
   <button id="calculateBtn" aria-label="ابدأ الحسبة">ابدأ الحسبة</button>
 
   <div id="result" class="result-container" style="display:none;"></div>
+  <button id="resetBtn" style="display:none;">إعادة الحسبة</button>
 </main>
 
 <footer>
-  سرعة تملك العقار والحلول التمويلية - الحلول معنا بلا تعقيد - جوالك: <span style="direction:ltr;">0555555555</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" rel="noopener">hlooleqrr.com</a>
+  سرعة تملك العقار والحلول التمويلية - الحلول معنا بلا تعقيد - جوالك: <span style="direction:ltr;">0506214458</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" rel="noopener">hlooleqrr.com</a>
   <br />
   <span id="dateTime"></span>
 </footer>
 
 <script>
-  // ----- تحويل التاريخ الهجري (نموذجي و تقريبي) -----
-  // التاريخ الهجري إلى تاريخ ميلادي تقريبي (يسمح الحساب)
+  // --- تهيئة خيارات السنوات والشهور والأيام ---
+  function populateSelect(selectElem, start, end, prefix = '') {
+    selectElem.innerHTML = '';
+    for(let i = start; i <= end; i++) {
+      let val = prefix + i;
+      let option = document.createElement('option');
+      option.value = i;
+      option.textContent = val;
+      selectElem.appendChild(option);
+    }
+  }
+  function populateDays(selectElem) {
+    selectElem.innerHTML = '';
+    for(let i = 1; i <= 30; i++) {
+      let val = i < 10 ? '0' + i : i;
+      let option = document.createElement('option');
+      option.value = i;
+      option.textContent = val;
+      selectElem.appendChild(option);
+    }
+  }
+
+  // تعبئة اختيارات التاريخ
+  const birthYear = document.getElementById('birthYear');
+  const birthMonth = document.getElementById('birthMonth');
+  const birthDay = document.getElementById('birthDay');
+  const joinYear = document.getElementById('joinYear');
+  const joinMonth = document.getElementById('joinMonth');
+  const joinDay = document.getElementById('joinDay');
+
+  populateSelect(birthYear, 1370, 1445);
+  populateSelect(joinYear, 1380, 1450);
+  populateSelect(birthMonth, 1, 12);
+  populateSelect(joinMonth, 1, 12);
+  populateDays(birthDay);
+  populateDays(joinDay);
+
+  // قيم افتراضية
+  birthYear.value = 1400;
+  birthMonth.value = 1;
+  birthDay.value = 1;
+  joinYear.value = 1420;
+  joinMonth.value = 1;
+  joinDay.value = 1;
+
+  // إظهار / إخفاء حقل الرتبة العسكرية
+  const retirementTypeSelect = document.getElementById('retirementType');
+  const militaryFields = document.getElementById('militaryFields');
+  const rankSelect = document.getElementById('rank');
+
+  retirementTypeSelect.addEventListener('change', () => {
+    if(retirementTypeSelect.value === 'military') {
+      militaryFields.style.display = 'block';
+      rankSelect.setAttribute('required', 'required');
+    } else {
+      militaryFields.style.display = 'none';
+      rankSelect.removeAttribute('required');
+    }
+    clearResult();
+  });
+
+  // تحويل التاريخ الهجري إلى ميلادي تقريبي
   function hijriToGregorian(year, month, day) {
-    // خوارزمية تقريبية (قد تكون دقيقة لتقدير عمر الخدمة)
-    // المرجع: https://www.staff.science.uu.nl/~gent0113/islam/islam_tabcal.htm
     let jd = Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
     let l = jd + 68569;
     let n = Math.floor((4 * l) / 146097);
@@ -269,37 +336,33 @@
     l = Math.floor(j / 11);
     let monthG = j + 2 - 12 * l;
     let yearG = 100 * (n - 49) + i + l;
-    return new Date(yearG, monthG -1, dayG);
+    return new Date(yearG, monthG - 1, dayG);
   }
 
-  // التاريخ الميلادي إلى هجري (تقريبي)
-  function gregorianToHijri(gDate) {
-    let jd = (gDate / 86400000) + 2440587.5;
-    let islamic = (jd - 1948439.5) / 29.530588853;
-    let year = Math.floor(islamic);
-    let month = Math.floor((islamic - year) * 12);
-    let day = Math.floor((((islamic - year) * 12) - month) * 29.5) + 1;
-    return { year: 1350 + year, month: month + 1, day: day };
+  // حساب سنوات الخدمة بالأشهر حتى التقاعد (60 سنة هجري)
+  function calculateServiceYears(birthHijri, joinHijri) {
+    const birthG = hijriToGregorian(...birthHijri);
+    const joinG = hijriToGregorian(...joinHijri);
+
+    // حساب عمر التقاعد هجري +60 سنة
+    const retirementHijriYear = birthHijri[0] + 60;
+    const retirementG = hijriToGregorian(retirementHijriYear, birthHijri[1], birthHijri[2]);
+
+    const now = new Date();
+    const endDate = retirementG > now ? now : retirementG;
+
+    let months = (endDate.getFullYear() - joinG.getFullYear()) * 12 + (endDate.getMonth() - joinG.getMonth());
+    if (endDate.getDate() < joinG.getDate()) months--;
+
+    let years = Math.floor(months / 12);
+    let remMonths = months % 12;
+    if(years < 0) years = 0;
+    if(remMonths < 0) remMonths = 0;
+
+    return { years, months, remMonths, endDate, retirementG };
   }
 
-  function hijriToString(h) {
-    const months = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة",
-                    "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
-    return `${h.day} ${months[h.month - 1]} ${h.year} هـ`;
-  }
-
-  // استدعاء العناصر
-  const retirementTypeSelect = document.getElementById('retirementType');
-  const militaryFields = document.getElementById('militaryFields');
-  const rankSelect = document.getElementById('rank');
-  const calculateBtn = document.getElementById('calculateBtn');
-  const resultDiv = document.getElementById('result');
-  const clientNameInput = document.getElementById('clientName');
-  const birthDateHijriInput = document.getElementById('birthDateHijri');
-  const joinDateHijriInput = document.getElementById('joinDateHijri');
-
-  // بيانات الرواتب الأساسية العسكرية والدرجات (نموذج تبسيطي)
-  // بناءً على أعلى درجة 15، مع تحديث واقعي ممكن من الصور
+  // الرواتب الأساسية العسكرية (افتراض أعلى درجة)
   const militaryRanks = {
     "جندي": 3200,
     "عريف": 3500,
@@ -317,59 +380,6 @@
     "لواء": 9000
   };
 
-  // الاستماع لتغيير نوع التقاعد
-  retirementTypeSelect.addEventListener('change', () => {
-    if (retirementTypeSelect.value === 'military') {
-      militaryFields.style.display = 'block';
-      rankSelect.setAttribute('required', 'required');
-    } else {
-      militaryFields.style.display = 'none';
-      rankSelect.removeAttribute('required');
-    }
-    clearResult();
-  });
-
-  function clearResult() {
-    resultDiv.style.display = 'none';
-    resultDiv.innerHTML = '';
-  }
-
-  // حساب سنوات الخدمة بناء على تواريخ التعيين والميلاد (هجري)
-  function calculateServiceYears(birthHijri, joinHijri) {
-    // تحويل الهجري إلى ميلادي
-    const birthG = hijriToGregorian(...birthHijri.split('/').map(x => +x));
-    const joinG = hijriToGregorian(...joinHijri.split('/').map(x => +x));
-
-    if (isNaN(birthG) || isNaN(joinG)) {
-      return null;
-    }
-
-    // حساب سن التقاعد 60 سنة هجري (تقريب)
-    const retirementHijriYear = birthHijri.split('/')[0]*1 + 60; // سنة هجري + 60
-    // مفترض أن التقويم الهجري متساوي لكن للتحويل نعيد حساب ميلادي للتقاعد
-    const retirementG = hijriToGregorian(retirementHijriYear, ...birthHijri.split('/').slice(1).map(x => +x));
-
-    // حساب مدة الخدمة بالأشهر حتى التقاعد أو الآن إذا متجاوز التقاعد
-    const now = new Date();
-    const endDate = (retirementG > now) ? now : retirementG;
-
-    let months = (endDate.getFullYear() - joinG.getFullYear()) * 12 + (endDate.getMonth() - joinG.getMonth());
-    if (endDate.getDate() < joinG.getDate()) months--;
-
-    let years = Math.floor(months / 12);
-    let remMonths = months % 12;
-    if(years < 0) years = 0;
-    if(remMonths < 0) remMonths = 0;
-
-    return { years, months, remMonths, endDate, retirementG };
-  }
-
-  // صياغة الرقم بالعربية (مبسطة)
-  function numberToArabicWords(number) {
-    // مكتبة مبسطة أو يمكن استدعاء مكتبة خارجية في مشروع حقيقي
-    return new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'SAR' }).format(number);
-  }
-
   // الترحيب حسب الوقت
   function getGreeting(name) {
     const hour = new Date().getHours();
@@ -378,44 +388,52 @@
     return `مساء الخير يا ${name}`;
   }
 
-  // تحويل رقم إلى نص (مبسّط) للراتب (ألف ريال)
-  function formatSalaryText(num) {
-    return new Intl.NumberFormat('ar-EG').format(num) + " ريال سعودي";
+  // تنسيق الأرقام بالعربية
+  function formatSalary(num) {
+    return num.toLocaleString('ar-EG') + " ريال";
   }
 
-  // التحقق من صحة تاريخ هجري بسيط (YYYY/MM/DD)
-  function isValidHijriDate(str) {
-    const hijriRegex = /^(\d{4})\/(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])$/;
-    return hijriRegex.test(str);
+  function clearResult() {
+    const res = document.getElementById('result');
+    res.style.display = 'none';
+    res.innerHTML = '';
+    document.getElementById('resetBtn').style.display = 'none';
   }
 
-  // الحساب الأساسي
-  function calculateSalary() {
-    clearResult();
-    let name = clientNameInput.value.trim();
-    if(!name) {
-      alert('يرجى إدخال الاسم الكريم');
-      return;
-    }
-    let type = retirementTypeSelect.value;
-    if(!type) {
-      alert('يرجى اختيار نوع التقاعد');
-      return;
-    }
-    let rank = null;
-    if(type === 'military') {
-      rank = rankSelect.value;
-      if(!rank) {
-        alert('يرجى اختيار الرتبة العسكرية');
-        return;
-      }
-    }
+  function showResult(data, name) {
+    const res = document.getElementById('result');
+    res.style.display = 'block';
 
-    const birthHijri = birthDateHijriInput.value.trim();
-    if(!isValidHijriDate(birthHijri)) {
-      alert('يرجى إدخال تاريخ الميلاد الهجري بشكل صحيح (YYYY/MM/DD)');
-      return;
-    }
-    const joinHijri = joinDateHijriInput.value.trim();
-    if(!isValidHijriDate(joinHijri)) {
-      alert('ير
+    // تحويل الميلادي للتاريخ الهجري (تقريب)
+    const hRet = toHijri(data.retirementDate);
+    const hijriStr = hijriToString(hRet);
+
+    const gregDate = data.retirementDate.toLocaleDateString('ar-SA');
+
+    const greeting = getGreeting(name);
+
+    let salaryRounded = Math.round(data.salary);
+
+    res.innerHTML = `
+      <h2>نتيجة الحسبة</h2>
+      <p class="result-text">${greeting}</p>
+      <p class="result-text">سوف تتقاعد بإذن الله وأنت بخير وأحسن حال في يوم <span class="highlight">${hijriStr}</span> هجري الموافق <span class="highlight">${gregDate}</span> ميلادي.</p>
+      <p class="result-text">سنوات خدمتك: <span class="highlight">${data.serviceYears}</span> سنة و <span class="highlight">${data.serviceMonths}</span> شهراً</p>
+      <p class="result-text">راتبك الأساسي: <span class="highlight">${formatSalary(data.baseSalary)}</span></p>
+      <p class="salary-number">الراتب التقاعدي المتوقع هو:<br><strong>${formatSalary(salaryRounded)}</strong></p>
+      <p style="margin-top: 35px; font-weight: 700; font-size: 16px; color: #004d40;">
+        مع تحيات <br/>
+        <span style="font-size: 18px;">سرعة تملك العقار والحلول التمويلية</span><br/>
+        الحلول معنا بلا تعقيد<br/>
+        جوالك: <span style="direction:ltr;">0506214458</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" style="color:#00796b;">hlooleqrr.com</a>
+      </p>
+    `;
+
+    // إظهار زر إعادة الحسبة
+    const resetBtn = document.getElementById('resetBtn');
+    resetBtn.style.display = 'inline-block';
+  }
+
+  // تحويل ميلادي لهجري (تقريب)
+  function toHijri(gDate) {
+    const jd = (Date.UTC(gDate.getFullYear(), gDate
