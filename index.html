@@ -3,16 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>سرعة تملك العقار والحلول التمويلية - حاسبة الراتب التقاعدي</title>
+<title>حاسبة راتب التقاعد - سرعة تملك العقار والحلول التمويلية</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal&display=swap');
   body {
     font-family: 'Tajawal', sans-serif;
     background: linear-gradient(135deg, #e0f2f1, #ffffff);
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    margin: 0; min-height: 100vh;
+    display: flex; flex-direction: column;
     color: #012a26;
   }
   header {
@@ -28,93 +26,85 @@
   main {
     flex: 1;
     max-width: 700px;
-    margin: 30px auto 50px;
+    margin: 30px auto 80px;
     background: white;
     border-radius: 18px;
     padding: 30px 32px;
     box-shadow: 0 12px 30px rgba(0,77,64,.25);
-    transition: box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  main:hover {
-    box-shadow: 0 20px 40px rgba(0,77,64,.4);
-  }
-  h1 {
-    font-weight: 900;
-    font-size: 34px;
-    margin-bottom: 30px;
-    color: #004d40;
-    text-align: center;
+  .step { display: none; flex-direction: column; }
+  .step.active { display: flex; }
+  h1, h2 {
+    font-weight: 900; color: #004d40; margin-bottom: 24px; text-align: center;
   }
   label {
-    display: block;
-    font-weight: 700;
-    font-size: 20px;
-    margin-top: 24px;
-    margin-bottom: 8px;
+    font-weight: 700; font-size: 20px;
+    margin: 20px 0 8px;
     color: #00695c;
-    user-select: none;
   }
-  select, input[type="text"] {
-    width: 100%;
-    padding: 14px 18px;
+  input[type="text"], select {
     font-size: 18px;
+    padding: 14px 18px;
     border-radius: 10px;
     border: 2px solid #b2dfdb;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
+    background-color: #e0f2f1;
     color: #004d40;
     font-weight: 600;
-    background-color: #e0f2f1;
     cursor: pointer;
-  }
-  select:focus, input[type="text"]:focus {
-    border-color: #004d40;
-    outline: none;
-    background-color: #c8e6c9;
+    width: 100%;
+    box-sizing: border-box;
   }
   input[type="text"]::placeholder {
-    font-weight: 400;
-    color: #00796b99;
+    font-weight: 400; color: #00796b99;
+  }
+  select:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #004d40;
+    background-color: #c8e6c9;
   }
   button {
-    margin-top: 36px;
+    margin-top: 40px;
     background-color: #00796b;
     border: none;
     border-radius: 14px;
     padding: 18px 0;
-    width: 100%;
-    color: #e0f2f1;
     font-size: 22px;
     font-weight: 900;
+    color: #e0f2f1;
     cursor: pointer;
     box-shadow: 0 6px 15px rgba(0,121,107,0.6);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
   }
-  button:hover {
+  button:hover:not(:disabled) {
     background-color: #004d40;
     box-shadow: 0 8px 20px rgba(0,77,64,0.9);
   }
-  #militaryFields {
-    margin-top: 0;
+  button:disabled {
+    background-color: #a5d6a7;
+    cursor: default;
+    box-shadow: none;
   }
-  #militaryFields select {
-    cursor: pointer;
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
   }
-  .note {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #004d40cc;
-    user-select: none;
+  .nav-buttons button {
+    width: 45%;
+    font-size: 18px;
+    padding: 14px 0;
   }
   .result-container {
-    margin-top: 48px;
     background-color: #b2dfdb;
     padding: 28px 24px;
     border-radius: 16px;
     box-shadow: inset 0 0 12px rgba(0,77,64,0.3);
     color: #004d40;
-    text-align: center;
     font-weight: 700;
+    text-align: center;
   }
   .result-container h2 {
     font-size: 32px;
@@ -177,10 +167,9 @@
       margin: 20px 12px 80px;
       padding: 24px 20px;
     }
-    button, #resetBtn {
-      font-size: 18px;
-      padding: 14px 0;
-      width: 100%;
+    button {
+      font-size: 20px;
+      padding: 16px 0;
     }
     label {
       font-size: 18px;
@@ -188,6 +177,10 @@
     input[type="text"], select {
       font-size: 16px;
       padding: 12px 14px;
+    }
+    .nav-buttons button {
+      width: 48%;
+      font-size: 16px;
     }
   }
 </style>
@@ -197,20 +190,73 @@
 <header>سرعة تملك العقار والحلول التمويلية</header>
 
 <main>
-  <h1>حاسبة الراتب التقاعدي</h1>
 
-  <label for="clientName">الاسم الكريم:</label>
-  <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" autocomplete="off" />
+  <!-- STEP 1: الترحيب -->
+  <section class="step active" id="step1">
+    <h1>مرحباً بك في الحاسبة لراتب التقاعدي<br>مع سرعة تملك العقار والحلول التمويلية</h1>
+    <button id="startBtn">ابدأ الحسبة</button>
+  </section>
 
-  <label for="retirementType">اختر نوع التقاعد:</label>
-  <select id="retirementType" aria-label="اختر نوع التقاعد">
-    <option value="" disabled selected>اختر النوع</option>
-    <option value="military">تقاعد عسكري</option>
-    <option value="civil">تقاعد مدني</option>
-  </select>
+  <!-- STEP 2: الاسم -->
+  <section class="step" id="step2">
+    <h2>ودنا نتعرف عليك</h2>
+    <label for="clientName">اسمك الكريم:</label>
+    <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" autocomplete="off" />
+    <div class="nav-buttons">
+      <button id="step2Prev">عودة</button>
+      <button id="step2Next" disabled>التالي</button>
+    </div>
+  </section>
 
-  <div id="militaryFields" style="display:none;">
-    <label for="rank">اختر الرتبة العسكرية:</label>
+  <!-- STEP 3: نوع التقاعد -->
+  <section class="step" id="step3">
+    <h2>وش ودك تحسب يا <span id="clientNameDisplay3"></span>؟</h2>
+    <label for="retirementType">اختر نوع التقاعد:</label>
+    <select id="retirementType" aria-label="اختر نوع التقاعد">
+      <option value="" disabled selected>اختر النوع</option>
+      <option value="military">راتب التقاعدي عسكري</option>
+      <option value="civil">راتب التقاعدي مدني</option>
+    </select>
+    <div class="nav-buttons">
+      <button id="step3Prev">عودة</button>
+      <button id="step3Next" disabled>التالي</button>
+    </div>
+  </section>
+
+  <!-- STEP 4: تاريخ الميلاد -->
+  <section class="step" id="step4">
+    <h2>تاريخ ميلادك يا <span id="clientNameDisplay4"></span></h2>
+    <label>سنة:</label>
+    <select id="birthYear"></select>
+    <label>شهر:</label>
+    <select id="birthMonth"></select>
+    <label>يوم:</label>
+    <select id="birthDay"></select>
+    <div class="nav-buttons">
+      <button id="step4Prev">عودة</button>
+      <button id="step4Next">التالي</button>
+    </div>
+  </section>
+
+  <!-- STEP 5: تاريخ التعيين -->
+  <section class="step" id="step5">
+    <h2>متى تاريخ تعيينك يا <span id="clientNameDisplay5"></span>؟</h2>
+    <label>سنة:</label>
+    <select id="joinYear"></select>
+    <label>شهر:</label>
+    <select id="joinMonth"></select>
+    <label>يوم:</label>
+    <select id="joinDay"></select>
+    <div class="nav-buttons">
+      <button id="step5Prev">عودة</button>
+      <button id="step5Next">التالي</button>
+    </div>
+  </section>
+
+  <!-- STEP 6: الرتبة (لعسكري فقط) -->
+  <section class="step" id="step6" style="display:none;">
+    <h2>اختر رتبتك العسكرية يا <span id="clientNameDisplay6"></span></h2>
+    <label for="rank">الرتبة العسكرية:</label>
     <select id="rank" aria-label="اختر الرتبة العسكرية">
       <option value="" disabled selected>اختر الرتبة</option>
       <option value="جندي">جندي</option>
@@ -228,30 +274,19 @@
       <option value="عميد">عميد</option>
       <option value="لواء">لواء</option>
     </select>
-  </div>
+    <div class="nav-buttons">
+      <button id="step6Prev">عودة</button>
+      <button id="step6Next" disabled>التالي</button>
+    </div>
+  </section>
 
-  <label>تاريخ الميلاد الهجري:</label>
-  <div style="display:flex; gap:10px;">
-    <select id="birthYear"></select>
-    <select id="birthMonth"></select>
-    <select id="birthDay"></select>
-  </div>
+  <!-- STEP 7: النتيجة -->
+  <section class="step" id="step7">
+    <h2>نتيجة الحسبة</h2>
+    <div id="result" class="result-container"></div>
+    <button id="resetBtn">إعادة الحسبة</button>
+  </section>
 
-  <label>تاريخ التعيين الهجري:</label>
-  <div style="display:flex; gap:10px;">
-    <select id="joinYear"></select>
-    <select id="joinMonth"></select>
-    <select id="joinDay"></select>
-  </div>
-
-  <p class="note" style="margin-top:30px;">
-    لكي تكون الحسبة دقيقة، يمكنك الاطلاع على صورة الرتب والرواتب الأساسية والعلاوات لمعرفة آخر راتب أساسي مستلم.
-  </p>
-
-  <button id="calculateBtn" aria-label="ابدأ الحسبة">ابدأ الحسبة</button>
-
-  <div id="result" class="result-container" style="display:none;"></div>
-  <button id="resetBtn" style="display:none;">إعادة الحسبة</button>
 </main>
 
 <footer>
@@ -261,7 +296,7 @@
 </footer>
 
 <script>
-  // تعبئة القوائم (سنوات، شهور، أيام)
+  // تعبئة القوائم للسنة والشهر واليوم
   function populateSelect(selectElem, start, end) {
     selectElem.innerHTML = '';
     for(let i = start; i <= end; i++) {
@@ -281,77 +316,66 @@
     }
   }
 
-  window.onload = function() {
-    const birthYear = document.getElementById('birthYear');
-    const birthMonth = document.getElementById('birthMonth');
-    const birthDay = document.getElementById('birthDay');
-    const joinYear = document.getElementById('joinYear');
-    const joinMonth = document.getElementById('joinMonth');
-    const joinDay = document.getElementById('joinDay');
+  // عناصر التاريخ ميلاد وتعـيين لكل صفحة
+  const birthYear = document.getElementById('birthYear');
+  const birthMonth = document.getElementById('birthMonth');
+  const birthDay = document.getElementById('birthDay');
+  const joinYear = document.getElementById('joinYear');
+  const joinMonth = document.getElementById('joinMonth');
+  const joinDay = document.getElementById('joinDay');
 
+  // تعبئة القوائم والقيم الافتراضية
+  function initDateSelects() {
     populateSelect(birthYear, 1370, 1445);
     populateSelect(joinYear, 1380, 1450);
     populateSelect(birthMonth, 1, 12);
     populateSelect(joinMonth, 1, 12);
     populateDays(birthDay);
     populateDays(joinDay);
-
     birthYear.value = 1400;
     birthMonth.value = 1;
     birthDay.value = 1;
     joinYear.value = 1420;
     joinMonth.value = 1;
     joinDay.value = 1;
-  };
+  }
 
-  const retirementTypeSelect = document.getElementById('retirementType');
-  const militaryFields = document.getElementById('militaryFields');
+  // التحكم بالخطوات
+  const steps = [...document.querySelectorAll('.step')];
+  let currentStep = 0;
+  function showStep(index) {
+    steps.forEach((s,i) => {
+      s.classList.toggle('active', i === index);
+    });
+    currentStep = index;
+  }
+
+  // أزرار التنقل
+  const startBtn = document.getElementById('startBtn');
+  const step2Next = document.getElementById('step2Next');
+  const step2Prev = document.getElementById('step2Prev');
+  const step3Next = document.getElementById('step3Next');
+  const step3Prev = document.getElementById('step3Prev');
+  const step4Next = document.getElementById('step4Next');
+  const step4Prev = document.getElementById('step4Prev');
+  const step5Next = document.getElementById('step5Next');
+  const step5Prev = document.getElementById('step5Prev');
+  const step6Next = document.getElementById('step6Next');
+  const step6Prev = document.getElementById('step6Prev');
+  const resetBtn = document.getElementById('resetBtn');
+
+  // عناصر الإدخال
+  const clientNameInput = document.getElementById('clientName');
+  const retirementType = document.getElementById('retirementType');
   const rankSelect = document.getElementById('rank');
 
-  retirementTypeSelect.addEventListener('change', () => {
-    if(retirementTypeSelect.value === 'military') {
-      militaryFields.style.display = 'block';
-      rankSelect.setAttribute('required', 'required');
-    } else {
-      militaryFields.style.display = 'none';
-      rankSelect.removeAttribute('required');
-    }
-    clearResult();
-  });
+  // عرض الاسم في الخطوات
+  const clientNameDisplay3 = document.getElementById('clientNameDisplay3');
+  const clientNameDisplay4 = document.getElementById('clientNameDisplay4');
+  const clientNameDisplay5 = document.getElementById('clientNameDisplay5');
+  const clientNameDisplay6 = document.getElementById('clientNameDisplay6');
 
-  // تحويل هجري إلى ميلادي تقريبي
-  function hijriToGregorian(year, month, day) {
-    let jd = Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
-    let l = jd + 68569;
-    let n = Math.floor((4 * l) / 146097);
-    l = l - Math.floor((146097 * n + 3) / 4);
-    let i = Math.floor((4000 * (l + 1)) / 1461001);
-    l = l - Math.floor((1461 * i) / 4) + 31;
-    let j = Math.floor((80 * l) / 2447);
-    let dayG = l - Math.floor((2447 * j) / 80);
-    l = Math.floor(j / 11);
-    let monthG = j + 2 - 12 * l;
-    let yearG = 100 * (n - 49) + i + l;
-    return new Date(yearG, monthG - 1, dayG);
-  }
-
-  // حساب سنوات الخدمة حتى التقاعد (60 سنة هجري)
-  function calculateServiceYears(birthHijri, joinHijri) {
-    const birthG = hijriToGregorian(...birthHijri);
-    const joinG = hijriToGregorian(...joinHijri);
-    const retirementHijriYear = birthHijri[0] + 60;
-    const retirementG = hijriToGregorian(retirementHijriYear, birthHijri[1], birthHijri[2]);
-    const now = new Date();
-    const endDate = retirementG > now ? now : retirementG;
-    let months = (endDate.getFullYear() - joinG.getFullYear()) * 12 + (endDate.getMonth() - joinG.getMonth());
-    if (endDate.getDate() < joinG.getDate()) months--;
-    let years = Math.floor(months / 12);
-    let remMonths = months % 12;
-    if(years < 0) years = 0;
-    if(remMonths < 0) remMonths = 0;
-    return { years, months, remMonths, endDate, retirementG };
-  }
-
+  // الرواتب العسكرية
   const militaryRanks = {
     "جندي": 3200,
     "عريف": 3500,
@@ -369,37 +393,71 @@
     "لواء": 9000
   };
 
-  function getGreeting(name) {
-    const hour = new Date().getHours();
-    if(hour >= 5 && hour < 12) return `صباحك خير يا ${name}`;
-    if(hour >= 12 && hour < 18) return `مساءك خير يا ${name}`;
-    return `مساء الخير يا ${name}`;
+  // تمكين أزرار التنقل حسب صحة الإدخال
+  function validateStep2() {
+    step2Next.disabled = clientNameInput.value.trim() === '';
+  }
+  function validateStep3() {
+    step3Next.disabled = retirementType.value === '';
+  }
+  function validateStep6() {
+    step6Next.disabled = rankSelect.value === '';
   }
 
-  function formatSalary(num) {
-    return num.toLocaleString('ar-EG') + " ريال";
-  }
+  // بدء الحسبة
+  startBtn.onclick = () => {
+    initDateSelects();
+    showStep(1);
+  };
+  clientNameInput.addEventListener('input', validateStep2);
+  retirementType.addEventListener('change', () => {
+    validateStep3();
+    if(retirementType.value === 'military') {
+      document.getElementById('step6').style.display = 'flex';
+    } else {
+      document.getElementById('step6').style.display = 'none';
+    }
+  });
+  rankSelect.addEventListener('change', validateStep6);
 
-  function clearResult() {
-    const res = document.getElementById('result');
-    res.style.display = 'none';
-    res.innerHTML = '';
-    document.getElementById('resetBtn').style.display = 'none';
-  }
+  step2Next.onclick = () => {
+    let name = clientNameInput.value.trim();
+    clientNameDisplay3.textContent = name;
+    clientNameDisplay4.textContent = name;
+    clientNameDisplay5.textContent = name;
+    clientNameDisplay6.textContent = name;
+    showStep(2);
+  };
+  step2Prev.onclick = () => showStep(0);
 
-  function showResult(data, name) {
-    const res = document.getElementById('result');
-    res.style.display = 'block';
-    const hRet = toHijri(data.retirementDate);
-    const hijriStr = hijriToString(hRet);
-    const gregDate = data.retirementDate.toLocaleDateString('ar-SA');
-    const greeting = getGreeting(name);
-    let salaryRounded = Math.round(data.salary);
-    res.innerHTML = `
-      <h2>نتيجة الحسبة</h2>
-      <p class="result-text">${greeting}</p>
-      <p class="result-text">سوف تتقاعد بإذن الله وأنت بخير وأحسن حال في يوم <span class="highlight">${hijriStr}</span> هجري الموافق <span class="highlight">${gregDate}</span> ميلادي.</p>
-      <p class="result-text">سنوات خدمتك: <span class="highlight">${data.serviceYears}</span> سنة و <span class="highlight">${data.serviceMonths}</span> شهراً</p>
-      <p class="result-text">راتبك الأساسي: <span class="highlight">${formatSalary(data.baseSalary)}</span></p>
-      <p class="salary-number">الراتب التقاعدي المتوقع هو:<br><strong>${formatSalary(salaryRounded)}</strong></p>
-      <p style="margin-top: 35px; font-weight: 700; font-size:
+  step3Next.onclick = () => {
+    if(retirementType.value === 'military') showStep(5);
+    else showStep(3);
+  };
+  step3Prev.onclick = () => showStep(1);
+
+  step4Next.onclick = () => showStep(4);
+  step4Prev.onclick = () => {
+    if(retirementType.value === 'military') showStep(5);
+    else showStep(2);
+  };
+
+  step5Next.onclick = () => {
+    if(retirementType.value === 'military') showStep(6);
+    else {
+      calculateAndShowResult();
+      showStep(6);
+    }
+  };
+  step5Prev.onclick = () => showStep(3);
+
+  step6Next.onclick = () => {
+    calculateAndShowResult();
+    showStep(6);
+  };
+  step6Prev.onclick = () => showStep(4);
+
+  resetBtn.onclick = () => {
+    // إعادة تعيين جميع الحقول
+    clientNameInput.value = '';
+   
