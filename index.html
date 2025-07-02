@@ -2,13 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<title>حاسبة التمويل - خطوة خطوة</title>
+<title>حاسبة تمويل - تجربة زر ابدأ والتنقل</title>
 <style>
   body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; }
   .step { display: none; }
   .step.active { display: block; }
-  button { padding: 10px 20px; margin-top: 10px; font-size: 18px; }
-  label, select, input { display: block; margin-top: 12px; font-size: 18px; width: 100%; max-width: 400px; }
+  button { padding: 10px 20px; margin-top: 10px; font-size: 18px; cursor: pointer; }
+  input, select { margin-top: 12px; font-size: 18px; width: 100%; max-width: 400px; }
 </style>
 </head>
 <body>
@@ -34,28 +34,17 @@
   <button id="btnNext3" disabled>التالي</button>
 </div>
 
-<div id="step4" class="step">
-  <h2>ادخل راتبك الشهري الصافي (ريال)</h2>
-  <input type="number" id="salary" placeholder="مثال: 15000" min="0" />
-  <button id="btnNext4" disabled>التالي</button>
-</div>
-
 <script>
   const btnStart = document.getElementById('btnStart');
   const btnNext2 = document.getElementById('btnNext2');
   const btnNext3 = document.getElementById('btnNext3');
-  const btnNext4 = document.getElementById('btnNext4');
 
   const step1 = document.getElementById('step1');
   const step2 = document.getElementById('step2');
   const step3 = document.getElementById('step3');
-  const step4 = document.getElementById('step4');
 
   const clientName = document.getElementById('clientName');
   const financeType = document.getElementById('financeType');
-  const salary = document.getElementById('salary');
-
-  let answers = {};
 
   btnStart.addEventListener('click', () => {
     step1.classList.remove('active');
@@ -68,7 +57,6 @@
   });
 
   btnNext2.addEventListener('click', () => {
-    answers.clientName = clientName.value.trim();
     step2.classList.remove('active');
     step3.classList.add('active');
   });
@@ -78,20 +66,8 @@
   });
 
   btnNext3.addEventListener('click', () => {
-    answers.financeType = financeType.value;
-    step3.classList.remove('active');
-    step4.classList.add('active');
-    salary.focus();
-  });
-
-  salary.addEventListener('input', () => {
-    btnNext4.disabled = !(salary.value > 0);
-  });
-
-  btnNext4.addEventListener('click', () => {
-    answers.salary = parseFloat(salary.value);
-    alert(`البيانات المدخلة:\nالاسم: ${answers.clientName}\nنوع التمويل: ${answers.financeType}\nالراتب: ${answers.salary} ريال`);
-    // هنا يمكن نكمل الخطوات أو حساب النتيجة
+    alert('شكراً لك، اخترت نوع التمويل: ' + financeType.value);
+    // هنا نقدر نكمل الخطوات أو الحساب
   });
 </script>
 
