@@ -262,52 +262,49 @@
 </footer>
 
 <script>
-  // --- تهيئة خيارات السنوات والشهور والأيام ---
-  function populateSelect(selectElem, start, end, prefix = '') {
+  // تعبئة القوائم (سنوات، شهور، أيام)
+  function populateSelect(selectElem, start, end) {
     selectElem.innerHTML = '';
     for(let i = start; i <= end; i++) {
-      let val = prefix + i;
-      let option = document.createElement('option');
+      const option = document.createElement('option');
       option.value = i;
-      option.textContent = val;
+      option.textContent = i;
       selectElem.appendChild(option);
     }
   }
   function populateDays(selectElem) {
     selectElem.innerHTML = '';
     for(let i = 1; i <= 30; i++) {
-      let val = i < 10 ? '0' + i : i;
-      let option = document.createElement('option');
+      const option = document.createElement('option');
       option.value = i;
-      option.textContent = val;
+      option.textContent = i < 10 ? '0' + i : i;
       selectElem.appendChild(option);
     }
   }
 
-  // تعبئة اختيارات التاريخ
-  const birthYear = document.getElementById('birthYear');
-  const birthMonth = document.getElementById('birthMonth');
-  const birthDay = document.getElementById('birthDay');
-  const joinYear = document.getElementById('joinYear');
-  const joinMonth = document.getElementById('joinMonth');
-  const joinDay = document.getElementById('joinDay');
+  window.onload = function() {
+    const birthYear = document.getElementById('birthYear');
+    const birthMonth = document.getElementById('birthMonth');
+    const birthDay = document.getElementById('birthDay');
+    const joinYear = document.getElementById('joinYear');
+    const joinMonth = document.getElementById('joinMonth');
+    const joinDay = document.getElementById('joinDay');
 
-  populateSelect(birthYear, 1370, 1445);
-  populateSelect(joinYear, 1380, 1450);
-  populateSelect(birthMonth, 1, 12);
-  populateSelect(joinMonth, 1, 12);
-  populateDays(birthDay);
-  populateDays(joinDay);
+    populateSelect(birthYear, 1370, 1445);
+    populateSelect(joinYear, 1380, 1450);
+    populateSelect(birthMonth, 1, 12);
+    populateSelect(joinMonth, 1, 12);
+    populateDays(birthDay);
+    populateDays(joinDay);
 
-  // قيم افتراضية
-  birthYear.value = 1400;
-  birthMonth.value = 1;
-  birthDay.value = 1;
-  joinYear.value = 1420;
-  joinMonth.value = 1;
-  joinDay.value = 1;
+    birthYear.value = 1400;
+    birthMonth.value = 1;
+    birthDay.value = 1;
+    joinYear.value = 1420;
+    joinMonth.value = 1;
+    joinDay.value = 1;
+  };
 
-  // إظهار / إخفاء حقل الرتبة العسكرية
   const retirementTypeSelect = document.getElementById('retirementType');
   const militaryFields = document.getElementById('militaryFields');
   const rankSelect = document.getElementById('rank');
@@ -323,7 +320,7 @@
     clearResult();
   });
 
-  // تحويل التاريخ الهجري إلى ميلادي تقريبي
+  // تحويل هجري إلى ميلادي تقريبي
   function hijriToGregorian(year, month, day) {
     let jd = Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
     let l = jd + 68569;
@@ -339,30 +336,23 @@
     return new Date(yearG, monthG - 1, dayG);
   }
 
-  // حساب سنوات الخدمة بالأشهر حتى التقاعد (60 سنة هجري)
+  // حساب سنوات الخدمة حتى التقاعد (60 سنة هجري)
   function calculateServiceYears(birthHijri, joinHijri) {
     const birthG = hijriToGregorian(...birthHijri);
     const joinG = hijriToGregorian(...joinHijri);
-
-    // حساب عمر التقاعد هجري +60 سنة
     const retirementHijriYear = birthHijri[0] + 60;
     const retirementG = hijriToGregorian(retirementHijriYear, birthHijri[1], birthHijri[2]);
-
     const now = new Date();
     const endDate = retirementG > now ? now : retirementG;
-
     let months = (endDate.getFullYear() - joinG.getFullYear()) * 12 + (endDate.getMonth() - joinG.getMonth());
     if (endDate.getDate() < joinG.getDate()) months--;
-
     let years = Math.floor(months / 12);
     let remMonths = months % 12;
     if(years < 0) years = 0;
     if(remMonths < 0) remMonths = 0;
-
     return { years, months, remMonths, endDate, retirementG };
   }
 
-  // الرواتب الأساسية العسكرية (افتراض أعلى درجة)
   const militaryRanks = {
     "جندي": 3200,
     "عريف": 3500,
@@ -380,7 +370,6 @@
     "لواء": 9000
   };
 
-  // الترحيب حسب الوقت
   function getGreeting(name) {
     const hour = new Date().getHours();
     if(hour >= 5 && hour < 12) return `صباحك خير يا ${name}`;
@@ -388,7 +377,6 @@
     return `مساء الخير يا ${name}`;
   }
 
-  // تنسيق الأرقام بالعربية
   function formatSalary(num) {
     return num.toLocaleString('ar-EG') + " ريال";
   }
@@ -403,17 +391,11 @@
   function showResult(data, name) {
     const res = document.getElementById('result');
     res.style.display = 'block';
-
-    // تحويل الميلادي للتاريخ الهجري (تقريب)
     const hRet = toHijri(data.retirementDate);
     const hijriStr = hijriToString(hRet);
-
     const gregDate = data.retirementDate.toLocaleDateString('ar-SA');
-
     const greeting = getGreeting(name);
-
     let salaryRounded = Math.round(data.salary);
-
     res.innerHTML = `
       <h2>نتيجة الحسبة</h2>
       <p class="result-text">${greeting}</p>
@@ -428,12 +410,13 @@
         جوالك: <span style="direction:ltr;">0506214458</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" style="color:#00796b;">hlooleqrr.com</a>
       </p>
     `;
-
-    // إظهار زر إعادة الحسبة
     const resetBtn = document.getElementById('resetBtn');
     resetBtn.style.display = 'inline-block';
   }
 
-  // تحويل ميلادي لهجري (تقريب)
   function toHijri(gDate) {
-    const jd = (Date.UTC(gDate.getFullYear(), gDate
+    const jd = (Date.UTC(gDate.getFullYear(), gDate.getMonth(), gDate.getDate()) / 86400000) + 2440587.5;
+    const islamic = (jd - 1948439.5) / 29.530588853;
+    const year = Math.floor(islamic);
+    const month = Math.floor((islamic - year) * 12);
+    const day = Math.floor((((islamic - year) * 12) - month) * 29.5) + 1
