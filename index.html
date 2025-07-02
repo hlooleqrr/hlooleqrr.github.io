@@ -104,14 +104,11 @@
     color: #004d40;
     font-weight: 700;
     text-align: center;
+    line-height: 1.5;
   }
   .result-container h2 {
     font-size: 32px;
     margin-bottom: 20px;
-  }
-  .result-text {
-    font-size: 22px;
-    margin: 14px 0;
   }
   .highlight {
     color: #004d40;
@@ -311,7 +308,6 @@
     "رئيس رقباء": 52
   };
 
-  // جداول الرواتب
   const salariesIndividuals = {
     "جندي":      [3220, 3350, 3480, 3610, 3740, 3870, 4000, 4130, 4260, 4390, 4520, 4650, 4780, 4910, 5040],
     "جندي أول":  [3395, 3530, 3665, 3800, 3935, 4070, 4205, 4340, 4475, 4610, 4745, 4880, 5015, 5150, 5285],
@@ -335,20 +331,20 @@
     "فريق أول": [31900, 32500, 33100, 33700, 34300, 34900, 35500, 36100, 36700, 37300, 37900, 38500, 39100, 39700, 40300]
   };
 
-  // حساب سنوات الخدمة من تواريخ هجري (تقديرية)
-  function calculateServiceYears(joinY, joinM, retireY, retireM) {
-    let years = retireY - joinY;
-    let months = retireM - joinM;
-    if(months < 0) {
-      years--;
-      months += 12;
+  // دوال ملء القوائم بالتواريخ الهجرية
+  function populateSelect(selectElem, start, end) {
+    selectElem.innerHTML = '';
+    for(let i = start; i <= end; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      selectElem.appendChild(option);
     }
-    return years + months / 12;
   }
-
-  // حساب سن التقاعد حسب الرتبة
-  function getRetirementAge(rank) {
-    return retirementAges[rank] || 60; // افتراض 60 إذا غير معروف
-  }
-
-  // دالة إرجاع الراتب الأساسي حسب الرتبة وسنوات الخدمة
+  function populateDays(selectElem) {
+    selectElem.innerHTML = '';
+    for(let i = 1; i <= 30; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i < 10 ? '0' + i : i;
+      selectElem
