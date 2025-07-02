@@ -266,7 +266,7 @@
 </footer>
 
 <script>
-  // ملء قوائم السنوات والشهور والأيام (هجري)
+  // ملء القوائم بالسنوات والشهور والأيام (هجري)
   function populateSelect(selectElem, start, end) {
     selectElem.innerHTML = '';
     for(let i = start; i <= end; i++) {
@@ -295,7 +295,7 @@
     }
   }
 
-  // بيانات التقاعد وسنوات الخدمة والرواتب
+  // بيانات التقاعد والرواتب حسب الرتبة (مبسطة)
   const retirementAges = {
     "ملازم": 44, "ملازم أول": 44,
     "نقيب": 46,
@@ -345,14 +345,4 @@
     birthYear: null,
     birthMonth: null,
     birthDay: null,
-    joinYear: null,
-    joinMonth: null,
-    joinDay: null,
-    rank: ''
-  };
-
-  // إظهار الخطوة المطلوبة وإخفاء البقية
-  function showStep(stepNum) {
-    const steps = document.querySelectorAll('.step');
-    steps.forEach(s => s.classList.remove('active'));
-    document.getElementBy
+   
