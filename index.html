@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبة التمويل والتقاعد الدقيقة - سرعة تملك العقار</title>
+<title>حاسبة التمويل والتقاعد المتكاملة - سرعة تملك العقار</title>
 <style>
   body {
     font-family: 'Tajawal', sans-serif;
@@ -31,7 +31,7 @@
     padding: 30px 36px;
     margin: 30px auto 60px;
     width: 95%;
-    max-width: 700px;
+    max-width: 720px;
     box-shadow: 0 12px 30px rgba(0,77,64,0.25);
   }
   h1, h2 {
@@ -105,18 +105,13 @@
     text-align: center;
     line-height: 1.5;
     font-size: 20px;
-    min-height: 260px;
+    min-height: 280px;
+    margin-top: 30px;
   }
   .highlight {
     font-weight: 900;
     font-size: 28px;
     color: #004d40;
-  }
-  .small-note {
-    font-size: 18px;
-    margin-top: 12px;
-    color: #2e7d32;
-    font-weight: 700;
   }
   footer {
     background-color: #004d40;
@@ -158,25 +153,23 @@
 <main>
   <!-- Step 1 -->
   <section class="step active" id="step1">
-    <h1>صباحك/مساءك خير يا غالي<br>مرحباً بك في حاسبة التمويل والتقاعد</h1>
+    <h1>حياك الله!<br>حاسبة التمويل العقاري والشخصي مع التقاعد</h1>
     <button id="btnStart">ابدأ الحسبة</button>
   </section>
 
   <!-- Step 2 -->
   <section class="step" id="step2">
-    <h2>ودنا نتعرف عليك</h2>
-    <label for="clientName">اسمك الكريم:</label>
+    <h2>اسمك الكريم:</h2>
     <input type="text" id="clientName" autocomplete="off" />
     <button id="btnNext2" disabled>التالي</button>
   </section>
 
   <!-- Step 3 -->
   <section class="step" id="step3">
-    <h2>وش ودك تحسب يا <span id="displayName3"></span>؟</h2>
-    <label for="financeType">اختر نوع التمويل:</label>
+    <h2>اختر نوع التمويل:</h2>
     <select id="financeType">
-      <option value="">اختر...</option>
-      <option value="personal">تمويل شخصي أو تمويل استهلاكي</option>
+      <option value="">-- اختر --</option>
+      <option value="personal">تمويل شخصي أو استهلاكي</option>
       <option value="realEstate">تمويل عقاري</option>
     </select>
     <button id="btnNext3" disabled>التالي</button>
@@ -184,10 +177,9 @@
 
   <!-- Step 4 -->
   <section class="step" id="step4">
-    <h2>وش نوع وظيفتك يا <span id="displayName4"></span>؟</h2>
-    <label for="jobType">اختر نوع الوظيفة:</label>
+    <h2>نوع الوظيفة:</h2>
     <select id="jobType">
-      <option value="">اختر...</option>
+      <option value="">-- اختر --</option>
       <option value="military">عسكري</option>
       <option value="civil">مدني (قطاع حكومي)</option>
       <option value="semiGov">خاص (شبه حكومي)</option>
@@ -199,8 +191,8 @@
 
   <!-- Step 5 -->
   <section class="step" id="step5">
-    <h2>متى تاريخ ميلادك يا <span id="displayName5"></span>؟</h2>
-    <label>السنة (هجري):</label>
+    <h2>تاريخ الميلاد (هجري):</h2>
+    <label>السنة:</label>
     <select id="birthYear"></select>
     <label>الشهر:</label>
     <select id="birthMonth"></select>
@@ -211,8 +203,8 @@
 
   <!-- Step 6 -->
   <section class="step" id="step6">
-    <h2>متى تاريخ تعيينك يا <span id="displayName6"></span>؟</h2>
-    <label>السنة (هجري):</label>
+    <h2>تاريخ التعيين (هجري):</h2>
+    <label>السنة:</label>
     <select id="joinYear"></select>
     <label>الشهر:</label>
     <select id="joinMonth"></select>
@@ -221,12 +213,11 @@
     <button id="btnNext6" disabled>التالي</button>
   </section>
 
-  <!-- Step 7 (For Military) -->
+  <!-- Step 7 -->
   <section class="step" id="step7" style="display:none;">
-    <h2>اختر رتبتك العسكرية يا <span id="displayName7"></span></h2>
-    <label for="militaryRank">الرتبة العسكرية:</label>
+    <h2>رتبتك العسكرية:</h2>
     <select id="militaryRank">
-      <option value="">اختر الرتبة</option>
+      <option value="">-- اختر --</option>
       <option value="جندي">جندي</option>
       <option value="جندي أول">جندي أول</option>
       <option value="عريف">عريف</option>
@@ -250,13 +241,14 @@
 
   <!-- Step 8 -->
   <section class="step" id="step8" style="display:none;">
-    <h2>كم باقي لك على التقاعد؟</h2>
-    <p>سنوياً: <span id="yearsToRetirement"></span> سنة</p>
-    <p>شهرياً: <span id="monthsToRetirement"></span> شهر</p>
+    <h2>مدة التقاعد المتبقية:</h2>
+    <p>السنة: <span id="yearsToRetirement"></span></p>
+    <p>الشهر: <span id="monthsToRetirement"></span></p>
+
     <div id="extendedCalcContainer" style="display:none;">
       <label>هل تريد الحسبة على التقاعد الممتد؟</label>
       <select id="extendedCalc">
-        <option value="">اختر...</option>
+        <option value="">-- اختر --</option>
         <option value="yes">نعم</option>
         <option value="no">لا</option>
       </select>
@@ -267,16 +259,15 @@
 
   <!-- Step 9 -->
   <section class="step" id="step9" style="display:none;">
-    <h2>كم راتبك الأساسي يا <span id="displayName9"></span>؟</h2>
-    <label for="baseSalary">أدخل الراتب الأساسي (ريال):</label>
-    <input type="number" id="baseSalary" min="1000" step="100" />
+    <h2>الراتب الأساسي (للعسكري فقط):</h2>
+    <input type="number" id="baseSalary" min="1000" step="100" placeholder="أدخل الراتب الأساسي (ريال)" />
     <button id="btnNext9" disabled>التالي</button>
   </section>
 
   <!-- Step 10 -->
   <section class="step" id="step10" style="display:none;">
-    <h2>متى تاريخ التعيين الأصلي يا <span id="displayName10"></span>؟</h2>
-    <label>السنة (هجري):</label>
+    <h2>تاريخ التعيين الأصلي (هجري):</h2>
+    <label>السنة:</label>
     <select id="hireYear"></select>
     <label>الشهر:</label>
     <select id="hireMonth"></select>
@@ -329,13 +320,16 @@ function fillDays(sel, defaultVal) {
     sel.appendChild(opt);
   }
 }
-// Retirement ages & salary tables
+
+// Retirement ages
 const retirementAges = {
   "جندي": 44, "جندي أول": 44, "عريف": 46, "وكيل رقيب": 46,
   "رقيب": 48, "رقيب أول": 50, "رئيس رقباء": 52, "ملازم": 48,
   "ملازم أول": 50, "نقيب": 52, "رائد": 54, "مقدم": 55,
   "عقيد": 56, "عميد": 57, "لواء": 58, "فريق": 60, "فريق أول": 60
 };
+
+// Base salaries & allowances (simplified)
 const baseSalaries = {
   "جندي": 3220, "جندي أول": 3395, "عريف": 3765, "وكيل رقيب": 4455,
   "رقيب": 5260, "رقيب أول": 6180, "رئيس رقباء": 7215, "ملازم": 7590,
@@ -349,7 +343,7 @@ const annualAllowances = {
   "عقيد": 570, "عميد": 665, "لواء": 730, "فريق": 800, "فريق أول": 900
 };
 
-// Calculate service years from join date to ref date (fixed 1446/12/01)
+// Util functions
 function calcServiceYears(joinYear, joinMonth, joinDay){
   const nowYear = 1446, nowMonth = 12, nowDay = 1;
   let yearDiff = nowYear - joinYear;
@@ -366,18 +360,15 @@ function calcServiceYears(joinYear, joinMonth, joinDay){
   if(yearDiff < 0) return 0;
   return yearDiff + (monthDiff / 12);
 }
-// Calculate base salary given rank and service years
 function calcBaseSalary(rank, serviceYears){
   const degree = Math.min(Math.floor(serviceYears) + 1, 15);
   const base = baseSalaries[rank] || 3220;
   const allowance = annualAllowances[rank] || 125;
   return base + (allowance * (degree - 1));
 }
-// Calculate retirement salary
 function calcRetirementSalary(baseSalary, serviceYears){
   return (baseSalary * serviceYears / 40) * 0.55;
 }
-// Calculate age at reference date (1446/12/01)
 function calcAgeAtYearMonthDay(birthYear,birthMonth,birthDay, refYear=1446, refMonth=12, refDay=1){
   let yearDiff = refYear - birthYear;
   let monthDiff = refMonth - birthMonth;
@@ -392,11 +383,9 @@ function calcAgeAtYearMonthDay(birthYear,birthMonth,birthDay, refYear=1446, refM
   }
   return {years: yearDiff, months: monthDiff, days: dayDiff};
 }
-// Number to formatted Arabic string
 function numberToArabicWords(n){
   return n.toLocaleString('ar-EG') + ' ريال';
 }
-// Describe months as "x شهر (y سنة و z شهر)"
 function describeMonths(m){
   const years = Math.floor(m / 12);
   const months = m % 12;
@@ -407,4 +396,24 @@ function describeMonths(m){
     yText = years === 1 ? 'سنة' : years === 2 ? 'سنتان' : `${years} سنوات`;
   }
   if(months > 0){
-   
+    mText = months === 1 ? 'وشهر' : months === 2 ? 'وشهرين' : `و${months} أشهر`;
+  }
+  if(yText || mText) result += ` (${yText} ${mText})`;
+  return result.trim();
+}
+// UI logic
+const steps = Array.from(document.querySelectorAll('.step'));
+const btnStart = document.getElementById('btnStart');
+const btnNext2 = document.getElementById('btnNext2');
+const btnNext3 = document.getElementById('btnNext3');
+const btnNext4 = document.getElementById('btnNext4');
+const btnNext5 = document.getElementById('btnNext5');
+const btnNext6 = document.getElementById('btnNext6');
+const btnNext7 = document.getElementById('btnNext7');
+const btnNext8 = document.getElementById('btnNext8');
+const btnNext8No = document.getElementById('btnNext8No');
+const btnNext9 = document.getElementById('btnNext9');
+const btnNext10 = document.getElementById('btnNext10');
+const resetBtn = document.getElementById('resetBtn');
+
+const displayName3 = document.getElementBy
