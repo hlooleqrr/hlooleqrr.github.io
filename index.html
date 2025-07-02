@@ -192,14 +192,14 @@
     </select>
   </section>
 
-  <section class="step" id="step7">
+  <section class="step" id="resultStep">
     <h2>نتيجة الحسبة</h2>
     <div id="result" class="result-container"></div>
     <button id="resetBtn">إعادة الحسبة</button>
   </section>
 
   <div style="text-align:center;">
-    <button id="mainBtn" style="margin: 24px auto 0; width: 180px; font-weight: 900; font-size: 22px;">ابدأ الحسبة</button>
+    <button id="mainBtn" style="width:180px; font-weight:900; font-size:22px;">ابدأ الحسبة</button>
   </div>
 
 </main>
@@ -209,48 +209,7 @@
 </footer>
 
 <script>
-  const retirementAges = {
-    "ملازم": 44, "ملازم أول": 44,
-    "نقيب": 46,
-    "رائد": 48,
-    "مقدم": 50,
-    "عقيد": 52,
-    "عميد": 54,
-    "لواء": 56,
-    "فريق": 58,
-    "فريق أول": 58,
-    "جندي": 44,
-    "جندي أول": 44,
-    "عريف": 46,
-    "وكيل رقيب": 48,
-    "رقيب": 50,
-    "رقيب أول": 50,
-    "رئيس رقباء": 52
-  };
-
-  const salariesIndividuals = {
-    "جندي":      [3220, 3350, 3480, 3610, 3740, 3870, 4000, 4130, 4260, 4390, 4520, 4650, 4780, 4910, 5040],
-    "جندي أول":  [3395, 3530, 3665, 3800, 3935, 4070, 4205, 4340, 4475, 4610, 4745, 4880, 5015, 5150, 5285],
-    "عريف":      [3715, 3855, 3995, 4135, 4275, 4415, 4555, 4695, 4835, 4975, 5115, 5255, 5395, 5535, 5675],
-    "وكيل رقيب": [4000, 4150, 4300, 4450, 4600, 4750, 4900, 5050, 5200, 5350, 5500, 5650, 5800, 5950, 6100],
-    "رقيب":      [4370, 4530, 4690, 4850, 5010, 5170, 5330, 5490, 5650, 5810, 5970, 6130, 6290, 6450, 6610],
-    "رقيب أول":  [4700, 4865, 5030, 5195, 5360, 5525, 5690, 5855, 6020, 6185, 6350, 6515, 6680, 6845, 7010],
-    "رئيس رقباء":[4950, 5120, 5290, 5460, 5630, 5800, 5970, 6140, 6310, 6480, 6650, 6820, 6990, 7160, 7330]
-  };
-
-  const salariesOfficers = {
-    "ملازم":    [8835, 9110, 9385, 9660, 9935, 10210, 10485, 10760, 11035, 11310, 11585, 11860, 12135, 12410, 12685],
-    "ملازم أول":[9715, 10055, 10495, 10935, 11375, 11815, 12255, 12695, 13135, 13575, 14015, 14455, 14895, 15335, 15775],
-    "نقيب":     [11940, 12390, 12840, 13290, 13740, 14190, 14640, 15090, 15540, 15990, 16440, 16890, 17340, 17790, 18240],
-    "رائد":     [14155, 14620, 15085, 15550, 16015, 16480, 16945, 17410, 17875, 18340, 18805, 19270, 19735, 20200, 20665],
-    "مقدم":     [16400, 16880, 17360, 17840, 18320, 18800, 19280, 19760, 20240, 20720, 21200, 21680, 22160, 22640, 23120],
-    "عقيد":     [18800, 19300, 19800, 20300, 20800, 21300, 21800, 22300, 22800, 23300, 23800, 24300, 24800, 25300, 25800],
-    "عميد":     [22000, 22520, 23040, 23560, 24080, 24600, 25120, 25640, 26160, 26680, 27200, 27720, 28240, 28760, 29280],
-    "لواء":     [23500, 24100, 24700, 25300, 25900, 26500, 27100, 27700, 28300, 28900, 29500, 30100, 30700, 31300, 31900],
-    "فريق":     [29500, 30100, 30700, 31300, 31900, 32500, 33100, 33700, 34300, 34900, 35500, 36100, 36700, 37300, 37900],
-    "فريق أول": [31900, 32500, 33100, 33700, 34300, 34900, 35500, 36100, 36700, 37300, 37900, 38500, 39100, 39700, 40300]
-  };
-
+  // ملء القوائم بالسنوات والشهور والأيام (هجري)
   function populateSelect(selectElem, start, end) {
     selectElem.innerHTML = '';
     for(let i = start; i <= end; i++) {
@@ -279,6 +238,7 @@
     }
   }
 
+  // تحديث عرض الأسماء في العناوين حسب الاسم المدخل
   function updateNameDisplays(name) {
     document.getElementById('clientNameDisplay3').textContent = name;
     document.getElementById('clientNameDisplay4').textContent = name;
@@ -286,60 +246,169 @@
     document.getElementById('clientNameDisplay6').textContent = name;
   }
 
+  // إظهار خطوة معينة وإخفاء الخطوات الأخرى
   function showStep(index) {
-    document.querySelectorAll('.step').forEach((step,i) => {
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((step, i) => {
       step.classList.toggle('active', i === index);
     });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // ملء القوائم
     populateSelect(document.getElementById('birthYear'), 1370, 1435);
     populateMonths(document.getElementById('birthMonth'));
     populateDays(document.getElementById('birthDay'));
-
     populateSelect(document.getElementById('joinYear'), 1370, 1435);
     populateMonths(document.getElementById('joinMonth'));
     populateDays(document.getElementById('joinDay'));
 
-    let currentStep = 0;
     const mainBtn = document.getElementById('mainBtn');
+    const resetBtn = document.getElementById('resetBtn');
 
+    let currentStep = 0;
     showStep(currentStep);
 
     mainBtn.addEventListener('click', () => {
-      // تحقق من صحة الخطوة الحالية
-      if(currentStep === 0) {
-        currentStep = 1;
-        showStep(currentStep);
-        mainBtn.textContent = 'التالي';
-        return;
-      }
-      if(currentStep === 1) {
-        if(document.getElementById('clientName').value.trim() === '') {
+      // تحقق صحة البيانات حسب الخطوة
+      if (currentStep === 1) {
+        const name = document.getElementById('clientName').value.trim();
+        if (!name) {
           alert('الرجاء إدخال اسمك الكريم');
           return;
         }
-        updateNameDisplays(document.getElementById('clientName').value.trim());
-        currentStep++;
-        showStep(currentStep);
-        return;
+        updateNameDisplays(name);
       }
-      if(currentStep === 2) {
-        if(document.getElementById('retirementType').value === '') {
+      if (currentStep === 2) {
+        const type = document.getElementById('retirementType').value;
+        if (!type) {
           alert('الرجاء اختيار نوع التقاعد');
           return;
         }
-        if(document.getElementById('retirementType').value === 'military') {
-          currentStep = 6; // اظهر اختيار الرتبة مباشرة
-          showStep(currentStep);
-          return;
-        } else {
-          currentStep++;
-          showStep(currentStep);
+      }
+      if (currentStep === 3) {
+        const by = document.getElementById('birthYear').value;
+        const bm = document.getElementById('birthMonth').value;
+        const bd = document.getElementById('birthDay').value;
+        if (!by || !bm || !bd) {
+          alert('الرجاء إدخال تاريخ الميلاد كاملًا');
           return;
         }
       }
-      if(currentStep === 3) {
-        const by = document.getElementById('birthYear').value;
-        const bm = document.getElementById('birthMonth').
+      if (currentStep === 4) {
+        const jy = document.getElementById('joinYear').value;
+        const jm = document.getElementById('joinMonth').value;
+        const jd = document.getElementById('joinDay').value;
+        if (!jy || !jm || !jd) {
+          alert('الرجاء إدخال تاريخ التعيين كاملًا');
+          return;
+        }
+      }
+      if (currentStep === 5) {
+        const type = document.getElementById('retirementType').value;
+        if (type === 'military') {
+          const rank = document.getElementById('rank').value;
+          if (!rank) {
+            alert('الرجاء اختيار رتبتك العسكرية');
+            return;
+          }
+        }
+      }
+
+      currentStep++;
+
+      if (currentStep === 6) { // بعد اختيار نوع التقاعد
+        const type = document.getElementById('retirementType').value;
+        if (type === 'military') {
+          document.getElementById('step6').style.display = 'flex';
+        } else {
+          // إذا مدني نعدي خطوة الرتب
+          currentStep++;
+        }
+      }
+
+      if (currentStep >= document.querySelectorAll('.step').length) {
+        currentStep = document.querySelectorAll('.step').length - 1;
+        // نحسب النتيجة هنا
+        calculateAndShowResult();
+        mainBtn.style.display = 'none';
+        resetBtn.style.display = 'inline-block';
+      }
+
+      showStep(currentStep);
+
+      if (currentStep > 0) {
+        mainBtn.textContent = 'التالي';
+      } else {
+        mainBtn.textContent = 'ابدأ الحسبة';
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      currentStep = 0;
+      showStep(currentStep);
+      mainBtn.textContent = 'ابدأ الحسبة';
+      mainBtn.style.display = 'inline-block';
+      resetBtn.style.display = 'none';
+      clearInputs();
+    });
+
+    // نخفي زر إعادة الحسبة أول ما تفتح الصفحة
+    resetBtn.style.display = 'none';
+
+    function clearInputs() {
+      document.getElementById('clientName').value = '';
+      document.getElementById('retirementType').value = '';
+      document.getElementById('birthYear').value = '';
+      document.getElementById('birthMonth').value = '';
+      document.getElementById('birthDay').value = '';
+      document.getElementById('joinYear').value = '';
+      document.getElementById('joinMonth').value = '';
+      document.getElementById('joinDay').value = '';
+      document.getElementById('rank').value = '';
+      document.getElementById('result').innerHTML = '';
+    }
+
+    function calculateAndShowResult() {
+      const name = document.getElementById('clientName').value.trim();
+      const type = document.getElementById('retirementType').value;
+      const birthYear = parseInt(document.getElementById('birthYear').value);
+      const joinYear = parseInt(document.getElementById('joinYear').value);
+      const rank = document.getElementById('rank').value;
+
+      const retirementAge = type === 'military' ? (retirementAges[rank] || 60) : 60;
+      const currentYear = 1446; // ثابت أو يمكن تحديثه حسب الحاجة
+      const age = currentYear - birthYear;
+      let serviceYears = currentYear - joinYear;
+      if (serviceYears < 0) serviceYears = 0;
+      if (serviceYears > (retirementAge - age)) serviceYears = retirementAge - age;
+
+      let degree = Math.min(Math.floor(serviceYears) + 1, 15);
+      let salary = 0;
+
+      if (type === 'military') {
+        if (['جندي', 'جندي أول', 'عريف', 'وكيل رقيب', 'رقيب', 'رقيب أول', 'رئيس رقباء'].includes(rank)) {
+          salary = salariesIndividuals[rank][degree - 1];
+        } else {
+          salary = salariesOfficers[rank][degree - 1];
+        }
+      } else {
+        // للمدنيين نقدر نستخدم راتب ثابت مؤقت أو نطلب مدخل إضافي لاحقاً
+        salary = 10000; // رقم وهمي مثال فقط
+      }
+
+      document.getElementById('result').innerHTML = `
+        <p>مرحباً يا <span style="font-weight:bold;">${name}</span></p>
+        <p>نوع التقاعد: <span style="font-weight:bold;">${type === 'military' ? 'عسكري' : 'مدني'}</span></p>
+        <p>العمر الحالي (هجري): <span style="font-weight:bold;">${age}</span> سنة</p>
+        <p>سن التقاعد: <span style="font-weight:bold;">${retirementAge}</span> سنة</p>
+        <p>سنوات الخدمة: <span style="font-weight:bold;">${serviceYears}</span></p>
+        <p>الدرجة: <span style="font-weight:bold;">${degree}</span></p>
+        <p>الراتب التقاعدي المتوقع: <span class="highlight">${salary.toLocaleString()} ريال</span></p>
+      `;
+    }
+
+  });
+</script>
+
+</body>
+</html>
