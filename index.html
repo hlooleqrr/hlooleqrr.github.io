@@ -106,6 +106,7 @@
     text-align: center;
     line-height: 1.5;
     font-size: 20px;
+    min-height: 180px;
   }
   .result-container h2 {
     font-size: 32px;
@@ -265,7 +266,7 @@
 </footer>
 
 <script>
-  // ملء القوائم بالسنوات والشهور والأيام (هجري)
+  // ملء قوائم السنوات والشهور والأيام (هجري)
   function populateSelect(selectElem, start, end) {
     selectElem.innerHTML = '';
     for(let i = start; i <= end; i++) {
@@ -294,7 +295,7 @@
     }
   }
 
-  // بيانات التقاعد والرواتب حسب الرتبة (مبسطة)
+  // بيانات التقاعد وسنوات الخدمة والرواتب
   const retirementAges = {
     "ملازم": 44, "ملازم أول": 44,
     "نقيب": 46,
@@ -354,4 +355,4 @@
   function showStep(stepNum) {
     const steps = document.querySelectorAll('.step');
     steps.forEach(s => s.classList.remove('active'));
-    document.getElementById('step' + step
+    document.getElementBy
