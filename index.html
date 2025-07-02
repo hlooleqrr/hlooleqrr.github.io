@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبة التمويل مع التقاعد الممتد - سرعة تملك العقار</title>
+<title>حاسبة التمويل والتقاعد</title>
 <style>
   body {
     font-family: 'Tajawal', sans-serif;
@@ -95,65 +95,6 @@
   .step.active {
     display: flex;
   }
-  .result-container {
-    background-color: #b2dfdb;
-    padding: 28px 24px;
-    border-radius: 16px;
-    box-shadow: inset 0 0 12px rgba(0,77,64,0.3);
-    color: #004d40;
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.5;
-    font-size: 20px;
-    min-height: 240px;
-  }
-  .result-container h3 {
-    margin-bottom: 20px;
-    font-size: 26px;
-    color: #004d40;
-  }
-  .highlight {
-    font-weight: 900;
-    font-size: 28px;
-    color: #004d40;
-  }
-  .small-note {
-    font-size: 18px;
-    margin-top: 12px;
-    color: #2e7d32;
-    font-weight: 700;
-  }
-  footer {
-    background-color: #004d40;
-    color: #a7c7c4;
-    font-size: 14px;
-    padding: 14px 12px;
-    text-align: center;
-    user-select: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    font-weight: 600;
-  }
-  footer a {
-    color: #80cbc4;
-    font-weight: 700;
-    text-decoration: none;
-  }
-  footer a:hover {
-    text-decoration: underline;
-  }
-  @media (max-width: 768px) {
-    body, main {
-      font-size: 16px;
-      padding: 12px;
-    }
-    button {
-      font-size: 20px;
-      padding: 14px 0;
-    }
-  }
 </style>
 </head>
 <body>
@@ -161,21 +102,18 @@
 <header>سرعة تملك العقار والحلول التمويلية</header>
 
 <main>
-  <!-- الخطوة 1: ترحيب -->
   <section class="step active" id="step1">
     <h1>صباحك/مساءك خير يا غالي<br>مرحباً بك في حاسبة التمويل والتقاعد</h1>
-    <button id="btnNext">ابدأ الحسبة</button>
+    <button id="btnStart">ابدأ الحسبة</button>
   </section>
 
-  <!-- الخطوة 2: اسم العميل -->
   <section class="step" id="step2">
     <h2>ودنا نتعرف عليك</h2>
     <label for="clientName">اسمك الكريم:</label>
-    <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" autocomplete="off" />
-    <button id="btnNext2">التالي</button>
+    <input type="text" id="clientName" autocomplete="off" />
+    <button id="btnNext2" disabled>التالي</button>
   </section>
 
-  <!-- الخطوة 3: نوع التمويل -->
   <section class="step" id="step3">
     <h2>وش ودك تحسب يا <span id="displayName3"></span>؟</h2>
     <label for="financeType">اختر نوع التمويل:</label>
@@ -187,219 +125,47 @@
     <button id="btnNext3" disabled>التالي</button>
   </section>
 
-  <!-- الخطوة 4: نوع الوظيفة -->
-  <section class="step" id="step4">
-    <h2>وش نوع وظيفتك يا <span id="displayName4"></span>؟</h2>
-    <label for="jobType">اختر نوع الوظيفة:</label>
-    <select id="jobType">
-      <option value="">اختر...</option>
-      <option value="military">عسكري</option>
-      <option value="civil">مدني (قطاع حكومي)</option>
-      <option value="semiGov">خاص (شبه حكومي)</option>
-      <option value="certified">خاص (شركة معتمدة)</option>
-      <option value="nonCertified">خاص (شركة غير معتمدة)</option>
-    </select>
-    <button id="btnNext4" disabled>التالي</button>
-  </section>
+  <!-- المزيد من الخطوات هنا حسب حاجتك -->
 
-  <!-- الخطوة 5: تاريخ الميلاد -->
-  <section class="step" id="step5">
-    <h2>متى تاريخ ميلادك يا <span id="displayName5"></span>؟</h2>
-    <label for="birthYear">السنة (هجري):</label>
-    <select id="birthYear"></select>
-    <label for="birthMonth">الشهر:</label>
-    <select id="birthMonth"></select>
-    <label for="birthDay">اليوم:</label>
-    <select id="birthDay"></select>
-    <button id="btnNext5" disabled>التالي</button>
-  </section>
-
-  <!-- الخطوة 6: تاريخ التعيين -->
-  <section class="step" id="step6">
-    <h2>متى تاريخ تعيينك يا <span id="displayName6"></span>؟</h2>
-    <label for="joinYear">السنة (هجري):</label>
-    <select id="joinYear"></select>
-    <label for="joinMonth">الشهر:</label>
-    <select id="joinMonth"></select>
-    <label for="joinDay">اليوم:</label>
-    <select id="joinDay"></select>
-    <button id="btnNext6" disabled>التالي</button>
-  </section>
-
-  <!-- الخطوة 7: الرتبة العسكرية (تظهر فقط للعسكري) -->
-  <section class="step" id="step7" style="display:none;">
-    <h2>اختر رتبتك العسكرية يا <span id="displayName7"></span></h2>
-    <label for="militaryRank">الرتبة العسكرية:</label>
-    <select id="militaryRank">
-      <option value="">اختر الرتبة</option>
-      <option value="جندي">جندي</option>
-      <option value="جندي أول">جندي أول</option>
-      <option value="عريف">عريف</option>
-      <option value="وكيل رقيب">وكيل رقيب</option>
-      <option value="رقيب">رقيب</option>
-      <option value="رقيب أول">رقيب أول</option>
-      <option value="رئيس رقباء">رئيس رقباء</option>
-      <option value="ملازم">ملازم</option>
-      <option value="ملازم أول">ملازم أول</option>
-      <option value="نقيب">نقيب</option>
-      <option value="رائد">رائد</option>
-      <option value="مقدم">مقدم</option>
-      <option value="عقيد">عقيد</option>
-      <option value="عميد">عميد</option>
-      <option value="لواء">لواء</option>
-      <option value="فريق">فريق</option>
-      <option value="فريق أول">فريق أول</option>
-    </select>
-    <button id="btnNext7" disabled>التالي</button>
-  </section>
-
-  <!-- الخطوة 8: هل تريد حسبة التقاعد الممتد؟ (لشخصي إذا أقل من 60 شهر تقاعد) -->
-  <section class="step" id="step8" style="display:none;">
-    <h2>ودك نحسب لك التمويل على التقاعد الممتد؟</h2>
-    <label for="extendedCalc">اختر:</label>
-    <select id="extendedCalc">
-      <option value="">اختر...</option>
-      <option value="yes">نعم</option>
-      <option value="no">لا</option>
-    </select>
-    <button id="btnNext8" disabled>التالي</button>
-  </section>
-
-  <!-- الخطوة 9: الراتب الأساسي (للتمديد) -->
-  <section class="step" id="step9" style="display:none;">
-    <h2>كم راتبك الأساسي يا <span id="displayName9"></span>؟</h2>
-    <label for="baseSalary">أدخل الراتب الأساسي (ريال):</label>
-    <input type="number" id="baseSalary" min="1000" step="100" />
-    <button id="btnNext9" disabled>التالي</button>
-  </section>
-
-  <!-- الخطوة 10: تاريخ التعيين (للتقاعد الممتد) -->
-  <section class="step" id="step10" style="display:none;">
-    <h2>متى تاريخ تعيينك الأصلي يا <span id="displayName10"></span>؟</h2>
-    <label for="hireYear">السنة (هجري):</label>
-    <select id="hireYear"></select>
-    <label for="hireMonth">الشهر:</label>
-    <select id="hireMonth"></select>
-    <label for="hireDay">اليوم:</label>
-    <select id="hireDay"></select>
-    <button id="btnNext10" disabled>احسب</button>
-  </section>
-
-  <!-- النتيجة -->
-  <section class="step" id="resultStep" style="display:none;">
-    <h2>نتيجة الحسبة يا <span id="displayNameResult"></span></h2>
-    <div id="resultContainer" class="result-container"></div>
-    <button id="resetBtn">🔁 إعادة الحسبة</button>
-  </section>
 </main>
 
-<footer>
-  سرعة تملك العقار والحلول التمويلية - جوالك: <span style="direction:ltr;">0506214458</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" rel="noopener">hlooleqrr.com</a>
-</footer>
-
 <script>
-// بيانات الرتب والعلاوات (مبسطة)
-const retirementAges = {
-  "جندي":44, "جندي أول":44, "عريف":46, "وكيل رقيب":46,
-  "رقيب":48, "رقيب أول":50, "رئيس رقباء":52, "ملازم":48,
-  "ملازم أول":50, "نقيب":52, "رائد":54, "مقدم":55,
-  "عقيد":56, "عميد":57, "لواء":58, "فريق":60, "فريق أول":60
-};
-
-const baseSalaries = {
-  "جندي":3220, "جندي أول":3395, "عريف":3765, "وكيل رقيب":4455,
-  "رقيب":5260, "رقيب أول":6180, "رئيس رقباء":7215, "ملازم":7590,
-  "ملازم أول":8365, "نقيب":9215, "رائد":11735, "مقدم":12735,
-  "عقيد":14365, "عميد":16350, "لواء":18600, "فريق":21000, "فريق أول":22000
-};
-
-const annualAllowances = {
-  "جندي":125, "جندي أول":135, "عريف":150, "وكيل رقيب":180,
-  "رقيب":210, "رقيب أول":250, "رئيس رقباء":310, "ملازم":380,
-  "ملازم أول":400, "نقيب":440, "رائد":265, "مقدم":470,
-  "عقيد":570, "عميد":665, "لواء":730, "فريق":800, "فريق أول":900
-};
-
-// ملء قوائم السنوات والشهور والأيام هجري
-function fillSelectOptions(sel, start, end, defaultVal) {
-  sel.innerHTML = '';
-  for(let i=start;i<=end;i++) {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = i;
-    if(defaultVal && i===defaultVal) opt.selected = true;
-    sel.appendChild(opt);
+  // عرض خطوة معينة
+  function showStep(stepId) {
+    document.querySelectorAll('.step').forEach(s => {
+      s.classList.remove('active');
+    });
+    document.getElementById(stepId).classList.add('active');
   }
-}
-function fillMonths(sel, defaultVal) {
-  sel.innerHTML = '';
-  for(let i=1;i<=12;i++) {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = i<10?'0'+i:i;
-    if(defaultVal && i===defaultVal) opt.selected = true;
-    sel.appendChild(opt);
-  }
-}
-function fillDays(sel, defaultVal) {
-  sel.innerHTML = '';
-  for(let i=1;i<=30;i++) {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = i<10?'0'+i:i;
-    if(defaultVal && i===defaultVal) opt.selected = true;
-    sel.appendChild(opt);
-  }
-}
 
-document.addEventListener('DOMContentLoaded',()=>{
-  fillSelectOptions(document.getElementById('birthYear'),1370,1435,1412);
-  fillMonths(document.getElementById('birthMonth'),1);
-  fillDays(document.getElementById('birthDay'),1);
-
-  fillSelectOptions(document.getElementById('joinYear'),1370,1435,1430);
-  fillMonths(document.getElementById('joinMonth'),1);
-  fillDays(document.getElementById('joinDay'),1);
-
-  fillSelectOptions(document.getElementById('hireYear'),1370,1435,1410);
-  fillMonths(document.getElementById('hireMonth'),1);
-  fillDays(document.getElementById('hireDay'),1);
-});
-
-// التنقل بين الخطوات والعمليات
-let currentStep = 1;
-const totalSteps = 11;
-const nameSteps = [2,3,4,5,6,7,9,10];
-
-function showStep(step) {
-  for(let i=1;i<=totalSteps;i++) {
-    const s = document.getElementById('step'+i);
-    if(!s) continue;
-    s.style.display = (i===step)?'flex':'none';
-  }
-  // زر إعادة الحسبة يخفيه إلا بالنتيجة
-  document.getElementById('resetBtn').style.display = (step===totalSteps) ? 'inline-block' : 'none';
-}
-
-function updateDisplayedName(name){
-  nameSteps.forEach(s=>{
-    const el = document.getElementById('displayName'+s);
-    if(el) el.textContent = name;
+  // زر ابدأ الحسبة
+  document.getElementById('btnStart').addEventListener('click', () => {
+    showStep('step2');
   });
-}
 
-// تمكين زر التالي حسب صحة الإدخال
-function enableButtonIfValid(inputId, btnId) {
-  const inp = document.getElementById(inputId);
-  const btn = document.getElementById(btnId);
-  if(!inp || !btn) return;
-  inp.addEventListener('input',()=> {
-    if(inp.value && inp.value !== '') btn.disabled = false;
-    else btn.disabled = true;
+  // تفعيل زر التالي في الخطوة 2 بعد كتابة الاسم
+  const clientNameInput = document.getElementById('clientName');
+  const btnNext2 = document.getElementById('btnNext2');
+  clientNameInput.addEventListener('input', () => {
+    btnNext2.disabled = !clientNameInput.value.trim();
   });
-  if(inp.value && inp.value !== '') btn.disabled = false;
-  else btn.disabled = true;
-}
 
-function enableSelectButtonIfValid(selectId, btnId) {
-  const sel = document
+  btnNext2.addEventListener('click', () => {
+    document.getElementById('displayName3').textContent = clientNameInput.value.trim();
+    showStep('step3');
+  });
+
+  // تفعيل زر التالي في الخطوة 3 بعد اختيار التمويل
+  const financeTypeSelect = document.getElementById('financeType');
+  const btnNext3 = document.getElementById('btnNext3');
+  financeTypeSelect.addEventListener('change', () => {
+    btnNext3.disabled = financeTypeSelect.value === '';
+  });
+  btnNext3.addEventListener('click', () => {
+    // اكمال التنقل أو حساب بناءً على اختيارك
+    alert('تابع باقي الخطوات حسب متطلباتك');
+  });
+</script>
+
+</body>
+</html>
