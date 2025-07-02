@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبة راتب التقاعد - طريقة مبسطة</title>
+<title>حاسبة راتب التقاعد - سرعة تملك العقار والحلول التمويلية</title>
 <style>
   body {
     font-family: 'Tajawal', sans-serif;
@@ -128,42 +128,50 @@
 <main>
 
   <section class="step active" id="step1">
-    <h1>مرحباً بك في حاسبة راتب التقاعد</h1>
-    <button id="mainBtn">ابدأ الحسبة</button>
+    <h1>مرحباً بك في الحاسبة لراتب التقاعدي<br>مع سرعة تملك العقار والحلول التمويلية</h1>
   </section>
 
   <section class="step" id="step2">
-    <h2>ادخل اسمك الكريم:</h2>
-    <input type="text" id="clientName" placeholder="اسمك الكريم" />
+    <h2>ودنا نتعرف عليك</h2>
+    <label for="clientName">اسمك الكريم:</label>
+    <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" autocomplete="off" />
   </section>
 
   <section class="step" id="step3">
-    <h2>اختر نوع التقاعد:</h2>
-    <select id="retirementType">
-      <option value="">-- اختر --</option>
-      <option value="military">راتب تقاعدي عسكري</option>
-      <option value="civil">راتب تقاعدي مدني</option>
+    <h2>وش ودك تحسب يا <span id="clientNameDisplay3"></span>؟</h2>
+    <label for="retirementType">اختر نوع التقاعد:</label>
+    <select id="retirementType" aria-label="اختر نوع التقاعد">
+      <option value="" disabled selected>اختر النوع</option>
+      <option value="military">راتب التقاعدي عسكري</option>
+      <option value="civil">راتب التقاعدي مدني</option>
     </select>
   </section>
 
   <section class="step" id="step4">
-    <h2>تاريخ ميلادك (هجري):</h2>
-    <label>سنة:</label><select id="birthYear"></select>
-    <label>شهر:</label><select id="birthMonth"></select>
-    <label>يوم:</label><select id="birthDay"></select>
+    <h2>تاريخ ميلادك يا <span id="clientNameDisplay4"></span></h2>
+    <label>سنة:</label>
+    <select id="birthYear"></select>
+    <label>شهر:</label>
+    <select id="birthMonth"></select>
+    <label>يوم:</label>
+    <select id="birthDay"></select>
   </section>
 
   <section class="step" id="step5">
-    <h2>تاريخ تعيينك (هجري):</h2>
-    <label>سنة:</label><select id="joinYear"></select>
-    <label>شهر:</label><select id="joinMonth"></select>
-    <label>يوم:</label><select id="joinDay"></select>
+    <h2>متى تاريخ تعيينك يا <span id="clientNameDisplay5"></span>؟</h2>
+    <label>سنة:</label>
+    <select id="joinYear"></select>
+    <label>شهر:</label>
+    <select id="joinMonth"></select>
+    <label>يوم:</label>
+    <select id="joinDay"></select>
   </section>
 
   <section class="step" id="step6" style="display:none;">
-    <h2>اختر رتبتك العسكرية:</h2>
-    <select id="rank">
-      <option value="">-- اختر الرتبة --</option>
+    <h2>اختر رتبتك العسكرية يا <span id="clientNameDisplay6"></span></h2>
+    <label for="rank">الرتبة العسكرية:</label>
+    <select id="rank" aria-label="اختر الرتبة العسكرية">
+      <option value="" disabled selected>اختر الرتبة</option>
       <option value="جندي">جندي</option>
       <option value="جندي أول">جندي أول</option>
       <option value="عريف">عريف</option>
@@ -184,11 +192,15 @@
     </select>
   </section>
 
-  <section class="step" id="resultStep" style="display:none;">
-    <h2>النتيجة النهائية</h2>
+  <section class="step" id="step7">
+    <h2>نتيجة الحسبة</h2>
     <div id="result" class="result-container"></div>
     <button id="resetBtn">إعادة الحسبة</button>
   </section>
+
+  <div style="text-align:center;">
+    <button id="mainBtn" style="margin: 24px auto 0; width: 180px; font-weight: 900; font-size: 22px;">ابدأ الحسبة</button>
+  </div>
 
 </main>
 
@@ -197,35 +209,6 @@
 </footer>
 
 <script>
-  // دوال ملء القوائم
-  function populateSelect(selectElem, start, end) {
-    selectElem.innerHTML = '';
-    for(let i = start; i <= end; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i;
-      selectElem.appendChild(option);
-    }
-  }
-  function populateMonths(selectElem) {
-    selectElem.innerHTML = '';
-    for(let i = 1; i <= 12; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i < 10 ? '0' + i : i;
-      selectElem.appendChild(option);
-    }
-  }
-  function populateDays(selectElem) {
-    selectElem.innerHTML = '';
-    for(let i = 1; i <= 30; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i < 10 ? '0' + i : i;
-      selectElem.appendChild(option);
-    }
-  }
-
   const retirementAges = {
     "ملازم": 44, "ملازم أول": 44,
     "نقيب": 46,
@@ -268,36 +251,49 @@
     "فريق أول": [31900, 32500, 33100, 33700, 34300, 34900, 35500, 36100, 36700, 37300, 37900, 38500, 39100, 39700, 40300]
   };
 
+  function populateSelect(selectElem, start, end) {
+    selectElem.innerHTML = '';
+    for(let i = start; i <= end; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      selectElem.appendChild(option);
+    }
+  }
+  function populateMonths(selectElem) {
+    selectElem.innerHTML = '';
+    for(let i = 1; i <= 12; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i < 10 ? '0' + i : i;
+      selectElem.appendChild(option);
+    }
+  }
+  function populateDays(selectElem) {
+    selectElem.innerHTML = '';
+    for(let i = 1; i <= 30; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i < 10 ? '0' + i : i;
+      selectElem.appendChild(option);
+    }
+  }
+
+  function updateNameDisplays(name) {
+    document.getElementById('clientNameDisplay3').textContent = name;
+    document.getElementById('clientNameDisplay4').textContent = name;
+    document.getElementById('clientNameDisplay5').textContent = name;
+    document.getElementById('clientNameDisplay6').textContent = name;
+  }
+
   function showStep(index) {
-    document.querySelectorAll('.step').forEach((section, i) => {
-      section.style.display = (i === index) ? 'flex' : 'none';
+    document.querySelectorAll('.step').forEach((step,i) => {
+      step.classList.toggle('active', i === index);
     });
   }
 
-  function isStepValid(index) {
-    if (index === 1) { // اسم العميل
-      return document.getElementById('clientName').value.trim() !== '';
-    } else if (index === 2) { // نوع التقاعد
-      return document.getElementById('retirementType').value !== '';
-    } else if (index === 3) { // تاريخ الميلاد
-      return document.getElementById('birthYear').value !== '' &&
-             document.getElementById('birthMonth').value !== '' &&
-             document.getElementById('birthDay').value !== '';
-    } else if (index === 4) { // تاريخ التعيين
-      return document.getElementById('joinYear').value !== '' &&
-             document.getElementById('joinMonth').value !== '' &&
-             document.getElementById('joinDay').value !== '';
-    } else if (index === 5) { // رتبة العسكري (إذا مطلوب)
-      const type = document.getElementById('retirementType').value;
-      if(type === 'military') {
-        return document.getElementById('rank').value !== '';
-      }
-      return true; // غير العسكريين لا يحتاجون رتبة
-    }
-    return true;
-  }
-
-  function populateAllSelects() {
+  document.addEventListener('DOMContentLoaded', () => {
+    // ملء القوائم
     populateSelect(document.getElementById('birthYear'), 1370, 1435);
     populateMonths(document.getElementById('birthMonth'));
     populateDays(document.getElementById('birthDay'));
@@ -305,26 +301,45 @@
     populateSelect(document.getElementById('joinYear'), 1370, 1435);
     populateMonths(document.getElementById('joinMonth'));
     populateDays(document.getElementById('joinDay'));
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    populateAllSelects();
 
     let currentStep = 0;
     const mainBtn = document.getElementById('mainBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const retirementTypeSelect = document.getElementById('retirementType');
-    const rankSelect = document.getElementById('rank');
 
     showStep(currentStep);
 
-    mainBtn.textContent = "ابدأ الحسبة";
-
     mainBtn.addEventListener('click', () => {
       // تحقق من صحة الخطوة الحالية
-      if(!isStepValid(currentStep)) {
-        alert('يرجى إكمال البيانات المطلوبة أولاً.');
+      if(currentStep === 0) {
+        currentStep = 1;
+        showStep(currentStep);
+        mainBtn.textContent = 'التالي';
         return;
       }
-
-      if(currentStep === 2) { //
+      if(currentStep === 1) {
+        if(document.getElementById('clientName').value.trim() === '') {
+          alert('الرجاء إدخال اسمك الكريم');
+          return;
+        }
+        updateNameDisplays(document.getElementById('clientName').value.trim());
+        currentStep++;
+        showStep(currentStep);
+        return;
+      }
+      if(currentStep === 2) {
+        if(document.getElementById('retirementType').value === '') {
+          alert('الرجاء اختيار نوع التقاعد');
+          return;
+        }
+        if(document.getElementById('retirementType').value === 'military') {
+          currentStep = 6; // اظهر اختيار الرتبة مباشرة
+          showStep(currentStep);
+          return;
+        } else {
+          currentStep++;
+          showStep(currentStep);
+          return;
+        }
+      }
+      if(currentStep === 3) {
+        const by = document.getElementById('birthYear').value;
+        const bm = document.getElementById('birthMonth').
