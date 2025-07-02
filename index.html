@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبة راتب التقاعد - سرعة تملك العقار والحلول التمويلية</title>
+<title>حاسبة راتب التقاعد - طريقة مبسطة</title>
 <style>
   body {
     font-family: 'Tajawal', sans-serif;
@@ -86,16 +86,6 @@
     cursor: default;
     box-shadow: none;
   }
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-  }
-  .nav-buttons button {
-    width: 45%;
-    font-size: 18px;
-    padding: 14px 0;
-  }
   .result-container {
     background-color: #b2dfdb;
     padding: 28px 24px;
@@ -107,15 +97,6 @@
     line-height: 1.5;
     font-size: 20px;
     min-height: 180px;
-  }
-  .result-container h2 {
-    font-size: 32px;
-    margin-bottom: 20px;
-  }
-  .highlight {
-    color: #004d40;
-    font-weight: 900;
-    font-size: 28px;
   }
   footer {
     background-color: #004d40;
@@ -138,27 +119,6 @@
   footer a:hover {
     text-decoration: underline;
   }
-  @media (max-width: 768px) {
-    main {
-      margin: 20px 12px 80px;
-      padding: 24px 20px;
-    }
-    button {
-      font-size: 20px;
-      padding: 16px 0;
-    }
-    label {
-      font-size: 18px;
-    }
-    select, input[type="text"] {
-      font-size: 16px;
-      padding: 12px 14px;
-    }
-    .nav-buttons button {
-      width: 48%;
-      font-size: 16px;
-    }
-  }
 </style>
 </head>
 <body>
@@ -168,19 +128,203 @@
 <main>
 
   <section class="step active" id="step1">
-    <h1>مرحباً بك في الحاسبة لراتب التقاعدي<br>مع سرعة تملك العقار والحلول التمويلية</h1>
-    <button id="startBtn">ابدأ الحسبة</button>
+    <h1>مرحباً بك في حاسبة راتب التقاعد</h1>
+    <button id="mainBtn">ابدأ الحسبة</button>
   </section>
 
   <section class="step" id="step2">
-    <h2>ودنا نتعرف عليك</h2>
-    <label for="clientName">اسمك الكريم:</label>
-    <input type="text" id="clientName" placeholder="أدخل اسمك الكريم" autocomplete="off" />
-    <div class="nav-buttons">
-      <button id="step2Prev">عودة</button>
-      <button id="step2Next" disabled>التالي</button>
-    </div>
+    <h2>ادخل اسمك الكريم:</h2>
+    <input type="text" id="clientName" placeholder="اسمك الكريم" />
   </section>
 
   <section class="step" id="step3">
-    <h2>وش ودك تحسب يا <span id="clientNameDisplay3"></span>
+    <h2>اختر نوع التقاعد:</h2>
+    <select id="retirementType">
+      <option value="">-- اختر --</option>
+      <option value="military">راتب تقاعدي عسكري</option>
+      <option value="civil">راتب تقاعدي مدني</option>
+    </select>
+  </section>
+
+  <section class="step" id="step4">
+    <h2>تاريخ ميلادك (هجري):</h2>
+    <label>سنة:</label><select id="birthYear"></select>
+    <label>شهر:</label><select id="birthMonth"></select>
+    <label>يوم:</label><select id="birthDay"></select>
+  </section>
+
+  <section class="step" id="step5">
+    <h2>تاريخ تعيينك (هجري):</h2>
+    <label>سنة:</label><select id="joinYear"></select>
+    <label>شهر:</label><select id="joinMonth"></select>
+    <label>يوم:</label><select id="joinDay"></select>
+  </section>
+
+  <section class="step" id="step6" style="display:none;">
+    <h2>اختر رتبتك العسكرية:</h2>
+    <select id="rank">
+      <option value="">-- اختر الرتبة --</option>
+      <option value="جندي">جندي</option>
+      <option value="جندي أول">جندي أول</option>
+      <option value="عريف">عريف</option>
+      <option value="وكيل رقيب">وكيل رقيب</option>
+      <option value="رقيب">رقيب</option>
+      <option value="رقيب أول">رقيب أول</option>
+      <option value="رئيس رقباء">رئيس رقباء</option>
+      <option value="ملازم">ملازم</option>
+      <option value="ملازم أول">ملازم أول</option>
+      <option value="نقيب">نقيب</option>
+      <option value="رائد">رائد</option>
+      <option value="مقدم">مقدم</option>
+      <option value="عقيد">عقيد</option>
+      <option value="عميد">عميد</option>
+      <option value="لواء">لواء</option>
+      <option value="فريق">فريق</option>
+      <option value="فريق أول">فريق أول</option>
+    </select>
+  </section>
+
+  <section class="step" id="resultStep" style="display:none;">
+    <h2>النتيجة النهائية</h2>
+    <div id="result" class="result-container"></div>
+    <button id="resetBtn">إعادة الحسبة</button>
+  </section>
+
+</main>
+
+<footer>
+  سرعة تملك العقار والحلول التمويلية - جوالك: <span style="direction:ltr;">0506214458</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" rel="noopener">hlooleqrr.com</a>
+</footer>
+
+<script>
+  // دوال ملء القوائم
+  function populateSelect(selectElem, start, end) {
+    selectElem.innerHTML = '';
+    for(let i = start; i <= end; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      selectElem.appendChild(option);
+    }
+  }
+  function populateMonths(selectElem) {
+    selectElem.innerHTML = '';
+    for(let i = 1; i <= 12; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i < 10 ? '0' + i : i;
+      selectElem.appendChild(option);
+    }
+  }
+  function populateDays(selectElem) {
+    selectElem.innerHTML = '';
+    for(let i = 1; i <= 30; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i < 10 ? '0' + i : i;
+      selectElem.appendChild(option);
+    }
+  }
+
+  const retirementAges = {
+    "ملازم": 44, "ملازم أول": 44,
+    "نقيب": 46,
+    "رائد": 48,
+    "مقدم": 50,
+    "عقيد": 52,
+    "عميد": 54,
+    "لواء": 56,
+    "فريق": 58,
+    "فريق أول": 58,
+    "جندي": 44,
+    "جندي أول": 44,
+    "عريف": 46,
+    "وكيل رقيب": 48,
+    "رقيب": 50,
+    "رقيب أول": 50,
+    "رئيس رقباء": 52
+  };
+
+  const salariesIndividuals = {
+    "جندي":      [3220, 3350, 3480, 3610, 3740, 3870, 4000, 4130, 4260, 4390, 4520, 4650, 4780, 4910, 5040],
+    "جندي أول":  [3395, 3530, 3665, 3800, 3935, 4070, 4205, 4340, 4475, 4610, 4745, 4880, 5015, 5150, 5285],
+    "عريف":      [3715, 3855, 3995, 4135, 4275, 4415, 4555, 4695, 4835, 4975, 5115, 5255, 5395, 5535, 5675],
+    "وكيل رقيب": [4000, 4150, 4300, 4450, 4600, 4750, 4900, 5050, 5200, 5350, 5500, 5650, 5800, 5950, 6100],
+    "رقيب":      [4370, 4530, 4690, 4850, 5010, 5170, 5330, 5490, 5650, 5810, 5970, 6130, 6290, 6450, 6610],
+    "رقيب أول":  [4700, 4865, 5030, 5195, 5360, 5525, 5690, 5855, 6020, 6185, 6350, 6515, 6680, 6845, 7010],
+    "رئيس رقباء":[4950, 5120, 5290, 5460, 5630, 5800, 5970, 6140, 6310, 6480, 6650, 6820, 6990, 7160, 7330]
+  };
+
+  const salariesOfficers = {
+    "ملازم":    [8835, 9110, 9385, 9660, 9935, 10210, 10485, 10760, 11035, 11310, 11585, 11860, 12135, 12410, 12685],
+    "ملازم أول":[9715, 10055, 10495, 10935, 11375, 11815, 12255, 12695, 13135, 13575, 14015, 14455, 14895, 15335, 15775],
+    "نقيب":     [11940, 12390, 12840, 13290, 13740, 14190, 14640, 15090, 15540, 15990, 16440, 16890, 17340, 17790, 18240],
+    "رائد":     [14155, 14620, 15085, 15550, 16015, 16480, 16945, 17410, 17875, 18340, 18805, 19270, 19735, 20200, 20665],
+    "مقدم":     [16400, 16880, 17360, 17840, 18320, 18800, 19280, 19760, 20240, 20720, 21200, 21680, 22160, 22640, 23120],
+    "عقيد":     [18800, 19300, 19800, 20300, 20800, 21300, 21800, 22300, 22800, 23300, 23800, 24300, 24800, 25300, 25800],
+    "عميد":     [22000, 22520, 23040, 23560, 24080, 24600, 25120, 25640, 26160, 26680, 27200, 27720, 28240, 28760, 29280],
+    "لواء":     [23500, 24100, 24700, 25300, 25900, 26500, 27100, 27700, 28300, 28900, 29500, 30100, 30700, 31300, 31900],
+    "فريق":     [29500, 30100, 30700, 31300, 31900, 32500, 33100, 33700, 34300, 34900, 35500, 36100, 36700, 37300, 37900],
+    "فريق أول": [31900, 32500, 33100, 33700, 34300, 34900, 35500, 36100, 36700, 37300, 37900, 38500, 39100, 39700, 40300]
+  };
+
+  function showStep(index) {
+    document.querySelectorAll('.step').forEach((section, i) => {
+      section.style.display = (i === index) ? 'flex' : 'none';
+    });
+  }
+
+  function isStepValid(index) {
+    if (index === 1) { // اسم العميل
+      return document.getElementById('clientName').value.trim() !== '';
+    } else if (index === 2) { // نوع التقاعد
+      return document.getElementById('retirementType').value !== '';
+    } else if (index === 3) { // تاريخ الميلاد
+      return document.getElementById('birthYear').value !== '' &&
+             document.getElementById('birthMonth').value !== '' &&
+             document.getElementById('birthDay').value !== '';
+    } else if (index === 4) { // تاريخ التعيين
+      return document.getElementById('joinYear').value !== '' &&
+             document.getElementById('joinMonth').value !== '' &&
+             document.getElementById('joinDay').value !== '';
+    } else if (index === 5) { // رتبة العسكري (إذا مطلوب)
+      const type = document.getElementById('retirementType').value;
+      if(type === 'military') {
+        return document.getElementById('rank').value !== '';
+      }
+      return true; // غير العسكريين لا يحتاجون رتبة
+    }
+    return true;
+  }
+
+  function populateAllSelects() {
+    populateSelect(document.getElementById('birthYear'), 1370, 1435);
+    populateMonths(document.getElementById('birthMonth'));
+    populateDays(document.getElementById('birthDay'));
+
+    populateSelect(document.getElementById('joinYear'), 1370, 1435);
+    populateMonths(document.getElementById('joinMonth'));
+    populateDays(document.getElementById('joinDay'));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    populateAllSelects();
+
+    let currentStep = 0;
+    const mainBtn = document.getElementById('mainBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const retirementTypeSelect = document.getElementById('retirementType');
+    const rankSelect = document.getElementById('rank');
+
+    showStep(currentStep);
+
+    mainBtn.textContent = "ابدأ الحسبة";
+
+    mainBtn.addEventListener('click', () => {
+      // تحقق من صحة الخطوة الحالية
+      if(!isStepValid(currentStep)) {
+        alert('يرجى إكمال البيانات المطلوبة أولاً.');
+        return;
+      }
+
+      if(currentStep === 2) { //
