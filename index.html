@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>سرعة تملك العقار والحلول التمويلية - حاسبة الراتب التقاعدي</title>
-
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal&display=swap');
   body {
@@ -403,20 +402,4 @@
       <p class="result-text">سنوات خدمتك: <span class="highlight">${data.serviceYears}</span> سنة و <span class="highlight">${data.serviceMonths}</span> شهراً</p>
       <p class="result-text">راتبك الأساسي: <span class="highlight">${formatSalary(data.baseSalary)}</span></p>
       <p class="salary-number">الراتب التقاعدي المتوقع هو:<br><strong>${formatSalary(salaryRounded)}</strong></p>
-      <p style="margin-top: 35px; font-weight: 700; font-size: 16px; color: #004d40;">
-        مع تحيات <br/>
-        <span style="font-size: 18px;">سرعة تملك العقار والحلول التمويلية</span><br/>
-        الحلول معنا بلا تعقيد<br/>
-        جوالك: <span style="direction:ltr;">0506214458</span> - الموقع: <a href="https://hlooleqrr.com" target="_blank" style="color:#00796b;">hlooleqrr.com</a>
-      </p>
-    `;
-    const resetBtn = document.getElementById('resetBtn');
-    resetBtn.style.display = 'inline-block';
-  }
-
-  function toHijri(gDate) {
-    const jd = (Date.UTC(gDate.getFullYear(), gDate.getMonth(), gDate.getDate()) / 86400000) + 2440587.5;
-    const islamic = (jd - 1948439.5) / 29.530588853;
-    const year = Math.floor(islamic);
-    const month = Math.floor((islamic - year) * 12);
-    const day = Math.floor((((islamic - year) * 12) - month) * 29.5) + 1
+      <p style="margin-top: 35px; font-weight: 700; font-size:
