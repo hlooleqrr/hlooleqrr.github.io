@@ -234,7 +234,7 @@
     <select id="birthDay"></select>
     <div class="nav-buttons">
       <button id="step4Prev">عودة</button>
-      <button id="step4Next">التالي</button>
+      <button id="step4Next" disabled>التالي</button>
     </div>
   </section>
 
@@ -249,7 +249,7 @@
     <select id="joinDay"></select>
     <div class="nav-buttons">
       <button id="step5Prev">عودة</button>
-      <button id="step5Next">التالي</button>
+      <button id="step5Next" disabled>التالي</button>
     </div>
   </section>
 
@@ -296,7 +296,6 @@
 </footer>
 
 <script>
-  // تعبئة القوائم للسنة والشهر واليوم
   function populateSelect(selectElem, start, end) {
     selectElem.innerHTML = '';
     for(let i = start; i <= end; i++) {
@@ -316,7 +315,6 @@
     }
   }
 
-  // عناصر التاريخ ميلاد وتعـيين لكل صفحة
   const birthYear = document.getElementById('birthYear');
   const birthMonth = document.getElementById('birthMonth');
   const birthDay = document.getElementById('birthDay');
@@ -324,7 +322,6 @@
   const joinMonth = document.getElementById('joinMonth');
   const joinDay = document.getElementById('joinDay');
 
-  // تعبئة القوائم والقيم الافتراضية
   function initDateSelects() {
     populateSelect(birthYear, 1370, 1445);
     populateSelect(joinYear, 1380, 1450);
@@ -340,7 +337,6 @@
     joinDay.value = 1;
   }
 
-  // التحكم بالخطوات
   const steps = [...document.querySelectorAll('.step')];
   let currentStep = 0;
   function showStep(index) {
@@ -350,7 +346,6 @@
     currentStep = index;
   }
 
-  // أزرار التنقل
   const startBtn = document.getElementById('startBtn');
   const step2Next = document.getElementById('step2Next');
   const step2Prev = document.getElementById('step2Prev');
@@ -364,18 +359,15 @@
   const step6Prev = document.getElementById('step6Prev');
   const resetBtn = document.getElementById('resetBtn');
 
-  // عناصر الإدخال
   const clientNameInput = document.getElementById('clientName');
   const retirementType = document.getElementById('retirementType');
   const rankSelect = document.getElementById('rank');
 
-  // عرض الاسم في الخطوات
   const clientNameDisplay3 = document.getElementById('clientNameDisplay3');
   const clientNameDisplay4 = document.getElementById('clientNameDisplay4');
   const clientNameDisplay5 = document.getElementById('clientNameDisplay5');
   const clientNameDisplay6 = document.getElementById('clientNameDisplay6');
 
-  // الرواتب العسكرية
   const militaryRanks = {
     "جندي": 3200,
     "عريف": 3500,
@@ -393,18 +385,22 @@
     "لواء": 9000
   };
 
-  // تمكين أزرار التنقل حسب صحة الإدخال
   function validateStep2() {
     step2Next.disabled = clientNameInput.value.trim() === '';
   }
   function validateStep3() {
     step3Next.disabled = retirementType.value === '';
   }
+  function validateStep4() {
+    step4Next.disabled = !(birthYear.value && birthMonth.value && birthDay.value);
+  }
+  function validateStep5() {
+    step5Next.disabled = !(joinYear.value && joinMonth.value && joinDay.value);
+  }
   function validateStep6() {
-    step6Next.disabled = rankSelect.value === '';
+    step6Next.disabled = retirementType.value === 'military' && !rankSelect.value;
   }
 
-  // بدء الحسبة
   startBtn.onclick = () => {
     initDateSelects();
     showStep(1);
@@ -416,12 +412,20 @@
       document.getElementById('step6').style.display = 'flex';
     } else {
       document.getElementById('step6').style.display = 'none';
+      step6Next.disabled = false;
     }
+    validateStep6();
   });
   rankSelect.addEventListener('change', validateStep6);
+  birthYear.addEventListener('change', validateStep4);
+  birthMonth.addEventListener('change', validateStep4);
+  birthDay.addEventListener('change', validateStep4);
+  joinYear.addEventListener('change', validateStep5);
+  joinMonth.addEventListener('change', validateStep5);
+  joinDay.addEventListener('change', validateStep5);
 
   step2Next.onclick = () => {
-    let name = clientNameInput.value.trim();
+    const name = clientNameInput.value.trim();
     clientNameDisplay3.textContent = name;
     clientNameDisplay4.textContent = name;
     clientNameDisplay5.textContent = name;
@@ -443,21 +447,4 @@
   };
 
   step5Next.onclick = () => {
-    if(retirementType.value === 'military') showStep(6);
-    else {
-      calculateAndShowResult();
-      showStep(6);
-    }
-  };
-  step5Prev.onclick = () => showStep(3);
-
-  step6Next.onclick = () => {
-    calculateAndShowResult();
-    showStep(6);
-  };
-  step6Prev.onclick = () => showStep(4);
-
-  resetBtn.onclick = () => {
-    // إعادة تعيين جميع الحقول
-    clientNameInput.value = '';
-   
+    if(ret
