@@ -1,220 +1,206 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>حاسبة التمويل العقاري والتقاعدي</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: linear-gradient(135deg, #e0f2f1, #ffffff);
-      margin: 0; padding: 0;
-      min-height: 100vh; display: flex;
-      flex-direction: column; align-items: center;
-      color: #012a26; text-align: center;
-    }
-    header {
-      background: #005c48; color: #fff;
-      padding: 25px; font-size: 32px; width: 100%;
-    }
-    .container {
-      background: #fff; margin: 30px auto;
-      padding: 30px; border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      width: 95%; max-width: 700px;
-    }
-    label { font-size: 26px; color: #00695c; margin-top: 20px; display:block; }
-    input, select {
-      font-size: 24px; padding: 14px;
-      width: 90%; max-width: 450px;
-      margin: 12px auto; display: block;
-      border: 2px solid #b2dfdb; border-radius: 8px;
-      color: #004d40; font-weight: 600;
-    }
-    button {
-      font-size: 26px; padding: 16px 0;
-      width: 90%; max-width: 450px;
-      margin: 30px auto; border:none;
-      border-radius: 12px; background: #00796b;
-      color: #fff; cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0,121,107,0.6);
-    }
-    button:disabled { background: #a5d6a7; cursor: default; }
-    button:hover:not(:disabled) { background: #004d40; }
-    #result { background: #b2dfdb; padding: 25px;
-      border-radius: 12px; font-size:24px;
-      color: #004d40; line-height: 1.6;
-      white-space: pre-line; margin-top: 20px;
-    }
-    footer {
-      margin-top: auto; padding: 20px;
-      font-size: 18px; color: #666;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>حاسبة التمويل العقاري والتقاعدي - سرعة تملك العقار</title>
+<style>
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: linear-gradient(135deg, #e0f2f1, #ffffff);
+    margin: 0; padding: 0;
+    min-height: 100vh; display: flex;
+    flex-direction: column; align-items: center;
+    color: #012a26; text-align: center;
+  }
+  header {
+    background: #005c48; color: #fff;
+    padding: 25px; font-size: 32px; width: 100%;
+  }
+  .container {
+    background: #fff; margin: 30px auto;
+    padding: 30px; border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    width: 95%; max-width: 700px;
+  }
+  label { font-size: 26px; color: #00695c; margin-top: 20px; display:block; }
+  input, select {
+    font-size: 24px; padding: 14px;
+    width: 90%; max-width: 450px;
+    margin: 12px auto; display: block;
+    border: 2px solid #b2dfdb; border-radius: 8px;
+    color: #004d40; font-weight: 600;
+  }
+  button {
+    font-size: 26px; padding: 16px 0;
+    width: 90%; max-width: 450px;
+    margin: 30px auto; border:none;
+    border-radius: 12px; background: #00796b;
+    color: #fff; cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0,121,107,0.6);
+  }
+  button:disabled { background: #a5d6a7; cursor: default; }
+  button:hover:not(:disabled) { background: #004d40; }
+  #result { background: #b2dfdb; padding: 25px;
+    border-radius: 12px; font-size:24px;
+    color: #004d40; line-height: 1.6;
+    white-space: pre-line; margin-top: 20px;
+  }
+  footer {
+    margin-top: auto; padding: 20px;
+    font-size: 18px; color: #666;
+  }
+</style>
 </head>
 <body>
-  <header>سرعة تملك العقار والحلول التمويلية</header>
-  <div class="container">
-    <button id="startBtn">ابدأ الحسبة</button>
-    <div id="form" style="display:none;">
-      <label>اختر نوع التمويل:</label>
-      <select id="financeType">
-        <option value="">-- اختر --</option>
-        <option value="real">تمويل عقاري</option>
-        <option value="personal">تمويل شخصي</option>
+<header>سرعة تملك العقار والحلول التمويلية</header>
+<div class="container">
+  <button id="startBtn">ابدأ الحسبة</button>
+  <div id="form" style="display:none;">
+    <label>اختر نوع التمويل:</label>
+    <select id="financeType">
+      <option value="">-- اختر --</option>
+      <option value="real">تمويل عقاري</option>
+      <option value="personal">تمويل شخصي</option>
+    </select>
+    <label>نوع الوظيفة:</label>
+    <select id="jobType">
+      <option value="">-- اختر --</option>
+      <option value="military">عسكري</option>
+      <option value="civil">مدني</option>
+      <option value="private">خاص</option>
+    </select>
+    <label>سنة الميلاد (هجري):</label>
+    <input type="number" id="birthYear" placeholder="مثال: 1406" min="1300" max="1450"/>
+    <div id="rankSection" style="display:none;">
+      <label>رتبتك العسكرية:</label>
+      <select id="rank"><option value="">-- اختر --</option>
+        <option>جندي</option><option>جندي أول</option><option>عريف</option><option>وكيل رقيب</option>
+        <option>رقيب</option><option>رقيب أول</option><option>رئيس رقباء</option>
+        <option>ملازم</option><option>ملازم أول</option><option>نقيب</option>
+        <option>رائد</option><option>مقدم</option><option>عقيد</option>
+        <option>عميد</option><option>لواء</option>
       </select>
-      <label>نوع الوظيفة:</label>
-      <select id="jobType">
-        <option value="">-- اختر --</option>
-        <option value="military">عسكري</option>
-        <option value="civil">مدني</option>
-        <option value="private">خاص</option>
-      </select>
-      <label>سنة الميلاد (هجري):</label>
-      <input type="number" id="birthYear" placeholder="مثال: 1406" min="1300" max="1450"/>
-      <div id="rankSection" style="display:none;">
-        <label>رتبتك العسكرية:</label>
-        <select id="rank"><option value="">-- اختر --</option>
-          <option>جندي</option><option>جندي أول</option><option>عريف</option><option>وكيل رقيب</option>
-          <option>رقيب</option><option>رقيب أول</option><option>رئيس رقباء</option>
-          <option>ملازم</option><option>ملازم أول</option><option>نقيب</option>
-          <option>رائد</option><option>مقدم</option><option>عقيد</option>
-          <option>عميد</option><option>لواء</option>
-        </select>
-      </div>
-      <label>الراتب الصافي الحالي:</label>
-      <input type="number" id="netSalary" placeholder="مثال: 10000"/>
-      <label>هامش الربح السنوي (%):</label>
-      <input type="number" id="profitMargin" placeholder="مثال: 4"/>
-      <button id="nextBtn" disabled>التالي</button>
     </div>
-    <div id="result" style="display:none;"></div>
+    <label>الراتب الصافي الحالي:</label>
+    <input type="number" id="netSalary" placeholder="مثال: 10000"/>
+    <label>هامش الربح السنوي (%):</label>
+    <input type="number" id="profitMargin" placeholder="مثال: 4"/>
+    <button id="nextBtn" disabled>التالي</button>
   </div>
-  <footer>
-    📅 هجري: <span id="hijri"></span> | ميلادي: <span id="greg"></span>
-    <br>© سرعة تملك العقار والحلول التمويلية
-  </footer>
-  <script>
-    // فوتر التاريخ
-    const today = new Date();
-    document.getElementById('greg').innerText = today.toLocaleDateString('ar-EG');
-    document.getElementById('hijri').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(today);
+  <div id="result" style="display:none;"></div>
+</div>
+<footer>
+  📅 هجري: <span id="hijri"></span> | ميلادي: <span id="greg"></span><br />
+  © سرعة تملك العقار والحلول التمويلية
+</footer>
+<script>
+  const today=new Date();
+  document.getElementById('greg').innerText=today.toLocaleDateString('ar-EG');
+  document.getElementById('hijri').innerText=new Intl.DateTimeFormat('ar-SA-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(today);
 
-    // التعريف بالعناصر
-    const startBtn = document.getElementById('startBtn'),
-      form = document.getElementById('form'),
-      financeType = document.getElementById('financeType'),
-      jobType = document.getElementById('jobType'),
-      birthYear = document.getElementById('birthYear'),
-      rankSection = document.getElementById('rankSection'),
-      rankSel = document.getElementById('rank'),
-      netSalary = document.getElementById('netSalary'),
-      profitMargin = document.getElementById('profitMargin'),
-      nextBtn = document.getElementById('nextBtn'),
-      resultDiv = document.getElementById('result');
+  const startBtn=document.getElementById('startBtn');
+  const form=document.getElementById('form');
+  const financeType=document.getElementById('financeType');
+  const jobType=document.getElementById('jobType');
+  const birthYear=document.getElementById('birthYear');
+  const rankSection=document.getElementById('rankSection');
+  const rankSel=document.getElementById('rank');
+  const netSalary=document.getElementById('netSalary');
+  const profitMargin=document.getElementById('profitMargin');
+  const nextBtn=document.getElementById('nextBtn');
+  const resultDiv=document.getElementById('result');
 
-    // بيانات التقاعد والرُتب والعلاوات
-    const retireAges = {'جندي':44,'جندي أول':44,'عريف':46,'وكيل رقيب':48,'رقيب':48,
-      'رقيب أول':50,'رئيس رقباء':52,'ملازم':48,'ملازم أول':50,
-      'نقيب':52,'رائد':54,'مقدم':56,'عقيد':58,'عميد':60,'لواء':60};
-    const salaryGrades = {
-      'جندي':{base:3220,inc:125},'جندي أول':{base:3395,inc:135},
-      'عريف':{base:3715,inc:140},'وكيل رقيب':{base:4000,inc:150},
-      'رقيب':{base:4370,inc:160},'رقيب أول':{base:4700,inc:165},
-      'رئيس رقباء':{base:4950,inc:170},'ملازم':{base:8835,inc:275},
-      'ملازم أول':{base:9715,inc:350},'نقيب':{base:11940,inc:450},
-      'رائد':{base:14155,inc:500},'مقدم':{base:16400,inc:600},
-      'عقيد':{base:18800,inc:700},'عميد':{base:22000,inc:800},'لواء':{base:23500,inc:900}
-    };
+  const retireAges = {
+    'جندي':44,'جندي أول':44,'عريف':46,'وكيل رقيب':48,'رقيب':48,
+    'رقيب أول':50,'رئيس رقباء':52,'ملازم':48,'ملازم أول':50,
+    'نقيب':52,'رائد':54,'مقدم':56,'عقيد':58,'عميد':60,'لواء':60
+  };
 
-    // بدء الحسبة
-    startBtn.onclick = () => {
-      startBtn.style.display = 'none';
-      form.style.display = 'block';
-      nextBtn.disabled = true;
-    };
+  const salaryGrades = {
+    'جندي':{base:3220,inc:125},'جندي أول':{base:3395,inc:135},
+    'عريف':{base:3715,inc:140},'وكيل رقيب':{base:4000,inc:150},
+    'رقيب':{base:4370,inc:160},'رقيب أول':{base:4700,inc:165},
+    'رئيس رقباء':{base:4950,inc:170},'ملازم':{base:8835,inc:275},
+    'ملازم أول':{base:9715,inc:350},'نقيب':{base:11940,inc:450},
+    'رائد':{base:14155,inc:500},'مقدم':{base:16400,inc:600},
+    'عقيد':{base:18800,inc:700},'عميد':{base:22000,inc:800},'لواء':{base:23500,inc:900}
+  };
 
-    // إظهار خانة الرتبة للعسكريين فقط
-    jobType.onchange = () => {
-      if(jobType.value==='military') rankSection.style.display='block';
-      else { rankSection.style.display='none'; rankSel.value=''; }
-      validate();
-    };
+  startBtn.onclick=()=>{
+    startBtn.style.display='none';
+    form.style.display='block';
+    nextBtn.disabled=true;
+  };
 
-    // التحقق من صحة الإدخالات لتفعيل زر التالي
-    [financeType,jobType,birthYear,netSalary,profitMargin,rankSel].forEach(el=>{
-      el.onchange = validate; el.oninput = validate;
-    });
-    function validate(){
-      let ok = financeType.value && jobType.value && birthYear.value && netSalary.value && profitMargin.value;
-      if(jobType.value==='military') ok = ok && rankSel.value;
-      nextBtn.disabled = !ok;
+  jobType.onchange=()=>{
+    if(jobType.value==='military') rankSection.style.display='block';
+    else {
+      rankSection.style.display='none';
+      rankSel.value='';
+    }
+    validate();
+  };
+
+  [financeType,jobType,birthYear,netSalary,profitMargin,rankSel].forEach(el=>{
+    el.oninput=validate;
+    el.onchange=validate;
+  });
+
+  function validate(){
+    let ok=financeType.value&&jobType.value&&birthYear.value&&netSalary.value&&profitMargin.value;
+    if(jobType.value==='military') ok=ok&&rankSel.value;
+    nextBtn.disabled=!ok;
+  }
+
+  nextBtn.onclick=()=>{
+    const fin=financeType.value;
+    const job=jobType.value;
+    const by=+birthYear.value;
+    const sal=+netSalary.value;
+    const prof=+profitMargin.value/100;
+
+    const monthsLived=(1446-by)*12;
+    let retAge=job==='military'?retireAges[rankSel.value]:60;
+    const retireMonths=retAge*12;
+    const monthsLeft=retireMonths-monthsLived;
+
+    let extended=false;
+    if((fin==='real'&&job==='military'&&monthsLeft<300)||
+       (fin==='personal'&&monthsLeft<60)){
+      extended=confirm('هل ترغب بالحسبة على التقاعد الممتد؟');
     }
 
-    nextBtn.onclick = () => {
-      // قراءة البيانات
-      const fin = financeType.value,
-            job = jobType.value,
-            by = +birthYear.value,
-            sal = +netSalary.value,
-            prof = +profitMargin.value/100;
-      // حساب المتبقّي إلى التقاعد بالأشهر
-      const monthsLived = (1446 - by)*12;
-      const retireMonths = (retireAges[job==='military'?rankSel.value:'civil']*12);
-      const monthsLeft = retireMonths - monthsLived;
-      // طرح التمويل الممتد؟
-      let extended = false;
-      if((fin==='real' && job==='military' && monthsLeft<300) ||
-         (fin==='personal' && monthsLeft<60)) {
-        extended = confirm('هل ترغب بالحسبة على التقاعد الممتد؟');
-      }
-      // احتساب الراتب التقاعدي
-      let pension = 0;
-      if(job==='military' && extended){
-        // نفترض الخدمة بناءً على سنوات كاملة
-        let serviceYears = Math.min(Math.floor(monthsLived/12),15);
-        let {base,inc} = salaryGrades[rankSel.value];
-        let bs = base + inc*(serviceYears-1);
-        pension = bs * serviceYears/40 * 0.55;
-      }
-      // حساب الأقساط
-      let beforeRate = (fin==='personal'?0.3333:0.55),
-          afterRate  = (fin==='personal'?0.25:0.55);
-      let totalMonths = extended? monthsLeft: (fin==='personal'? Math.min(monthsLeft,60) : monthsLeft);
-      let beforeMonths = extended? monthsLeft : totalMonths;
-      let afterMonths  = extended? totalMonths - monthsLeft: 0;
-      let beforeInst = Math.round(sal * beforeRate);
-      let afterInst = Math.round(pension * afterRate);
-      // إجمالي التمويل والربح (تقريبي)
-      let totalInst = beforeInst*beforeMonths + afterInst*afterMonths;
-      let profit = Math.round(totalInst * prof);
-      let net = totalInst - profit;
-      // عرض النتيجة
-      let txt = `مرحباً ومسهلاً يا ${job==='military'?rankSel.value+' '+'' : ''}\n`+
-                `نوع التمويل: ${fin==='real'?'عقاري':'شخصي'}\n`+
-                `مدة التمويل: ${totalMonths} شهر\n`+
-                `القسط قبل التقاعد (${beforeMonths} شهر): ${beforeInst} ريال\n`+
-                (afterMonths?`القسط بعد التقاعد (${afterMonths} شهر): ${afterInst} ريال\n`:'')+
-                `\nالتمويل الصافي: ${net.toLocaleString()} ريال\n`+
-                `الربح: ${profit.toLocaleString()} ريال`;
-      resultDiv.innerText = txt;
-      resultDiv.style.display='block';
-    };
-  </script>
+    let pension=0;
+    if(job==='military'&&extended){
+      const serviceYears=Math.min(Math.floor(monthsLived/12),15);
+      const {base,inc}=salaryGrades[rankSel.value];
+      const bs=base+inc*(serviceYears-1);
+      pension=bs*serviceYears/40*0.55;
+    }
+
+    const beforeRate=fin==='personal'?0.3333:0.55;
+    const afterRate=fin==='personal'?0.25:0.55;
+    const totalMonths=extended?monthsLeft:(fin==='personal'?Math.min(monthsLeft,60):monthsLeft);
+    const beforeMonths=extended?monthsLeft:totalMonths;
+    const afterMonths=extended?totalMonths-monthsLeft:0;
+    const beforeInst=Math.round(sal*beforeRate);
+    const afterInst=Math.round(pension*afterRate);
+    const totalInst=beforeInst*beforeMonths+afterInst*afterMonths;
+    const profit=Math.round(totalInst*prof);
+    const net=totalInst-profit;
+
+    let txt=`مرحباً ومسهلاً يا ${job==='military'?rankSel.value+' ':''}العميل\n`;
+    txt+=`نوع التمويل: ${fin==='real'?'عقاري':'شخصي'}\n`;
+    txt+=`مدة التمويل: ${totalMonths} شهر\n`;
+    txt+=`القسط قبل التقاعد (${beforeMonths} شهر): ${beforeInst.toLocaleString()} ريال\n`;
+    if(afterMonths>0) txt+=`القسط بعد التقاعد (${afterMonths} شهر): ${afterInst.toLocaleString()} ريال\n`;
+    txt+=`\nالتمويل الصافي: ${net.toLocaleString()} ريال\n`;
+    txt+=`الربح: ${profit.toLocaleString()} ريال\n`;
+
+    resultDiv.innerText=txt;
+    resultDiv.style.display='block';
+  };
+</script>
 </body>
 </html>
-"""
-print(html_code)
-
-ها هو الكود النهائي بالكامل، مدموج لكل المنطق المتفق عليه:
-
-- لا يسأل عن الراتب الأساسي أبدًا
-- حساب التقاعد تلقائيًا حسب الرتبة وتاريخ الميلاد
-- عرض سؤال “الحسبة الممتدة” حسب الشروط
-- دعم التمويل العقاري والشخصي
-- نسب الاستقطاع والمنطق الأصلي بدون تغيير
-- تصميم عصري ومتوافق مع الحاسبة العقارية
-- فوتر هجري وميلادي
-
-انسخه كاملًا في ملف `index.html` وشغّله في المتصفح.  
-أتمنى إنه يلبي كل متطلباتك بدقة 100%! |oai:code-citation|
