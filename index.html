@@ -2,13 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<title>تجربة زر ابدأ بسيط</title>
+<title>حاسبة تمويل - خطوات متتالية</title>
 <style>
   body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; }
   .step { display: none; }
   .step.active { display: block; }
-  button { font-size: 18px; padding: 10px 20px; cursor: pointer; }
-  input { font-size: 18px; padding: 8px; width: 100%; max-width: 400px; }
+  button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin-top: 12px; }
+  input, select { font-size: 18px; padding: 8px; width: 100%; max-width: 400px; margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -21,15 +21,30 @@
 <div id="step2" class="step">
   <h2>ادخل اسمك الكريم</h2>
   <input type="text" id="nameInput" placeholder="الاسم" />
-  <button id="nextBtn" disabled>التالي</button>
+  <button id="nextBtn2" disabled>التالي</button>
+</div>
+
+<div id="step3" class="step">
+  <h2>اختر نوع التمويل</h2>
+  <select id="financeType">
+    <option value="">-- اختر --</option>
+    <option value="personal">تمويل شخصي أو استهلاكي</option>
+    <option value="realEstate">تمويل عقاري</option>
+  </select>
+  <button id="nextBtn3" disabled>التالي</button>
 </div>
 
 <script>
   const startBtn = document.getElementById('startBtn');
-  const nextBtn = document.getElementById('nextBtn');
+  const nextBtn2 = document.getElementById('nextBtn2');
+  const nextBtn3 = document.getElementById('nextBtn3');
+
   const step1 = document.getElementById('step1');
   const step2 = document.getElementById('step2');
+  const step3 = document.getElementById('step3');
+
   const nameInput = document.getElementById('nameInput');
+  const financeType = document.getElementById('financeType');
 
   startBtn.addEventListener('click', () => {
     step1.classList.remove('active');
@@ -38,12 +53,21 @@
   });
 
   nameInput.addEventListener('input', () => {
-    nextBtn.disabled = nameInput.value.trim() === '';
+    nextBtn2.disabled = nameInput.value.trim() === '';
   });
 
-  nextBtn.addEventListener('click', () => {
-    alert('أهلاً وسهلاً يا ' + nameInput.value.trim());
-    // هنا ممكن تضيف التنقل أو الحساب
+  nextBtn2.addEventListener('click', () => {
+    step2.classList.remove('active');
+    step3.classList.add('active');
+  });
+
+  financeType.addEventListener('change', () => {
+    nextBtn3.disabled = financeType.value === '';
+  });
+
+  nextBtn3.addEventListener('click', () => {
+    alert('التمويل المختار: ' + financeType.value);
+    // نكمل بناء الحاسبة حسب طلبك بعد هالخطوة
   });
 </script>
 
