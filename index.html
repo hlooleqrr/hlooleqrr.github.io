@@ -1,58 +1,144 @@
+<!-- كود الحاسبة الكامل بعد الدمج بناءً على النسخة التي تعمل -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>زر ابدأ الحسبة - نسخة 1</title>
+  <meta charset="UTF-8">
+  <title>حاسبة التمويل العقاري والتقاعدي - سرعة تملك</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: 'Tajawal', sans-serif;
-      padding: 30px;
-      text-align: center;
-      background: #f0f4f3;
-    }
-    #startBtn {
-      background-color: #00796b;
-      color: white;
-      font-size: 28px;
-      padding: 20px 40px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0,121,107,0.6);
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    #startBtn:hover {
-      background-color: #004d40;
-    }
-    #formSection {
-      display: none;
-      margin-top: 40px;
-      font-size: 24px;
-      color: #004d40;
-    }
+    body { font-family: 'Tajawal', sans-serif; background: #f0f0f0; margin: 0; font-size: 24px; text-align: center; direction: rtl; }
+    header { background: #004d40; color: white; padding: 20px; font-size: 30px; font-weight: bold; }
+    .container { max-width: 700px; margin: auto; background: white; padding: 30px; margin-top: 40px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    label { display: block; margin-top: 25px; font-weight: bold; color: #00695c; }
+    input, select { width: 90%; font-size: 22px; padding: 14px; margin-top: 10px; border-radius: 8px; border: 2px solid #80cbc4; }
+    button { background: #00796b; color: white; border: none; padding: 18px; font-size: 24px; border-radius: 12px; margin-top: 40px; cursor: pointer; }
+    button:hover { background: #004d40; }
+    #resultContainer { margin-top: 40px; background: #b2dfdb; padding: 25px; border-radius: 12px; font-weight: bold; font-size: 22px; white-space: pre-line; }
+    footer { background: #004d40; color: #a7c7c4; font-size: 16px; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%; }
   </style>
 </head>
 <body>
+<header>💼 سرعة تملك العقار والحلول التمويلية</header>
 
-<button id="startBtn">ابدأ الحسبة</button>
-
-<div id="formSection">
-  <h2>هنا يبدأ النموذج بعد الضغط على الزر</h2>
-  <p>ضع هنا أسئلتك أو الحاسبة</p>
+<div class="container">
+  <div id="questionContainer"></div>
+  <button id="nextBtn">التالي</button>
+  <div id="resultContainer" style="display:none;"></div>
 </div>
 
+<footer>
+  📅 هجري: <span id="hijriDate"></span> | ميلادي: <span id="gregorianDate"></span>
+</footer>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const startBtn = document.getElementById('startBtn');
-    const formSection = document.getElementById('formSection');
+const today = new Date();
+document.getElementById('hijriDate').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day:'numeric', month:'long', year:'numeric' }).format(today);
+document.getElementById('gregorianDate').innerText = today.toLocaleDateString('ar-SA');
 
-    startBtn.addEventListener('click', function () {
-      startBtn.style.display = 'none';
-      formSection.style.display = 'block';
-    });
-  });
+const questions = [
+  { id:'name', label:'اسمك الكريم', type:'text' },
+  { id:'financeType', label:'اختر نوع التمويل', type:'select', options:['تمويل شخصي أو استهلاكي','تمويل عقاري'] },
+  { id:'jobType', label:'نوع الوظيفة', type:'select', options:['عسكري','مدني','خاص'] },
+  { id:'birthYear', label:'سنة الميلاد (هجري)', type:'select', options:Array.from({length:80},(_,i)=>1370+i) },
+  { id:'militaryRank', label:'اذكر الرتبة العسكرية', type:'select', options:['جندي','عريف','وكيل رقيب','رقيب','رئيس رقباء','ملازم','نقيب','رائد','مقدم','عقيد','عميد','لواء'], show:a=>a.jobType==='عسكري' },
+  { id:'extendedRetirement', label:'هل ترغب بالحسبة على التقاعد الممتد؟', type:'select', options:['نعم','لا'], show:a=>a.jobType==='عسكري' && a.militaryRank },
+  { id:'baseSalary', label:'راتبك الأساسي (للتقاعد الممتد)', type:'number', show:a=>a.extendedRetirement==='نعم' },
+  { id:'hireYear', label:'سنة التعيين (هجري)', type:'select', options:Array.from({length:40},(_,i)=>1407+i), show:a=>a.extendedRetirement==='نعم' },
+  { id:'salary', label:'راتبك الشهري الصافي', type:'number' },
+  { id:'profitMargin', label:'هامش الربح السنوي (%)', type:'number' },
+  { id:'months', label:'مدة التمويل المطلوبة (بالأشهر)', type:'select', options:Array.from({length:30},(_,i)=>(i+1)*12), format:v=>`${v} شهر (${v/12} سنوات)` }
+];
+
+let step = 0;
+let answers = {};
+
+function showQuestion(){
+  const q = questions[step];
+  if(q.show && !q.show(answers)){ step++; showQuestion(); return; }
+
+  const container = document.getElementById('questionContainer');
+  container.innerHTML = `<label>${q.label}</label>`;
+  let el;
+
+  if(q.type === 'select'){
+    el = document.createElement('select');
+    el.innerHTML = `<option value="">-- اختر --</option>` + q.options.map(v=>{
+      const val = typeof v==='number'?v:v;
+      const label = q.format ? q.format(v) : v;
+      return `<option value="${val}">${label}</option>`;
+    }).join('');
+  } else {
+    el = document.createElement('input');
+    el.type = q.type;
+  }
+
+  el.id = q.id;
+  el.value = answers[q.id] || '';
+  el.oninput = ()=> answers[q.id] = el.value;
+  container.appendChild(el);
+}
+
+function formatNumber(n){
+  return n.toLocaleString('ar-EG');
+}
+
+function toYearsText(m){
+  const y = Math.floor(m/12);
+  const r = m % 12;
+  let text = '';
+  if(y > 0) text += `${y} سنة`;
+  if(r > 0) text += ` و${r} شهر`;
+  return text || 'شهر واحد';
+}
+
+function showResult(){
+  const r = document.getElementById('resultContainer');
+  const name = answers.name;
+  const salary = +answers.salary;
+  const margin = +answers.profitMargin;
+  const months = +answers.months;
+  const job = answers.jobType;
+  const extended = answers.extendedRetirement;
+  const base = +answers.baseSalary;
+  const hire = +answers.hireYear;
+  const birth = +answers.birthYear;
+  const now = 1446;
+
+  let percent = answers.financeType.includes('شخصي') ? 0.3333 : 0.55;
+
+  let retirementSalary = null;
+  if(job==='عسكري' && extended==='نعم'){
+    let service = now - hire;
+    retirementSalary = (base * service / 40) * 0.55;
+    percent = answers.financeType.includes('شخصي') ? 0.25 : 0.55;
+  }
+
+  let monthlyInstallment = retirementSalary ? retirementSalary * percent : salary * percent;
+  let netFinance = monthlyInstallment * months;
+  let totalWithProfit = netFinance * (1 + margin * (months/12) / 100);
+  let profit = totalWithProfit - netFinance;
+
+  r.innerHTML = `مرحباً ومسهلاً يا ${name} 👋\n\n` +
+    `مدة التمويل: ${months} شهر (${toYearsText(months)})\n` +
+    (retirementSalary ? `راتبك التقاعدي المحتسب: ${formatNumber(retirementSalary.toFixed(0))} ريال\n` : '') +
+    `القسط الشهري المسموح به: ${formatNumber(monthlyInstallment.toFixed(0))} ريال\n\n` +
+    `التمويل الصافي: ${formatNumber(netFinance.toFixed(0))} ريال\n` +
+    `الربح التقريبي: ${formatNumber(profit.toFixed(0))} ريال\n` +
+    `إجمالي المبلغ مع الأرباح: ${formatNumber(totalWithProfit.toFixed(0))} ريال`;
+
+  r.style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+document.getElementById('nextBtn').onclick = ()=>{
+  const q = questions[step];
+  const input = document.getElementById(q.id);
+  if(input && input.value) answers[q.id] = input.value;
+  if(step < questions.length - 1){ step++; showQuestion(); }
+  else showResult();
+};
+
+showQuestion();
 </script>
-
 </body>
 </html>
