@@ -2,423 +2,57 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>حاسبة التمويل العقاري والتقاعدي</title>
+  <title>زر ابدأ الحسبة - نسخة 1</title>
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
-      background: #f4f6f8;
-      margin: 0; padding: 0;
-      font-size: 28px;
-      direction: rtl;
+      padding: 30px;
       text-align: center;
+      background: #f0f4f3;
     }
-    header {
-      background: #004d40;
-      color: white;
-      padding: 20px 0;
-      font-size: 34px;
-      font-weight: bold;
-      user-select: none;
-    }
-    .container {
-      max-width: 720px;
-      margin: 30px auto;
-      background: white;
-      border-radius: 12px;
-      padding: 30px 40px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 25px;
-      font-weight: 700;
-      color: #00695c;
-    }
-    input, select {
-      width: 90%;
-      max-width: 450px;
-      font-size: 22px;
-      padding: 14px 16px;
-      margin-top: 8px;
-      border-radius: 8px;
-      border: 2px solid #b2dfdb;
-      color: #004d40;
-      font-weight: 600;
-      box-sizing: border-box;
-      cursor: pointer;
-      transition: border-color 0.3s, background-color 0.3s;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #004d40;
-      background-color: #c8e6c9;
-    }
-    button {
-      margin-top: 40px;
+    #startBtn {
       background-color: #00796b;
       color: white;
+      font-size: 28px;
+      padding: 20px 40px;
       border: none;
-      padding: 18px 0;
-      width: 90%;
-      max-width: 450px;
-      font-size: 26px;
-      font-weight: 900;
-      border-radius: 14px;
+      border-radius: 12px;
       cursor: pointer;
       box-shadow: 0 6px 15px rgba(0,121,107,0.6);
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      transition: background-color 0.3s ease;
       user-select: none;
     }
-    button:disabled {
-      background-color: #a5d6a7;
-      cursor: default;
-      box-shadow: none;
-    }
-    button:hover:not(:disabled) {
+    #startBtn:hover {
       background-color: #004d40;
-      box-shadow: 0 8px 20px rgba(0,77,64,0.9);
     }
-    #resultContainer {
+    #formSection {
+      display: none;
       margin-top: 40px;
-      background-color: #b2dfdb;
-      padding: 30px;
-      border-radius: 16px;
-      font-weight: 700;
       font-size: 24px;
       color: #004d40;
-      line-height: 1.6;
-      min-height: 200px;
-      user-select: text;
-      white-space: pre-line;
-    }
-    footer {
-      background-color: #004d40;
-      color: #a7c7c4;
-      font-size: 16px;
-      padding: 12px 10px;
-      text-align: center;
-      user-select: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      font-weight: 600;
-    }
-    footer a {
-      color: #80cbc4;
-      font-weight: 700;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-<header>سرعة تملك العقار والحلول التمويلية</header>
+<button id="startBtn">ابدأ الحسبة</button>
 
-<div class="container">
-
-  <div id="startScreen">
-    <button id="startBtn">ابدأ الحسبة</button>
-  </div>
-
-  <div id="formScreen" style="display:none;">
-    <label for="clientName">اسمك الكريم</label>
-    <input type="text" id="clientName" autocomplete="off" />
-
-    <label for="financeType">اختر نوع التمويل</label>
-    <select id="financeType">
-      <option value="">-- اختر --</option>
-      <option value="personal">تمويل شخصي أو استهلاكي</option>
-      <option value="realEstate">تمويل عقاري</option>
-    </select>
-
-    <label for="jobType">نوع الوظيفة</label>
-    <select id="jobType">
-      <option value="">-- اختر --</option>
-      <option value="military">عسكري</option>
-      <option value="civil">مدني</option>
-      <option value="private">خاص</option>
-    </select>
-
-    <label>سنة الميلاد (هجري)</label>
-    <select id="birthYear"></select>
-
-    <label for="salary">راتبك الشهري الصافي (ريال)</label>
-    <input type="number" id="salary" min="1000" />
-
-    <label for="profitMargin">نسبة هامش الربح السنوي (%)</label>
-    <input type="number" id="profitMargin" min="0" step="0.1" />
-
-    <label for="months">مدة التمويل (شهور)</label>
-    <select id="months"></select>
-
-    <div id="militaryRankSection" style="display:none;">
-      <label for="militaryRank">رتبتك العسكرية</label>
-      <select id="militaryRank">
-        <option value="">-- اختر --</option>
-        <option>جندي</option><option>جندي أول</option><option>عريف</option><option>وكيل رقيب</option>
-        <option>رقيب</option><option>رقيب أول</option><option>رئيس رقباء</option><option>ملازم</option>
-        <option>ملازم أول</option><option>نقيب</option><option>رائد</option><option>مقدم</option>
-        <option>عقيد</option><option>عميد</option><option>لواء</option><option>فريق</option>
-        <option>فريق أول</option>
-      </select>
-    </div>
-
-    <div id="extendedRetirementSection" style="display:none; margin-top: 20px;">
-      <label for="extendedRetirement">هل ترغب بالحسبة على التقاعد الممتد؟</label>
-      <select id="extendedRetirement">
-        <option value="">-- اختر --</option>
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
-    </div>
-
-    <div id="baseSalarySection" style="display:none; margin-top: 20px;">
-      <label for="baseSalary">الراتب الأساسي (ريال)</label>
-      <input type="number" id="baseSalary" min="1000" />
-    </div>
-
-    <div id="hireYearSection" style="display:none; margin-top: 20px;">
-      <label for="hireYear">سنة التعيين (هجري)</label>
-      <input type="number" id="hireYear" min="1300" max="1450" />
-    </div>
-
-    <button id="calculateBtn" disabled>احسب</button>
-  </div>
-
-  <div id="resultScreen" style="display:none;">
-    <div id="resultContainer"></div>
-    <button id="resetBtn">🔁 إعادة الحسبة</button>
-  </div>
-
+<div id="formSection">
+  <h2>هنا يبدأ النموذج بعد الضغط على الزر</h2>
+  <p>ضع هنا أسئلتك أو الحاسبة</p>
 </div>
 
-<footer>
-  📅 اليوم هجري: <span id="hijriDate"></span> | ميلادي: <span id="gregorianDate"></span><br />
-  © سرعة تملك العقار والحلول التمويلية
-</footer>
-
 <script>
-  // تاريخ هجري وميلادي للفوتر
-  const today = new Date();
-  document.getElementById('hijriDate').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day:'numeric', month:'long', year:'numeric' }).format(today);
-  document.getElementById('gregorianDate').innerText = today.toLocaleDateString('ar-SA', { day:'numeric', month:'long', year:'numeric' });
+  document.addEventListener('DOMContentLoaded', function () {
+    const startBtn = document.getElementById('startBtn');
+    const formSection = document.getElementById('formSection');
 
-  // عناصر التحكم
-  const startBtn = document.getElementById('startBtn');
-  const startScreen = document.getElementById('startScreen');
-  const formScreen = document.getElementById('formScreen');
-  const resultScreen = document.getElementById('resultScreen');
-  const resultContainer = document.getElementById('resultContainer');
-  const resetBtn = document.getElementById('resetBtn');
-
-  const clientNameInput = document.getElementById('clientName');
-  const financeTypeSelect = document.getElementById('financeType');
-  const jobTypeSelect = document.getElementById('jobType');
-  const birthYearSelect = document.getElementById('birthYear');
-  const salaryInput = document.getElementById('salary');
-  const profitMarginInput = document.getElementById('profitMargin');
-  const monthsSelect = document.getElementById('months');
-  const militaryRankSection = document.getElementById('militaryRankSection');
-  const militaryRankSelect = document.getElementById('militaryRank');
-  const extendedRetirementSection = document.getElementById('extendedRetirementSection');
-  const extendedRetirementSelect = document.getElementById('extendedRetirement');
-  const baseSalarySection = document.getElementById('baseSalarySection');
-  const baseSalaryInput = document.getElementById('baseSalary');
-  const hireYearSection = document.getElementById('hireYearSection');
-  const hireYearInput = document.getElementById('hireYear');
-
-  const calculateBtn = document.getElementById('calculateBtn');
-
-  // ملء قائمة السنوات الميلادية (هجري)
-  function fillYears() {
-    let year = 1370;
-    for(let i=year; i<=1446; i++) {
-      let option = document.createElement('option');
-      option.value = i;
-      option.textContent = i;
-      birthYearSelect.appendChild(option);
-    }
-  }
-  fillYears();
-
-  // ملء قائمة مدة التمويل حسب نوع التمويل
-  function fillMonths() {
-    monthsSelect.innerHTML = '';
-    let maxMonths = financeTypeSelect.value === 'personal' ? 60 : 360;
-    for(let i=12; i<=maxMonths; i+=12) {
-      let option = document.createElement('option');
-      option.value = i;
-      option.textContent = i + ' شهر (' + (i/12) + ' سنوات)';
-      monthsSelect.appendChild(option);
-    }
-  }
-
-  financeTypeSelect.addEventListener('change', () => {
-    fillMonths();
-    validateForm();
+    startBtn.addEventListener('click', function () {
+      startBtn.style.display = 'none';
+      formSection.style.display = 'block';
+    });
   });
+</script>
 
-  // إظهار/إخفاء رتبة العسكري وامتداد التقاعد
-  jobTypeSelect.addEventListener('change', () => {
-    if(jobTypeSelect.value === 'military') {
-      militaryRankSection.style.display = 'block';
-    } else {
-      militaryRankSection.style.display = 'none';
-      militaryRankSelect.value = '';
-      extendedRetirementSection.style.display = 'none';
-      extendedRetirementSelect.value = '';
-      baseSalarySection.style.display = 'none';
-      hireYearSection.style.display = 'none';
-      baseSalaryInput.value = '';
-      hireYearInput.value = '';
-    }
-    validateForm();
-  });
-
-  militaryRankSelect.addEventListener('change', () => {
-    // تحقق إذا العمر أقل من سن التقاعد حسب الرتبة واظهار خيار الحسبة الممتدة
-    let birthYear = parseInt(birthYearSelect.value);
-    let rank = militaryRankSelect.value;
-    if(!birthYear || !rank) {
-      extendedRetirementSection.style.display = 'none';
-      extendedRetirementSelect.value = '';
-      baseSalarySection.style.display = 'none';
-      hireYearSection.style.display = 'none';
-      baseSalaryInput.value = '';
-      hireYearInput.value = '';
-      validateForm();
-      return;
-    }
-    const retirementAges = {
-      "جندي": 44, "جندي أول": 44, "عريف": 46, "وكيل رقيب": 46,
-      "رقيب": 48, "رقيب أول": 50, "رئيس رقباء": 52,
-      "ملازم": 48, "ملازم أول": 50, "نقيب": 52, "رائد": 54,
-      "مقدم": 56, "عقيد": 58, "عميد": 60, "لواء": 60,
-      "فريق": 60, "فريق أول": 60
-    };
-    let age = 1446 - birthYear;
-    let retAge = retirementAges[rank] || 44;
-    let monthsToRetire = (retAge - age) * 12;
-    if(monthsToRetire <= 300 || financeTypeSelect.value === 'personal') {
-      extendedRetirementSection.style.display = 'block';
-    } else {
-      extendedRetirementSection.style.display = 'none';
-      extendedRetirementSelect.value = '';
-      baseSalarySection.style.display = 'none';
-      hireYearSection.style.display = 'none';
-      baseSalaryInput.value = '';
-      hireYearInput.value = '';
-    }
-    validateForm();
-  });
-
-  extendedRetirementSelect.addEventListener('change', () => {
-    if(extendedRetirementSelect.value === 'yes') {
-      baseSalarySection.style.display = 'block';
-      hireYearSection.style.display = 'block';
-    } else {
-      baseSalarySection.style.display = 'none';
-      hireYearSection.style.display = 'none';
-      baseSalaryInput.value = '';
-      hireYearInput.value = '';
-    }
-    validateForm();
-  });
-
-  // تحقق من صحة الإدخالات لتفعيل زر الحساب
-  function validateForm() {
-    let valid = true;
-    if(clientName.value.trim() === '') valid = false;
-    if(!financeTypeSelect.value) valid = false;
-    if(!jobTypeSelect.value) valid = false;
-    if(!birthYearSelect.value) valid = false;
-    if(!salaryInput.value || salaryInput.value <= 0) valid = false;
-    if(!profitMarginInput.value || profitMarginInput.value < 0) valid = false;
-    if(!monthsSelect.value) valid = false;
-    if(jobTypeSelect.value === 'military') {
-      if(!militaryRankSelect.value) valid = false;
-      if(extendedRetirementSelect.value === '') valid = false;
-      if(extendedRetirementSelect.value === 'yes') {
-        if(!baseSalaryInput.value || baseSalaryInput.value <= 0) valid = false;
-        if(!hireYearInput.value || hireYearInput.value < 1300) valid = false;
-      }
-    }
-    calculateBtn.disabled = !valid;
-  }
-
-  // إضافة مستمعات على الحقول
-  const clientName = clientNameInput;
-  const calculateBtn = document.getElementById('calculateBtn');
-
-  [
-    clientNameInput, financeTypeSelect, jobTypeSelect, birthYearSelect,
-    salaryInput, profitMarginInput, monthsSelect, militaryRankSelect,
-    extendedRetirementSelect, baseSalaryInput, hireYearInput
-  ].forEach(el => {
-    el.addEventListener('input', validateForm);
-    el.addEventListener('change', validateForm);
-  });
-
-  // ملء سنوات الميلاد عند التحميل
-  document.addEventListener('DOMContentLoaded', () => {
-    fillYears();
-    validateForm();
-  });
-
-  // حساب العمر ومدة الخدمة
-  function calcAge(birthYear) {
-    return 1446 - birthYear;
-  }
-  function calcServiceYears(hireYear) {
-    return 1446 - hireYear;
-  }
-
-  // حساب الراتب التقاعدي
-  function calcRetirementSalary(baseSalary, serviceYears) {
-    return (baseSalary * serviceYears / 40) * 0.55;
-  }
-
-  // تحويل الأرقام للفواصل العربية
-  function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
-
-  // حساب التمويل واظهار النتيجة
-  calculateBtn.addEventListener('click', () => {
-    let name = clientName.value.trim();
-    let financeType = financeTypeSelect.value;
-    let jobType = jobTypeSelect.value;
-    let birthYear = parseInt(birthYearSelect.value);
-    let salary = parseFloat(salaryInput.value);
-    let profitMargin = parseFloat(profitMarginInput.value);
-    let months = parseInt(monthsSelect.value);
-
-    let militaryRank = militaryRankSelect.value;
-    let wantExtended = extendedRetirementSelect.value;
-    let baseSalary = parseFloat(baseSalaryInput.value) || 0;
-    let hireYear = parseInt(hireYearInput.value) || 0;
-
-    let resultHTML = `مرحباً ومسهلاً يا <strong>${name}</strong>\n\n`;
-
-    // النسبة المسموح بها حسب التمويل ونوع الوظيفة وحالة التقاعد الممتد
-    let allowedPercent = 0.55;
-    if(financeType === 'personal' || financeType === 'personal' || financeType === 'personal') {
-      allowedPercent = 0.3333; // 33.33%
-      if(wantExtended === 'yes') allowedPercent = 0.25; // 25% بعد التقاعد الممتد
-    }
-
-    if(jobType === 'military' && wantExtended === 'yes') {
-      let serviceYears = calcServiceYears(hireYear);
-      let retirementSalary = calcRetirementSalary(baseSalary, serviceYears);
-      resultHTML += `راتبك التقاعدي المحتسب: <strong>${formatNumber(Math.round(retirementSalary))} ريال</strong>\n`;
-      resultHTML += `القسط الشهري المسموح بعد التقاعد: <strong>${formatNumber(Math.round(retirementSalary * allowedPercent))} ريال</strong>\n`;
-    } else {
-      let allowedInstallment = Math.round(salary * allowedPercent);
-      resultHTML += `القسط الشهري المتاح: <strong>${formatNumber(allowedInstallment)} ريال</strong>\n`;
-    }
-
-    resultHTML += `مدة التمويل: <strong>${months}
+</body>
+</html>
