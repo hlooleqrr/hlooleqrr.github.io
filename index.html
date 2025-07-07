@@ -60,6 +60,7 @@
     font-size: 22px;
     line-height: 1.5;
     color: #00695c;
+    margin-top: 30px;
   }
   footer {
     margin-top: 40px;
@@ -121,7 +122,7 @@
   </div>
 
   <!-- النتيجة -->
-  <div id="result" style="margin-top: 30px; display: none;"></div>
+  <div id="result" style="display: none;"></div>
 
 </div>
 
@@ -158,65 +159,66 @@ function fillDateSelects(dayId, monthId, yearId, startYear, endYear) {
 fillDateSelects('birthDay','birthMonth','birthYear',1370,1430);
 fillDateSelects('hireDay','hireMonth','hireYear',1410,1460);
 
-// التحكم في الخطوات
+// التحكم في الخطوات والانتقال بينهم
 let currentStep = 1;
 const totalSteps = 3;
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 
 function showStep(step) {
-  for(let i=1; i<=totalSteps; i++) {
-    document.getElementById('step'+i).classList.remove('active');
+  for (let i = 1; i <= totalSteps; i++) {
+    document.getElementById('step' + i).classList.remove('active');
   }
-  document.getElementById('step'+step).classList.add('active');
+  document.getElementById('step' + step).classList.add('active');
 
   prevBtn.disabled = step === 1;
-  nextBtn.textContent = (step === totalSteps) ? "احسب" : "التالي";
+  nextBtn.textContent = step === totalSteps ? 'احسب' : 'التالي';
 
-  // إخفاء النتيجة عند التنقل بين الخطوات
+  // إخفاء النتيجة إذا رجع المستخدم خطوة
   document.getElementById('result').style.display = 'none';
-}
-showStep(currentStep);
 
-// تحقق من صحة المدخلات في كل خطوة
-function validateStep(step) {
-  if(step === 1) {
-    const rank = document.getElementById('rank').value;
-    return rank !== "";
-  }
-  // باقي الخطوات بدون شروط إضافية لأن الاختيارات في القوائم
-  return true;
+  // إظهار أزرار التنقل عند الخطوات، إخفاؤها عند النتيجة
+  prevBtn.style.display = 'inline-block';
+  nextBtn.style.display = 'inline-block';
 }
 
-nextBtn.addEventListener('click', () => {
-  if(!validateStep(currentStep)) {
-    alert('يرجى إكمال الحقل المطلوب');
-    return;
-  }
-  if(currentStep < totalSteps) {
-    currentStep++;
-    showStep(currentStep);
-  } else {
-    // حساب النتيجة النهائية
-    calculateResult();
-  }
-});
 prevBtn.addEventListener('click', () => {
-  if(currentStep > 1) {
+  if (currentStep > 1) {
     currentStep--;
     showStep(currentStep);
   }
 });
 
+nextBtn.addEventListener('click', () => {
+  if (!validateStep(currentStep)) {
+    alert('يرجى إكمال الحقل المطلوب');
+    return;
+  }
+  if (currentStep < totalSteps) {
+    currentStep++;
+    showStep(currentStep);
+  } else {
+    // عند الخطوة الأخيرة نعرض النتيجة
+    calculateResult();
+  }
+});
+
+// دالة التحقق لكل خطوة
+function validateStep(step) {
+  if (step === 1) {
+    return document.getElementById('rank').value !== '';
+  }
+  // باقي الخطوات في اختيار من قائمة دائمًا صالح
+  return true;
+}
+
 // تحويل التاريخ الهجري إلى عدد أيام تقريباً
 function hijriToJulianDays(year, month, day) {
-  // حساب تقريبي يعتمد على السنة والشهر واليوم في التقويم الهجري
   return (year * 354) + ((month - 1) * 29.5) + day;
 }
 
 // حساب الفرق بين تاريخين هجريين (سنة،شهر،يوم) بدقة سنوات، أشهر، أيام
 function diffHijriDates(y1,m1,d1, y2,m2,d2) {
-  // تحويل إلى عدد الأيام لكل تاريخ
   const jd1 = hijriToJulianDays(y1,m1,d1);
   const jd2 = hijriToJulianDays(y2,m2,d2);
   let diffDays = Math.floor(jd2 - jd1);
@@ -231,13 +233,12 @@ function diffHijriDates(y1,m1,d1, y2,m2,d2) {
   return { years, months, days };
 }
 
-// دالة لتحويل الأرقام إلى نص عربي مفصل
+// دالة لتحويل رقم إلى نص عربي (بسيطة مع فواصل)
 function numberToArabicText(num) {
-  // بسيطة هنا فقط تحويل الأرقام لـ صيغة رقمية مع فواصل
   return num.toLocaleString('ar-EG');
 }
 
-// بيانات الرتب - مربوط الدرجة الأولى وقيمة العلاوة السنوية وعدد سنوات العلاوة القصوى
+// بيانات الرتب - مربوط الدرجة الأولى وقيمة العلاوة السنوية وعدد سنوات العلاوة القصوى وسن التقاعد
 const ranksData = {
   "جندي":        { base: 3220,  allowance: 125,  maxYears: 15, retireAge: 44 },
   "جندي أول":    { base: 3395,  allowance: 135,  maxYears: 15, retireAge: 44 },
@@ -256,11 +257,20 @@ const ranksData = {
   "لواء":        { base: 18600, allowance: 200,  maxYears: 15, retireAge: 58 }
 };
 
-// تحويل هجري إلى ميلادي (تقريبي)  
-function hijriToGregorian(y,m,d) {
-  // هنا نستخدم تحويل تقريبي (الفارق تقريبا 622 سنة و 10 أيام)
-  const gregorianYear = y + 622 - Math.floor((m <= 2) ? 1 : 0);
-  return { year: gregorianYear, month: m, day: d };
+// إضافة أشهر وأيام لتاريخ هجري
+function addHijriMonthsDays(date, months, days) {
+  let y = date.y;
+  let m = date.m + months;
+  let d = date.d + days;
+  if (d > 30) {
+    d -= 30;
+    m += 1;
+  }
+  while (m > 12) {
+    m -= 12;
+    y += 1;
+  }
+  return { y, m, d };
 }
 
 // حساب عمر الشخص في تاريخ معين (هجري) بالنسبة لتاريخ ميلاده (هجري)
@@ -268,34 +278,18 @@ function calculateAgeAtDate(birth, atDate) {
   let ageYears = atDate.y - birth.y;
   let ageMonths = atDate.m - birth.m;
   let ageDays = atDate.d - birth.d;
-  if(ageDays < 0) {
+  if (ageDays < 0) {
     ageDays += 30;
     ageMonths--;
   }
-  if(ageMonths < 0) {
+  if (ageMonths < 0) {
     ageMonths += 12;
     ageYears--;
   }
   return { years: ageYears, months: ageMonths, days: ageDays };
 }
 
-// إضافة أشهر وأيام لتاريخ هجري
-function addHijriMonthsDays(date, months, days) {
-  let y = date.y;
-  let m = date.m + months;
-  let d = date.d + days;
-  if(d > 30) {
-    d -= 30;
-    m += 1;
-  }
-  while(m > 12) {
-    m -= 12;
-    y += 1;
-  }
-  return { y, m, d };
-}
-
-// عرض النتائج النهائية
+// حساب النتيجة النهائية وعرضها
 function calculateResult() {
   const rank = document.getElementById('rank').value;
   const birth = {
@@ -309,28 +303,26 @@ function calculateResult() {
     d: parseInt(document.getElementById('hireDay').value)
   };
 
-  // التحقق من صحة المدخلات المنطقية
-  if(rank === "" || !ranksData[rank]) {
-    alert("الرجاء اختيار رتبة صحيحة");
-    currentStep = 1; showStep(currentStep); return;
-  }
-  if(hire.y < birth.y || (hire.y === birth.y && hire.m < birth.m) || (hire.y === birth.y && hire.m === birth.m && hire.d < birth.d)) {
+  // تحقق منطقي من التواريخ
+  if (hire.y < birth.y || (hire.y === birth.y && hire.m < birth.m) || (hire.y === birth.y && hire.m === birth.m && hire.d < birth.d)) {
     alert("تاريخ التعيين لا يمكن أن يكون قبل تاريخ الميلاد");
-    currentStep = 3; showStep(currentStep); return;
+    currentStep = 3;
+    showStep(currentStep);
+    return;
   }
 
-  // حساب اليوم الحالي هجري (تقريبي)
+  // اليوم هجري تقريبي
   const now = new Date();
-  const hijriNowY = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {year:'numeric'}).format(now);
-  const hijriNowM = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {month:'numeric'}).format(now);
-  const hijriNowD = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {day:'numeric'}).format(now);
-  const today = { y: parseInt(hijriNowY), m: parseInt(hijriNowM), d: parseInt(hijriNowD) };
+  const hijriNowY = parseInt(new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric' }).format(now));
+  const hijriNowM = parseInt(new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { month: 'numeric' }).format(now));
+  const hijriNowD = parseInt(new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric' }).format(now));
+  const today = { y: hijriNowY, m: hijriNowM, d: hijriNowD };
 
-  // حساب سنوات الخدمة بين التعيين واليوم
+  // مدة الخدمة حتى اليوم
   const serviceDuration = diffHijriDates(hire.y, hire.m, hire.d, today.y, today.m, today.d);
-  const serviceYears = serviceDuration.years + serviceDuration.months / 12 + serviceDuration.days / 365;
+  const serviceYearsDecimal = serviceDuration.years + serviceDuration.months / 12 + serviceDuration.days / 365;
 
-  // سنوات العلاوة (حتى حد معين)
+  // سنوات العلاوة (محدودة)
   const maxAllowanceYears = ranksData[rank].maxYears;
   const allowanceYears = Math.min(serviceDuration.years, maxAllowanceYears);
 
@@ -338,16 +330,16 @@ function calculateResult() {
   const baseSalary = ranksData[rank].base + (allowanceYears * ranksData[rank].allowance);
 
   // الراتب التقاعدي = (الراتب الأساسي × سنوات الخدمة × 0.55) ÷ 40
-  const pension = Math.round((baseSalary * serviceYears * 0.55) / 40);
+  const pension = Math.round((baseSalary * serviceYearsDecimal * 0.55) / 40);
 
   // حساب موعد التقاعد: تاريخ الميلاد + عمر التقاعد
   const retireAge = ranksData[rank].retireAge;
   const retireDate = addHijriMonthsDays(birth, retireAge * 12, 0);
 
-  // كم بقي على التقاعد
+  // باقي الوقت على التقاعد
   const timeToRetire = diffHijriDates(today.y, today.m, today.d, retireDate.y, retireDate.m, retireDate.d);
 
-  // عمر العميل عند التقاعد
+  // عمر المتقاعد عند التقاعد
   const ageAtRetire = calculateAgeAtDate(birth, retireDate);
 
   // صياغة نص النتائج
@@ -362,7 +354,6 @@ function calculateResult() {
     <p>👴 <strong>عمر المتقاعد المتوقع:</strong> ${ageAtRetire.years} سنة، ${ageAtRetire.months} شهر، و${ageAtRetire.days} يوم</p>
   `;
 
-  // عرض النتيجة
   const resultDiv = document.getElementById('result');
   resultDiv.innerHTML = resultText;
   resultDiv.style.display = 'block';
@@ -381,4 +372,12 @@ function updateFooter() {
     day: 'numeric', month: 'long', year: 'numeric'
   }).format(now);
 
-  document.getElementBy
+  document.getElementById('footer').innerHTML =
+    `📅 التاريخ الميلادي: ${miladi} <br> 📆 التاريخ الهجري: ${hijri} <br> 🕒 الوقت الآن: ${time}`;
+}
+
+updateFooter();
+</script>
+
+</body>
+</html>
