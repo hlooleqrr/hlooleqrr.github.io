@@ -8,38 +8,33 @@
   body {
     font-family: 'Tajawal', sans-serif;
     background: #e8f5f2;
-    margin: 0; padding: 0; color: #012a26;
-    display: flex; justify-content: center; align-items: center; min-height: 100vh;
+    margin: 0; padding: 20px;
+    color: #012a26;
   }
   #app {
+    max-width: 720px;
+    margin: auto;
     background: white;
-    width: 100%; max-width: 720px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
     padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
   }
   h2 {
     text-align: center;
-    margin-bottom: 30px;
     color: #004d40;
-  }
-  .step {
-    display: none;
-  }
-  .step.active {
-    display: block;
+    margin-bottom: 30px;
   }
   label {
     display: block;
-    margin: 18px 0 10px;
+    margin: 20px 0 8px;
     font-weight: 700;
-    font-size: 19px;
+    font-size: 18px;
   }
   select, button {
     width: 100%;
-    font-size: 18px;
     padding: 12px;
-    border-radius: 8px;
+    font-size: 18px;
+    border-radius: 7px;
     border: 1.5px solid #004d40;
     background: #f0f9f8;
     cursor: pointer;
@@ -48,25 +43,17 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
-  .buttons {
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .buttons button {
-    width: 48%;
-  }
   #result {
+    margin-top: 40px;
     font-size: 22px;
     line-height: 1.6;
     color: #00695c;
-    margin-top: 35px;
   }
   footer {
     margin-top: 50px;
     text-align: center;
     color: gray;
-    font-size: 17px;
+    font-size: 16px;
   }
 </style>
 </head>
@@ -76,60 +63,46 @@
 
   <h2>حاسبة الراتب التقاعدي للعسكريين</h2>
 
-  <!-- خطوة 1: اختيار الرتبة -->
-  <div class="step active" id="step1">
-    <label for="rank">🎖️ اختر رتبتك العسكرية:</label>
-    <select id="rank">
-      <option value="">-- اختر رتبة --</option>
-      <option value="جندي">جندي</option>
-      <option value="جندي أول">جندي أول</option>
-      <option value="عريف">عريف</option>
-      <option value="وكيل رقيب">وكيل رقيب</option>
-      <option value="رقيب">رقيب</option>
-      <option value="رقيب أول">رقيب أول</option>
-      <option value="رئيس رقباء">رئيس رقباء</option>
-      <option value="ملازم">ملازم</option>
-      <option value="ملازم أول">ملازم أول</option>
-      <option value="نقيب">نقيب</option>
-      <option value="رائد">رائد</option>
-      <option value="مقدم">مقدم</option>
-      <option value="عقيد">عقيد</option>
-      <option value="عميد">عميد</option>
-      <option value="لواء">لواء</option>
-    </select>
-  </div>
+  <label for="rank">🎖️ اختر رتبتك العسكرية:</label>
+  <select id="rank" required>
+    <option value="">-- اختر رتبة --</option>
+    <option value="جندي">جندي</option>
+    <option value="جندي أول">جندي أول</option>
+    <option value="عريف">عريف</option>
+    <option value="وكيل رقيب">وكيل رقيب</option>
+    <option value="رقيب">رقيب</option>
+    <option value="رقيب أول">رقيب أول</option>
+    <option value="رئيس رقباء">رئيس رقباء</option>
+    <option value="ملازم">ملازم</option>
+    <option value="ملازم أول">ملازم أول</option>
+    <option value="نقيب">نقيب</option>
+    <option value="رائد">رائد</option>
+    <option value="مقدم">مقدم</option>
+    <option value="عقيد">عقيد</option>
+    <option value="عميد">عميد</option>
+    <option value="لواء">لواء</option>
+  </select>
 
-  <!-- خطوة 2: تاريخ الميلاد هجري -->
-  <div class="step" id="step2">
-    <label>📅 اختر تاريخ ميلادك (هجري):</label>
-    <select id="birthDay"></select>
-    <select id="birthMonth"></select>
-    <select id="birthYear"></select>
-  </div>
+  <label>📅 اختر تاريخ ميلادك (هجري):</label>
+  <select id="birthDay"></select>
+  <select id="birthMonth"></select>
+  <select id="birthYear"></select>
 
-  <!-- خطوة 3: تاريخ التعيين هجري -->
-  <div class="step" id="step3">
-    <label>📅 اختر تاريخ تعيينك (هجري):</label>
-    <select id="hireDay"></select>
-    <select id="hireMonth"></select>
-    <select id="hireYear"></select>
-  </div>
+  <label>📅 اختر تاريخ تعيينك (هجري):</label>
+  <select id="hireDay"></select>
+  <select id="hireMonth"></select>
+  <select id="hireYear"></select>
 
-  <!-- أزرار التنقل -->
-  <div class="buttons">
-    <button id="prevBtn" disabled>السابق</button>
-    <button id="nextBtn">التالي</button>
-  </div>
+  <button id="calculateBtn" style="margin-top:30px;">احسب</button>
 
-  <!-- عرض النتائج -->
-  <div id="result" style="display:none;"></div>
+  <div id="result"></div>
 
 </div>
 
 <footer id="footer"></footer>
 
 <script>
-  // تعيين الأيام، الشهور، السنوات في القوائم
+  // تعبئة الأيام والشهور والسنوات
   function fillDateSelects(dayId, monthId, yearId, startYear, endYear) {
     const daySelect = document.getElementById(dayId);
     const monthSelect = document.getElementById(monthId);
@@ -139,78 +112,15 @@
     for(let m=1; m<=12; m++) monthSelect.appendChild(new Option(m,m));
     for(let y=startYear; y<=endYear; y++) yearSelect.appendChild(new Option(y,y));
 
-    // قيم افتراضية وسط النطاق
     daySelect.value = 1;
     monthSelect.value = 1;
     yearSelect.value = Math.floor((startYear + endYear) / 2);
   }
-  fillDateSelects('birthDay','birthMonth','birthYear', 1370, 1430);
-  fillDateSelects('hireDay','hireMonth','hireYear', 1410, 1460);
 
-  // التحكم بالخطوات
-  let currentStep = 1;
-  const totalSteps = 3;
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
+  fillDateSelects('birthDay','birthMonth','birthYear',1370,1430);
+  fillDateSelects('hireDay','hireMonth','hireYear',1410,1460);
 
-  function showStep(step) {
-    for(let i=1; i<=totalSteps; i++)
-      document.getElementById('step'+i).classList.remove('active');
-    document.getElementById('step'+step).classList.add('active');
-    prevBtn.disabled = step === 1;
-    nextBtn.textContent = step === totalSteps ? 'احسب' : 'التالي';
-    document.getElementById('result').style.display = 'none';
-    prevBtn.style.display = 'inline-block';
-    nextBtn.style.display = 'inline-block';
-  }
-  showStep(currentStep);
-
-  prevBtn.onclick = () => {
-    if(currentStep > 1) {
-      currentStep--;
-      showStep(currentStep);
-    }
-  };
-  nextBtn.onclick = () => {
-    if(!validateStep(currentStep)) return alert('يرجى إكمال الحقل المطلوب');
-    if(currentStep < totalSteps) {
-      currentStep++;
-      showStep(currentStep);
-    } else {
-      calculateResult();
-    }
-  };
-
-  // تحقق إدخالات
-  function validateStep(step) {
-    if(step === 1) {
-      return document.getElementById('rank').value !== '';
-    }
-    return true;
-  }
-
-  // حساب الفرق بين تاريخين هجريين بدقة (سنوات، شهور، أيام)
-  function hijriToDays(y,m,d) {
-    return y*354 + (m-1)*29.5 + d;
-  }
-
-  function diffHijriDates(y1,m1,d1, y2,m2,d2) {
-    let diff = Math.floor(hijriToDays(y2,m2,d2) - hijriToDays(y1,m1,d1));
-    if(diff < 0) diff = 0;
-    const years = Math.floor(diff/354);
-    diff -= years*354;
-    const months = Math.floor(diff/29.5);
-    diff -= months*29.5;
-    const days = Math.floor(diff);
-    return { years, months, days };
-  }
-
-  // تحويل الرقم لفاصلة عربية
-  function numberToArabicText(num) {
-    return num.toLocaleString('ar-EG');
-  }
-
-  // بيانات الرتب مع الرواتب والعلاوات وسن التقاعد
+  // بيانات الرتب
   const ranksData = {
     "جندي":        { base: 3220,  allowance: 125,  maxYears: 15, retireAge: 44 },
     "جندي أول":    { base: 3395,  allowance: 135,  maxYears: 15, retireAge: 44 },
@@ -229,36 +139,68 @@
     "لواء":        { base: 18600, allowance: 200,  maxYears: 15, retireAge: 58 }
   };
 
-  // إضافة أشهر لتاريخ هجري - نبدأ أول يوم من الشهر التالي
-  function addMonthsHijriStartNextMonth(date, months) {
-    let y = date.y;
-    let m = date.m + months + 1; // +1 لشهر جديد
-    let d = 1;
-    while (m > 12) {
-      m -= 12;
-      y++;
-    }
-    return { y, m, d };
+  // تحويل التاريخ الهجري إلى أيام تقريبية
+  function hijriToDays(y,m,d) {
+    return y * 354 + (m - 1) * 29.5 + d;
   }
 
-  // حساب العمر عند تاريخ معين (هجري)
+  // حساب الفرق بين تاريخين هجريين
+  function diffHijriDates(y1,m1,d1, y2,m2,d2) {
+    let diff = Math.floor(hijriToDays(y2,m2,d2) - hijriToDays(y1,m1,d1));
+    if(diff < 0) diff = 0;
+    const years = Math.floor(diff / 354);
+    diff -= years * 354;
+    const months = Math.floor(diff / 29.5);
+    diff -= months * 29.5;
+    const days = Math.floor(diff);
+    return { years, months, days };
+  }
+
+  // حساب عمر عند تاريخ معين هجرياً
   function calculateAgeAtDate(birth, atDate) {
     let y = atDate.y - birth.y;
     let m = atDate.m - birth.m;
     let d = atDate.d - birth.d;
-    if (d < 0) {
+    if(d < 0) {
       d += 30;
       m--;
     }
-    if (m < 0) {
+    if(m < 0) {
       m += 12;
       y--;
     }
     return { years: y, months: m, days: d };
   }
 
-  // الحساب النهائي وعرض النتائج
-  function calculateResult() {
+  // حساب موعد التقاعد كبداية أول شهر بعد إكمال العمر
+  function addMonthsHijriStartNextMonth(date, months) {
+    let y = date.y;
+    let m = date.m + months + 1;
+    let d = 1;
+    while(m > 12) {
+      m -= 12;
+      y++;
+    }
+    return { y, m, d };
+  }
+
+  // تحويل رقم لفاصل عربي
+  function numberToArabicText(num) {
+    return num.toLocaleString('ar-EG');
+  }
+
+  // تحديث الفوتر مع التاريخ والوقت
+  function updateFooter() {
+    const now = new Date();
+    const miladi = now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const time = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+    const hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+    document.getElementById('footer').innerHTML = `📅 التاريخ الميلادي: ${miladi} <br> 📆 التاريخ الهجري: ${hijri} <br> 🕒 الوقت الآن: ${time}`;
+  }
+  updateFooter();
+
+  // الحدث عند الضغط على زر الحساب
+  document.getElementById('calculateBtn').onclick = function() {
     const rank = document.getElementById('rank').value;
     const birth = {
       y: parseInt(document.getElementById('birthYear').value),
@@ -271,46 +213,40 @@
       d: parseInt(document.getElementById('hireDay').value)
     };
 
-    if (hire.y < birth.y || (hire.y === birth.y && hire.m < birth.m) || (hire.y === birth.y && hire.m === birth.m && hire.d < birth.d)) {
-      alert("تاريخ التعيين لا يمكن أن يكون قبل تاريخ الميلاد");
-      currentStep = 3;
-      showStep(currentStep);
-      return;
+    if(!rank) return alert("اختر رتبة صحيحة");
+    if(hire.y < birth.y || (hire.y === birth.y && hire.m < birth.m) || (hire.y === birth.y && hire.m === birth.m && hire.d < birth.d)) {
+      return alert("تاريخ التعيين لا يمكن أن يكون قبل تاريخ الميلاد");
     }
 
-    // الحصول على التاريخ الهجري الحالي
-    const now = new Date();
-    const hijriNowY = parseInt(new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric' }).format(now));
-    const hijriNowM = parseInt(new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { month: 'numeric' }).format(now));
-    const hijriNowD = parseInt(new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric' }).format(now));
-    const today = { y: hijriNowY, m: hijriNowM, d: hijriNowD };
+    const serviceDuration = diffHijriDates(hire.y, hire.m, hire.d, new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).reduce((acc, part) => {
+      if(part.type === 'year') acc.y = parseInt(part.value);
+      else if(part.type === 'month') acc.m = parseInt(part.value);
+      else if(part.type === 'day') acc.d = parseInt(part.value);
+      return acc;
+    }, {}));
 
-    // حساب مدة الخدمة
-    const serviceDuration = diffHijriDates(hire.y, hire.m, hire.d, today.y, today.m, today.d);
     const serviceYearsDecimal = serviceDuration.years + serviceDuration.months / 12 + serviceDuration.days / 365;
 
-    // سنوات العلاوة
     const maxAllowanceYears = ranksData[rank].maxYears;
     const allowanceYears = Math.min(serviceDuration.years, maxAllowanceYears);
 
-    // الراتب الأساسي
     const baseSalary = ranksData[rank].base + allowanceYears * ranksData[rank].allowance;
-
-    // الراتب التقاعدي
     const pension = Math.round((baseSalary * serviceYearsDecimal * 0.55) / 40);
 
-    // موعد التقاعد بداية أول شهر بعد إكمال العمر
     const retireAge = ranksData[rank].retireAge;
     const retireDate = addMonthsHijriStartNextMonth(birth, retireAge * 12);
 
-    // باقي الوقت حتى التقاعد
-    const timeToRetire = diffHijriDates(today.y, today.m, today.d, retireDate.y, retireDate.m, retireDate.d);
+    const nowHijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).reduce((acc, part) => {
+      if(part.type === 'year') acc.y = parseInt(part.value);
+      else if(part.type === 'month') acc.m = parseInt(part.value);
+      else if(part.type === 'day') acc.d = parseInt(part.value);
+      return acc;
+    }, {});
 
-    // عمر المتقاعد عند التقاعد
+    const timeToRetire = diffHijriDates(nowHijri.y, nowHijri.m, nowHijri.d, retireDate.y, retireDate.m, retireDate.d);
     const ageAtRetire = calculateAgeAtDate(birth, retireDate);
 
-    // عرض النتيجة
-    const resultText = `
+    document.getElementById('result').innerHTML = `
       <p>🎖️ <strong>الرتبة:</strong> ${rank}</p>
       <p>📆 <strong>مدة الخدمة حتى اليوم:</strong> ${serviceDuration.years} سنة، ${serviceDuration.months} شهر، ${serviceDuration.days} يوم</p>
       <p>💼 <strong>الراتب الأساسي الحالي:</strong> ${numberToArabicText(baseSalary)} ريال</p>
@@ -322,25 +258,7 @@
       <hr>
       <p><em>ملاحظة: سيتم صرف الراتب التقاعدي بعد شهرين من تاريخ التقاعد.</em></p>
     `;
-
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = resultText;
-    resultDiv.style.display = 'block';
-
-    prevBtn.style.display = 'none';
-    nextBtn.style.display = 'none';
-  }
-
-  // تحديث الفوتر
-  function updateFooter() {
-    const now = new Date();
-    const miladi = now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const time = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-    const hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
-    document.getElementById('footer').innerHTML = `📅 التاريخ الميلادي: ${miladi} <br> 📆 التاريخ الهجري: ${hijri} <br> 🕒 الوقت الآن: ${time}`;
-  }
-
-  updateFooter();
+  };
 </script>
 
 </body>
