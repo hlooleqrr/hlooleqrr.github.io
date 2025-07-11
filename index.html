@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبة الراتب التقاعدي للعسكريين</title>
+<title>حاسبة الراتب التقاعدي للعسكريين - نسخة مؤكدة</title>
 <style>
   body {
     font-family: 'Tajawal', sans-serif;
@@ -48,6 +48,7 @@
     font-size: 22px;
     line-height: 1.6;
     color: #00695c;
+    white-space: pre-line;
   }
   footer {
     margin-top: 50px;
@@ -95,14 +96,14 @@
 
   <button id="calculateBtn" style="margin-top:30px;">احسب</button>
 
-  <div id="result"></div>
+  <pre id="result" style="display:none;"></pre>
 
 </div>
 
 <footer id="footer"></footer>
 
 <script>
-  // تعبئة الأيام والشهور والسنوات
+  // تعبئة الأيام، الأشهر، والسنوات
   function fillDateSelects(dayId, monthId, yearId, startYear, endYear) {
     const daySelect = document.getElementById(dayId);
     const monthSelect = document.getElementById(monthId);
@@ -139,24 +140,24 @@
     "لواء":        { base: 18600, allowance: 200,  maxYears: 15, retireAge: 58 }
   };
 
-  // تحويل التاريخ الهجري إلى أيام تقريبية
+  // تحويل التاريخ الهجري إلى أيام تقريبي
   function hijriToDays(y,m,d) {
-    return y * 354 + (m - 1) * 29.5 + d;
+    return y*354 + (m-1)*29.5 + d;
   }
 
-  // حساب الفرق بين تاريخين هجريين
+  // حساب الفرق بدقة (سنوات، شهور، أيام)
   function diffHijriDates(y1,m1,d1, y2,m2,d2) {
     let diff = Math.floor(hijriToDays(y2,m2,d2) - hijriToDays(y1,m1,d1));
     if(diff < 0) diff = 0;
-    const years = Math.floor(diff / 354);
-    diff -= years * 354;
-    const months = Math.floor(diff / 29.5);
-    diff -= months * 29.5;
+    const years = Math.floor(diff/354);
+    diff -= years*354;
+    const months = Math.floor(diff/29.5);
+    diff -= months*29.5;
     const days = Math.floor(diff);
     return { years, months, days };
   }
 
-  // حساب عمر عند تاريخ معين هجرياً
+  // حساب العمر عند تاريخ معين هجري
   function calculateAgeAtDate(birth, atDate) {
     let y = atDate.y - birth.y;
     let m = atDate.m - birth.m;
@@ -172,10 +173,10 @@
     return { years: y, months: m, days: d };
   }
 
-  // حساب موعد التقاعد كبداية أول شهر بعد إكمال العمر
+  // تاريخ التقاعد كبداية أول شهر بعد العمر التقاعدي
   function addMonthsHijriStartNextMonth(date, months) {
     let y = date.y;
-    let m = date.m + months + 1;
+    let m = date.m + months + 1; // +1 لبداية الشهر التالي
     let d = 1;
     while(m > 12) {
       m -= 12;
@@ -184,12 +185,29 @@
     return { y, m, d };
   }
 
-  // تحويل رقم لفاصل عربي
+  // رقم لفاصلة عربية
   function numberToArabicText(num) {
     return num.toLocaleString('ar-EG');
   }
 
-  // تحديث الفوتر مع التاريخ والوقت
+  // الحصول على التاريخ الهجري الحالي
+  function getTodayHijri() {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    }).formatToParts(now);
+    let y, m, d;
+    parts.forEach(part => {
+      if(part.type === 'year') y = parseInt(part.value);
+      if(part.type === 'month') m = parseInt(part.value);
+      if(part.type === 'day') d = parseInt(part.value);
+    });
+    return { y, m, d };
+  }
+
+  // تحديث الفوتر
   function updateFooter() {
     const now = new Date();
     const miladi = now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -199,7 +217,6 @@
   }
   updateFooter();
 
-  // الحدث عند الضغط على زر الحساب
   document.getElementById('calculateBtn').onclick = function() {
     const rank = document.getElementById('rank').value;
     const birth = {
@@ -218,13 +235,9 @@
       return alert("تاريخ التعيين لا يمكن أن يكون قبل تاريخ الميلاد");
     }
 
-    const serviceDuration = diffHijriDates(hire.y, hire.m, hire.d, new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).reduce((acc, part) => {
-      if(part.type === 'year') acc.y = parseInt(part.value);
-      else if(part.type === 'month') acc.m = parseInt(part.value);
-      else if(part.type === 'day') acc.d = parseInt(part.value);
-      return acc;
-    }, {}));
+    const today = getTodayHijri();
 
+    const serviceDuration = diffHijriDates(hire.y, hire.m, hire.d, today.y, today.m, today.d);
     const serviceYearsDecimal = serviceDuration.years + serviceDuration.months / 12 + serviceDuration.days / 365;
 
     const maxAllowanceYears = ranksData[rank].maxYears;
@@ -236,28 +249,21 @@
     const retireAge = ranksData[rank].retireAge;
     const retireDate = addMonthsHijriStartNextMonth(birth, retireAge * 12);
 
-    const nowHijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).reduce((acc, part) => {
-      if(part.type === 'year') acc.y = parseInt(part.value);
-      else if(part.type === 'month') acc.m = parseInt(part.value);
-      else if(part.type === 'day') acc.d = parseInt(part.value);
-      return acc;
-    }, {});
-
-    const timeToRetire = diffHijriDates(nowHijri.y, nowHijri.m, nowHijri.d, retireDate.y, retireDate.m, retireDate.d);
+    const timeToRetire = diffHijriDates(today.y, today.m, today.d, retireDate.y, retireDate.m, retireDate.d);
     const ageAtRetire = calculateAgeAtDate(birth, retireDate);
 
-    document.getElementById('result').innerHTML = `
-      <p>🎖️ <strong>الرتبة:</strong> ${rank}</p>
-      <p>📆 <strong>مدة الخدمة حتى اليوم:</strong> ${serviceDuration.years} سنة، ${serviceDuration.months} شهر، ${serviceDuration.days} يوم</p>
-      <p>💼 <strong>الراتب الأساسي الحالي:</strong> ${numberToArabicText(baseSalary)} ريال</p>
-      <p>💰 <strong>الراتب التقاعدي المتوقع:</strong> ${numberToArabicText(pension)} ريال</p>
-      <hr>
-      <p>⏳ <strong>باقي على التقاعد:</strong> ${timeToRetire.years} سنة، ${timeToRetire.months} شهر، ${timeToRetire.days} يوم</p>
-      <p>📅 <strong>موعد التقاعد المتوقع (هجري):</strong> ${retireDate.y} / ${retireDate.m} / ${retireDate.d}</p>
-      <p>👴 <strong>عمر المتقاعد المتوقع:</strong> ${ageAtRetire.years} سنة، ${ageAtRetire.months} شهر، ${ageAtRetire.days} يوم</p>
-      <hr>
-      <p><em>ملاحظة: سيتم صرف الراتب التقاعدي بعد شهرين من تاريخ التقاعد.</em></p>
-    `;
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('result').textContent = 
+      `🎖️ الرتبة: ${rank}
+مدة الخدمة حتى اليوم: ${serviceDuration.years} سنة، ${serviceDuration.months} شهر، ${serviceDuration.days} يوم
+💼 الراتب الأساسي الحالي: ${numberToArabicText(baseSalary)} ريال
+💰 الراتب التقاعدي المتوقع: ${numberToArabicText(pension)} ريال
+
+⏳ باقي على التقاعد: ${timeToRetire.years} سنة، ${timeToRetire.months} شهر، ${timeToRetire.days} يوم
+📅 موعد التقاعد المتوقع (هجري): ${retireDate.y} / ${retireDate.m} / ${retireDate.d}
+👴 عمر المتقاعد المتوقع: ${ageAtRetire.years} سنة، ${ageAtRetire.months} شهر، ${ageAtRetire.days} يوم
+
+ملاحظة: سيتم صرف الراتب التقاعدي بعد شهرين من تاريخ التقاعد.`;
   };
 </script>
 
