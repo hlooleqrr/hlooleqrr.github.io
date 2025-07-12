@@ -1,271 +1,177 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبة الراتب التقاعدي للعسكريين - نسخة مؤكدة</title>
-<style>
-  body {
-    font-family: 'Tajawal', sans-serif;
-    background: #e8f5f2;
-    margin: 0; padding: 20px;
-    color: #012a26;
-  }
-  #app {
-    max-width: 720px;
-    margin: auto;
-    background: white;
-    padding: 30px 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-  }
-  h2 {
-    text-align: center;
-    color: #004d40;
-    margin-bottom: 30px;
-  }
-  label {
-    display: block;
-    margin: 20px 0 8px;
-    font-weight: 700;
-    font-size: 18px;
-  }
-  select, button {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 7px;
-    border: 1.5px solid #004d40;
-    background: #f0f9f8;
-    cursor: pointer;
-  }
-  button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  #result {
-    margin-top: 40px;
-    font-size: 22px;
-    line-height: 1.6;
-    color: #00695c;
-    white-space: pre-line;
-  }
-  footer {
-    margin-top: 50px;
-    text-align: center;
-    color: gray;
-    font-size: 16px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>سرعة تملك العقار | حلول تمويلية</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0}
+    body{font-family:'Tajawal',sans-serif;background:#fdfdfd;color:#012a26;text-align:center}
+    header{padding:42px 20px}
+    h1{font-size:2rem;color:#005c48;margin-bottom:8px}
+    .tagline{font-size:1.05rem;color:#007a63;margin-bottom:38px;font-weight:700}
+    .question{font-weight:700;margin-bottom:20px}
+    .cards{display:flex;flex-direction:column;gap:20px;max-width:420px;margin:auto}
+    .card{display:block;text-decoration:none;background:#00b28f;color:#fff;padding:26px;border-radius:12px;font-size:1.35rem;box-shadow:0 4px 12px rgba(0,0,0,.12);transition:.2s}
+    .card:hover{transform:translateY(-4px)}
+    @media(min-width:600px){.cards{flex-direction:row}}
+    footer{font-size:13px;color:#888;margin:60px 0 20px}
+  </style>
 </head>
 <body>
+  <header>
+    <h1>سرعة تملك العقار</h1>
+    <p class="tagline">حلولنا بلا تقيّد • سرعة بالإنجاز</p>
+    <p class="question">هل تريد حلول في؟</p>
+    <nav class="cards">
+      <a class="card" href="real-estate.html">التمويل العقاري</a>
+      <a class="card" href="personal-finance.html">التمويل الشخصي</a>
+      <a class="card" href="services.html">الخدمات الأخرى</a>
+    </nav>
+  </header>
+  <footer>© سرعة تملك العقار والحلول التمويلية</footer>
+</body>
+</html>
 
-<div id="app">
+<!-- real-estate.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>التمويل العقاري | سرعة تملك العقار</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Tajawal',sans-serif;margin:0;padding:24px;line-height:1.8;color:#012a26}
+    .head{display:flex;justify-content:space-between;align-items:center}
+    h1{font-size:1.55rem;color:#005c48;margin:0}
+    .back{color:#00b28f;text-decoration:none}
+    ul{margin-top:22px;padding-right:22px}
+    ul li{margin-bottom:10px}
+    .box{background:#e0f7f1;padding:14px;border-right:5px solid #00b28f;border-radius:8px;margin-top:22px}
+    footer{font-size:13px;color:#888;text-align:center;margin-top:40px}
+  </style>
+</head>
+<body>
+  <div class="head">
+    <a class="back" href="index.html">⬅ الرئيسية</a>
+    <h1>التمويل العقاري</h1>
+  </div>
 
-  <h2>حاسبة الراتب التقاعدي للعسكريين</h2>
+  <div class="box">
+    <p><strong>(معتــــمدون)</strong> - خبرة تتجاوز 17 عام</p>
+    <p>نخدم جميع أنحاء المملكة</p>
+  </div>
 
-  <label for="rank">🎖️ اختر رتبتك العسكرية:</label>
-  <select id="rank" required>
-    <option value="">-- اختر رتبة --</option>
-    <option value="جندي">جندي</option>
-    <option value="جندي أول">جندي أول</option>
-    <option value="عريف">عريف</option>
-    <option value="وكيل رقيب">وكيل رقيب</option>
-    <option value="رقيب">رقيب</option>
-    <option value="رقيب أول">رقيب أول</option>
-    <option value="رئيس رقباء">رئيس رقباء</option>
-    <option value="ملازم">ملازم</option>
-    <option value="ملازم أول">ملازم أول</option>
-    <option value="نقيب">نقيب</option>
-    <option value="رائد">رائد</option>
-    <option value="مقدم">مقدم</option>
-    <option value="عقيد">عقيد</option>
-    <option value="عميد">عميد</option>
-    <option value="لواء">لواء</option>
-  </select>
+  <p>بتشتري فيلا، دور، شقة 🏠؟ أو بتبني 🏗️؟ أو ترهن عن طريق البنك؟ متلخبط؟ 🥴 محتار وش أفضل بنك؟</p>
+  <ul>
+    <li>ننجزك بأفضل نسبة <strong>حتى لو بالإستثناء، ابشر بالسعد</strong></li>
+    <li>الإقساط تبدأ أحيانًا بـ<strong> 500 ريال لأول 5 سنوات</strong> ☺️</li>
+    <li>حل لمن تُطلب عليه الدفعة الأولى</li>
+    <li>بعض البنوك بدون تحويل راتب</li>
+    <li>تقييم سريع ودقيق بالتعاون مع المقيّمين</li>
+    <li>إجراءات أونلاين بالكامل، استلام الصك باتصال من وزارة العدل</li>
+    <li><strong>بدون تعقيدات ولا قروشة</strong> 😵💫</li>
+  </ul>
 
-  <label>📅 اختر تاريخ ميلادك (هجري):</label>
-  <select id="birthDay"></select>
-  <select id="birthMonth"></select>
-  <select id="birthYear"></select>
+  <div class="box">
+    <h2 style="margin-top:0">تواصل معنا</h2>
+    <p><strong>0506214458 📞</strong></p>
+    <p><strong>https://hlooleqrr.com/</strong></p>
+    <p>حياك الله بأي وقت</p>
+  </div>
 
-  <label>📅 اختر تاريخ تعيينك (هجري):</label>
-  <select id="hireDay"></select>
-  <select id="hireMonth"></select>
-  <select id="hireYear"></select>
+  <footer>© سرعة تملك العقار والحلول التمويلية</footer>
+</body>
+</html>
 
-  <button id="calculateBtn" style="margin-top:30px;">احسب</button>
+<!-- personal-finance.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>التمويل الشخصي | سرعة تملك العقار</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Tajawal',sans-serif;margin:0;padding:24px;line-height:1.8;color:#012a26}
+    .head{display:flex;justify-content:space-between;align-items:center}
+    h1{font-size:1.55rem;color:#005c48;margin:0}
+    .back{color:#00b28f;text-decoration:none}
+    ul{margin-top:22px;padding-right:22px}
+    ul li{margin-bottom:10px}
+    .box{background:#e0f7f1;padding:14px;border-right:5px solid #00b28f;border-radius:8px;margin-top:22px}
+    footer{font-size:13px;color:#888;text-align:center;margin-top:40px}
+  </style>
+</head>
+<body>
+  <div class="head">
+    <a class="back" href="index.html">⬅ الرئيسية</a>
+    <h1>التمويل الشخصي</h1>
+  </div>
 
-  <pre id="result" style="display:none;"></pre>
+  <ul>
+    <li>أقل نسبة (ولو بالاستثناء) ☺️</li>
+    <li>بعض البنوك بدون تحويل راتب وبنسبة أقل</li>
+    <li>مع تحويل الراتب نفك الحجز قبل نزوله</li>
+    <li><strong>بدون تعقيدات ولا قروشة</strong> 😵💫</li>
+    <li><strong>عروض مميزة</strong> لإعادة التمويل وسداد القرض السابق</li>
+  </ul>
 
-</div>
+  <div class="box">
+    <h2 style="margin-top:0">تواصل معنا</h2>
+    <p><strong>0506214458 📞</strong></p>
+    <p><strong>https://hlooleqrr.com/</strong></p>
+    <p>حياك الله بأي وقت</p>
+  </div>
 
-<footer id="footer"></footer>
+  <footer>© سرعة تملك العقار والحلول التمويلية</footer>
+</body>
+</html>
 
-<script>
-  // تعبئة الأيام، الأشهر، والسنوات
-  function fillDateSelects(dayId, monthId, yearId, startYear, endYear) {
-    const daySelect = document.getElementById(dayId);
-    const monthSelect = document.getElementById(monthId);
-    const yearSelect = document.getElementById(yearId);
+<!-- services.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الخدمات الأخرى | سرعة تملك العقار</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Tajawal',sans-serif;margin:0;padding:24px;line-height:1.8;color:#012a26}
+    .head{display:flex;justify-content:space-between;align-items:center}
+    h1{font-size:1.55rem;color:#005c48;margin:0}
+    .back{color:#00b28f;text-decoration:none}
+    ul{margin-top:22px;padding-right:22px}
+    ul li{margin-bottom:10px}
+    .box{background:#e0f7f1;padding:14px;border-right:5px solid #00b28f;border-radius:8px;margin-top:22px}
+    footer{font-size:13px;color:#888;text-align:center;margin-top:40px}
+  </style>
+</head>
+<body>
+  <div class="head">
+    <a class="back" href="index.html">⬅ الرئيسية</a>
+    <h1>الخدمات الأخرى</h1>
+  </div>
 
-    for(let d=1; d<=30; d++) daySelect.appendChild(new Option(d,d));
-    for(let m=1; m<=12; m++) monthSelect.appendChild(new Option(m,m));
-    for(let y=startYear; y<=endYear; y++) yearSelect.appendChild(new Option(y,y));
+  <ul>
+    <li>تمويل سيــــــارات</li>
+    <li>منتج ثروة</li>
+    <li>منتج أسطول</li>
+    <li>نقاط البيع</li>
+    <li>تمويل تجاري وغيره</li>
+    <li>حلول مع شركات تمويل معتمدة من البنك المركزي <strong>بأفضل نسب</strong></li>
+  </ul>
 
-    daySelect.value = 1;
-    monthSelect.value = 1;
-    yearSelect.value = Math.floor((startYear + endYear) / 2);
-  }
+  <div class="box">
+    <h2 style="margin-top:0">تواصل معنا</h2>
+    <p><strong>0506214458 📞</strong></p>
+    <p><strong>https://hlooleqrr.com/</strong></p>
+    <p>حياك الله بأي وقت</p>
+  </div>
 
-  fillDateSelects('birthDay','birthMonth','birthYear',1370,1430);
-  fillDateSelects('hireDay','hireMonth','hireYear',1410,1460);
-
-  // بيانات الرتب
-  const ranksData = {
-    "جندي":        { base: 3220,  allowance: 125,  maxYears: 15, retireAge: 44 },
-    "جندي أول":    { base: 3395,  allowance: 135,  maxYears: 15, retireAge: 44 },
-    "عريف":        { base: 3765,  allowance: 150,  maxYears: 15, retireAge: 46 },
-    "وكيل رقيب":   { base: 4455,  allowance: 180,  maxYears: 15, retireAge: 46 },
-    "رقيب":        { base: 5260,  allowance: 215,  maxYears: 15, retireAge: 48 },
-    "رقيب أول":    { base: 6180,  allowance: 260,  maxYears: 15, retireAge: 50 },
-    "رئيس رقباء":  { base: 7215,  allowance: 310,  maxYears: 15, retireAge: 52 },
-    "ملازم":       { base: 7590,  allowance: 380,  maxYears: 15, retireAge: 48 },
-    "ملازم أول":   { base: 8365,  allowance: 395,  maxYears: 15, retireAge: 50 },
-    "نقيب":        { base: 9215,  allowance: 230,  maxYears: 15, retireAge: 52 },
-    "رائد":        { base: 11705, allowance: 230,  maxYears: 15, retireAge: 54 },
-    "مقدم":        { base: 12735, allowance: 230,  maxYears: 15, retireAge: 55 },
-    "عقيد":        { base: 14365, allowance: 230,  maxYears: 15, retireAge: 56 },
-    "عميد":        { base: 16350, allowance: 210,  maxYears: 15, retireAge: 57 },
-    "لواء":        { base: 18600, allowance: 200,  maxYears: 15, retireAge: 58 }
-  };
-
-  // تحويل التاريخ الهجري إلى أيام تقريبي
-  function hijriToDays(y,m,d) {
-    return y*354 + (m-1)*29.5 + d;
-  }
-
-  // حساب الفرق بدقة (سنوات، شهور، أيام)
-  function diffHijriDates(y1,m1,d1, y2,m2,d2) {
-    let diff = Math.floor(hijriToDays(y2,m2,d2) - hijriToDays(y1,m1,d1));
-    if(diff < 0) diff = 0;
-    const years = Math.floor(diff/354);
-    diff -= years*354;
-    const months = Math.floor(diff/29.5);
-    diff -= months*29.5;
-    const days = Math.floor(diff);
-    return { years, months, days };
-  }
-
-  // حساب العمر عند تاريخ معين هجري
-  function calculateAgeAtDate(birth, atDate) {
-    let y = atDate.y - birth.y;
-    let m = atDate.m - birth.m;
-    let d = atDate.d - birth.d;
-    if(d < 0) {
-      d += 30;
-      m--;
-    }
-    if(m < 0) {
-      m += 12;
-      y--;
-    }
-    return { years: y, months: m, days: d };
-  }
-
-  // تاريخ التقاعد كبداية أول شهر بعد العمر التقاعدي
-  function addMonthsHijriStartNextMonth(date, months) {
-    let y = date.y;
-    let m = date.m + months + 1; // +1 لبداية الشهر التالي
-    let d = 1;
-    while(m > 12) {
-      m -= 12;
-      y++;
-    }
-    return { y, m, d };
-  }
-
-  // رقم لفاصلة عربية
-  function numberToArabicText(num) {
-    return num.toLocaleString('ar-EG');
-  }
-
-  // الحصول على التاريخ الهجري الحالي
-  function getTodayHijri() {
-    const now = new Date();
-    const parts = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
-    }).formatToParts(now);
-    let y, m, d;
-    parts.forEach(part => {
-      if(part.type === 'year') y = parseInt(part.value);
-      if(part.type === 'month') m = parseInt(part.value);
-      if(part.type === 'day') d = parseInt(part.value);
-    });
-    return { y, m, d };
-  }
-
-  // تحديث الفوتر
-  function updateFooter() {
-    const now = new Date();
-    const miladi = now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const time = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-    const hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
-    document.getElementById('footer').innerHTML = `📅 التاريخ الميلادي: ${miladi} <br> 📆 التاريخ الهجري: ${hijri} <br> 🕒 الوقت الآن: ${time}`;
-  }
-  updateFooter();
-
-  document.getElementById('calculateBtn').onclick = function() {
-    const rank = document.getElementById('rank').value;
-    const birth = {
-      y: parseInt(document.getElementById('birthYear').value),
-      m: parseInt(document.getElementById('birthMonth').value),
-      d: parseInt(document.getElementById('birthDay').value)
-    };
-    const hire = {
-      y: parseInt(document.getElementById('hireYear').value),
-      m: parseInt(document.getElementById('hireMonth').value),
-      d: parseInt(document.getElementById('hireDay').value)
-    };
-
-    if(!rank) return alert("اختر رتبة صحيحة");
-    if(hire.y < birth.y || (hire.y === birth.y && hire.m < birth.m) || (hire.y === birth.y && hire.m === birth.m && hire.d < birth.d)) {
-      return alert("تاريخ التعيين لا يمكن أن يكون قبل تاريخ الميلاد");
-    }
-
-    const today = getTodayHijri();
-
-    const serviceDuration = diffHijriDates(hire.y, hire.m, hire.d, today.y, today.m, today.d);
-    const serviceYearsDecimal = serviceDuration.years + serviceDuration.months / 12 + serviceDuration.days / 365;
-
-    const maxAllowanceYears = ranksData[rank].maxYears;
-    const allowanceYears = Math.min(serviceDuration.years, maxAllowanceYears);
-
-    const baseSalary = ranksData[rank].base + allowanceYears * ranksData[rank].allowance;
-    const pension = Math.round((baseSalary * serviceYearsDecimal * 0.55) / 40);
-
-    const retireAge = ranksData[rank].retireAge;
-    const retireDate = addMonthsHijriStartNextMonth(birth, retireAge * 12);
-
-    const timeToRetire = diffHijriDates(today.y, today.m, today.d, retireDate.y, retireDate.m, retireDate.d);
-    const ageAtRetire = calculateAgeAtDate(birth, retireDate);
-
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('result').textContent = 
-      `🎖️ الرتبة: ${rank}
-مدة الخدمة حتى اليوم: ${serviceDuration.years} سنة، ${serviceDuration.months} شهر، ${serviceDuration.days} يوم
-💼 الراتب الأساسي الحالي: ${numberToArabicText(baseSalary)} ريال
-💰 الراتب التقاعدي المتوقع: ${numberToArabicText(pension)} ريال
-
-⏳ باقي على التقاعد: ${timeToRetire.years} سنة، ${timeToRetire.months} شهر، ${timeToRetire.days} يوم
-📅 موعد التقاعد المتوقع (هجري): ${retireDate.y} / ${retireDate.m} / ${retireDate.d}
-👴 عمر المتقاعد المتوقع: ${ageAtRetire.years} سنة، ${ageAtRetire.months} شهر، ${ageAtRetire.days} يوم
-
-ملاحظة: سيتم صرف الراتب التقاعدي بعد شهرين من تاريخ التقاعد.`;
-  };
-</script>
-
+  <footer>© سرعة تملك العقار والحلول التمويلية</footer>
 </body>
 </html>
